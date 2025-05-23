@@ -49,7 +49,7 @@ const CharacterSheet = () => {
                   <span>XP: {character.xp}/{character.xpToNextLevel}</span>
                   <span>{Math.round(character.xp/character.xpToNextLevel*100)}%</span>
                 </div>
-                <Progress value={(character.xp/character.xpToNextLevel)*100} className="h-2 bg-amber-100" indicatorClassName="bg-amber-600" />
+                <Progress value={(character.xp/character.xpToNextLevel)*100} className="h-2 bg-amber-100" />
               </div>
             </div>
           </div>
@@ -72,7 +72,7 @@ const CharacterSheet = () => {
                     <span className="font-medium capitalize">{statName}</span>
                     <span className="text-amber-700 font-bold">{stat.value}</span>
                   </div>
-                  <Progress value={stat.progress} className="h-2 bg-stone-300" indicatorClassName="bg-amber-600" />
+                  <Progress value={stat.progress} className="h-2 bg-stone-300" />
                   <div className="text-xs text-right mt-1 text-gray-600">+{Math.floor((stat.value - 10) / 2)} modifier</div>
                 </div>
               ))}
@@ -118,7 +118,7 @@ const CharacterSheet = () => {
           <div className="max-w-md mx-auto flex justify-around">
             <Button 
               variant="ghost" 
-              className="flex-1 flex flex-col items-center py-3 text-amber-200 hover:bg-stone-700 rounded-none"
+              className="flex-1 flex flex-col items-center py-3 text-amber-200 hover:bg-stone-700 rounded-none bg-stone-700"
               onClick={() => navigate("/character-sheet")}
             >
               <Book size={20} />

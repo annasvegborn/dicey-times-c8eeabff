@@ -10,7 +10,9 @@ import CharacterCreation from "./pages/CharacterCreation";
 import CharacterSheet from "./pages/CharacterSheet";
 import WorldMap from "./pages/WorldMap";
 import QuestLog from "./pages/QuestLog";
+import QuestDetail from "./pages/QuestDetail";
 import StepTracker from "./pages/StepTracker";
+import Inventory from "./pages/Inventory";
 
 const queryClient = new QueryClient();
 
@@ -26,7 +28,9 @@ const App = () => (
           <Route path="/character-sheet" element={<CharacterSheet />} />
           <Route path="/world-map" element={<WorldMap />} />
           <Route path="/quests" element={<QuestLog />} />
+          <Route path="/quest/:questId" element={<QuestDetail />} />
           <Route path="/step-tracker" element={<StepTracker />} />
+          <Route path="/inventory" element={<Inventory />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
