@@ -1,10 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, CheckCircle2, Trophy, Clock } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "@/hooks/use-toast";
+import InteractiveBattleScene from "@/components/combat/InteractiveBattleScene";
 
 // Types for our quest data
 interface QuestObjective {
@@ -64,6 +64,8 @@ const QuestDetail = () => {
   const navigate = useNavigate();
   const [quest, setQuest] = useState<Quest | null>(null);
   const [loading, setLoading] = useState(true);
+  const [inBattle, setInBattle] = useState(false);
+  const [battleEnemy, setBattleEnemy] = useState<{ name: string; image: string } | null>(null);
 
   useEffect(() => {
     // Simulate loading data from an API
@@ -143,6 +145,36 @@ const QuestDetail = () => {
     });
   };
 
+  const startBattle = (enemyName: string, enemyImage: string) => {
+    setBattleEnemy({ name: enemyName, image: enemyImage });
+    setInBattle(true);
+  };
+
+  const handleBattleVictory = () => {
+    setInBattle(false);
+    setBattleEnemy(null);
+    
+    // Find and complete the fight objective
+    const fightObjective = quest?.objectives.find(obj => obj.id === "fight-1");
+    if (fightObjective) {
+      completeObjective("fight-1");
+      toast({
+        title: "Victory!",
+        description: "You defeated the bandit leader!",
+      });
+    }
+  };
+
+  const handleBattleDefeat = () => {
+    setInBattle(false);
+    setBattleEnemy(null);
+    toast({
+      title: "Defeat",
+      description: "You were defeated. Try again when you're stronger!",
+      variant: "destructive"
+    });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-indigo-900 via-purple-900 to-indigo-800 flex items-center justify-center">
@@ -155,6 +187,19 @@ const QuestDetail = () => {
     return (
       <div className="min-h-screen bg-gradient-to-b from-indigo-900 via-purple-900 to-indigo-800 flex items-center justify-center">
         <div className="text-white">Quest not found</div>
+      </div>
+    );
+  }
+
+  if (inBattle && battleEnemy) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-indigo-900 via-purple-900 to-indigo-800 flex items-center justify-center p-4">
+        <InteractiveBattleScene
+          enemyName={battleEnemy.name}
+          enemyImage={battleEnemy.image}
+          onVictory={handleBattleVictory}
+          onDefeat={handleBattleDefeat}
+        />
       </div>
     );
   }
@@ -226,7 +271,16 @@ const QuestDetail = () => {
                     
                     {!objective.completed && (
                       <div className="mt-3">
-                        {objective.target ? (
+                        {objective.id === "fight-1" ? (
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="text-xs py-1 bg-red-100 border-red-300 text-red-700 hover:bg-red-200"
+                            onClick={() => startBattle("Bandit Leader", "🗡️")}
+                          >
+                            Start Battle
+                          </Button>
+                        ) : objective.target ? (
                           <div className="grid grid-cols-3 gap-2">
                             <Button 
                               size="sm" 
