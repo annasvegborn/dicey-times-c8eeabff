@@ -1,99 +1,128 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCharacter } from "@/hooks/useCharacter";
+import AvatarCustomizer from "@/components/character/AvatarCustomizer";
 
 const CharacterCreation = () => {
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
+  const { createCharacter } = useCharacter();
   const [step, setStep] = useState(1);
+  const [creating, setCreating] = useState(false);
   const [character, setCharacter] = useState({
+    name: "Adventurer",
     avatar: "human",
     class: "warrior",
     fitnessLevel: "moderate",
     progressionMode: "xp",
+    avatarCustomization: {
+      race: "human",
+      bodyShape: "medium",
+      hairStyle: "short"
+    }
   });
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate("/auth");
+    }
+  }, [user, authLoading, navigate]);
 
   const handleChange = (field: string, value: string) => {
     setCharacter(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleAvatarChange = (field: string, value: string) => {
+    setCharacter(prev => ({
+      ...prev,
+      avatarCustomization: {
+        ...prev.avatarCustomization,
+        [field]: value
+      }
+    }));
+  };
+
   const nextStep = () => setStep(prev => prev + 1);
   const prevStep = () => setStep(prev => prev - 1);
 
-  const completeCreation = () => {
-    // In a real app, we would store this character data
-    // For now, just navigate to the character sheet
-    navigate("/character-sheet");
+  const completeCreation = async () => {
+    setCreating(true);
+    try {
+      await createCharacter({
+        name: character.name,
+        race: character.avatarCustomization.race,
+        class: character.class,
+        fitness_level: character.fitnessLevel,
+        progression_mode: character.progressionMode,
+        avatar_race: character.avatarCustomization.race,
+        avatar_body_shape: character.avatarCustomization.bodyShape,
+        avatar_hair_style: character.avatarCustomization.hairStyle
+      });
+      navigate("/character-sheet");
+    } catch (error) {
+      console.error("Error creating character:", error);
+    } finally {
+      setCreating(false);
+    }
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-indigo-900 via-purple-900 to-indigo-800 flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-900 via-purple-900 to-indigo-800 p-4">
       <div className="max-w-md mx-auto bg-stone-100 rounded-lg shadow-lg p-6 border-2 border-amber-700">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-amber-800 font-serif">Create Your Character</h1>
-          <div className="text-sm text-gray-500">Step {step}/4</div>
+          <div className="text-sm text-gray-500">Step {step}/5</div>
         </div>
 
         {step === 1 && (
           <div className="space-y-6">
-            <h2 className="text-xl font-medium text-amber-700">Choose Your Avatar</h2>
+            <h2 className="text-xl font-medium text-amber-700">Character Name</h2>
             
-            <RadioGroup 
-              value={character.avatar} 
-              onValueChange={(value) => handleChange("avatar", value)}
-              className="grid grid-cols-2 gap-4"
-            >
-              <div>
-                <RadioGroupItem value="human" id="human" className="peer sr-only" />
-                <Label 
-                  htmlFor="human" 
-                  className="flex flex-col items-center justify-center border-2 rounded-lg p-4 cursor-pointer peer-data-[state=checked]:border-amber-600 peer-data-[state=checked]:bg-amber-50"
-                >
-                  <span className="text-4xl">👤</span>
-                  <span className="mt-2">Human</span>
-                </Label>
-              </div>
-              
-              <div>
-                <RadioGroupItem value="elf" id="elf" className="peer sr-only" />
-                <Label 
-                  htmlFor="elf" 
-                  className="flex flex-col items-center justify-center border-2 rounded-lg p-4 cursor-pointer peer-data-[state=checked]:border-amber-600 peer-data-[state=checked]:bg-amber-50"
-                >
-                  <span className="text-4xl">🧝</span>
-                  <span className="mt-2">Elf</span>
-                </Label>
-              </div>
-              
-              <div>
-                <RadioGroupItem value="dwarf" id="dwarf" className="peer sr-only" />
-                <Label 
-                  htmlFor="dwarf" 
-                  className="flex flex-col items-center justify-center border-2 rounded-lg p-4 cursor-pointer peer-data-[state=checked]:border-amber-600 peer-data-[state=checked]:bg-amber-50"
-                >
-                  <span className="text-4xl">🧔</span>
-                  <span className="mt-2">Dwarf</span>
-                </Label>
-              </div>
-              
-              <div>
-                <RadioGroupItem value="halfling" id="halfling" className="peer sr-only" />
-                <Label 
-                  htmlFor="halfling" 
-                  className="flex flex-col items-center justify-center border-2 rounded-lg p-4 cursor-pointer peer-data-[state=checked]:border-amber-600 peer-data-[state=checked]:bg-amber-50"
-                >
-                  <span className="text-4xl">🧒</span>
-                  <span className="mt-2">Halfling</span>
-                </Label>
-              </div>
-            </RadioGroup>
+            <div>
+              <Label htmlFor="name">What shall we call you, adventurer?</Label>
+              <Input
+                id="name"
+                value={character.name}
+                onChange={(e) => handleChange("name", e.target.value)}
+                className="mt-2 text-lg font-medium"
+                placeholder="Enter your character name"
+              />
+            </div>
+            
+            <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+              <p className="text-sm text-amber-800">
+                Choose a name that represents your fitness journey. This will be your identity in the realm!
+              </p>
+            </div>
           </div>
         )}
 
         {step === 2 && (
+          <div className="space-y-6">
+            <h2 className="text-xl font-medium text-amber-700">Customize Your Avatar</h2>
+            
+            <AvatarCustomizer
+              values={character.avatarCustomization}
+              onChange={handleAvatarChange}
+            />
+          </div>
+        )}
+
+        {step === 3 && (
           <div className="space-y-6">
             <h2 className="text-xl font-medium text-amber-700">Choose Your Class</h2>
             
@@ -153,7 +182,7 @@ const CharacterCreation = () => {
           </div>
         )}
 
-        {step === 3 && (
+        {step === 4 && (
           <div className="space-y-6">
             <h2 className="text-xl font-medium text-amber-700">Your Fitness Level</h2>
             
@@ -207,7 +236,7 @@ const CharacterCreation = () => {
           </div>
         )}
 
-        {step === 4 && (
+        {step === 5 && (
           <div className="space-y-6">
             <h2 className="text-xl font-medium text-amber-700">Choose Progression Mode</h2>
             
@@ -266,7 +295,7 @@ const CharacterCreation = () => {
             </Button>
           )}
           
-          {step < 4 ? (
+          {step < 5 ? (
             <Button 
               onClick={nextStep}
               className="flex items-center gap-1 bg-amber-600 hover:bg-amber-700"
@@ -276,9 +305,10 @@ const CharacterCreation = () => {
           ) : (
             <Button 
               onClick={completeCreation}
+              disabled={creating}
               className="flex items-center gap-1 bg-amber-600 hover:bg-amber-700"
             >
-              Create Character <ArrowRight size={16} />
+              {creating ? "Creating..." : "Create Character"} <ArrowRight size={16} />
             </Button>
           )}
         </div>

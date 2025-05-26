@@ -1,57 +1,97 @@
 
-import { useState } from "react";
+import { useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { MapPin, Sword, Book, Backpack } from "lucide-react";
+import { MapPin, Sword, Book, Backpack, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCharacter } from "@/hooks/useCharacter";
 
 const CharacterSheet = () => {
   const navigate = useNavigate();
-  // In a real app, we would fetch this from a database
-  const [character] = useState({
-    name: "Adventurer",
-    level: 1,
-    race: "Human",
-    class: "Warrior",
-    xp: 30,
-    xpToNextLevel: 100,
-    stats: {
-      strength: { value: 12, progress: 25 },
-      dexterity: { value: 10, progress: 15 },
-      constitution: { value: 14, progress: 30 },
-      intelligence: { value: 8, progress: 10 },
-      wisdom: { value: 10, progress: 20 },
-      charisma: { value: 9, progress: 5 }
-    },
-    traits: ["Determined", "Cautious"],
-    features: ["Basic Attack", "Shield Block"]
-  });
+  const { user, signOut, loading: authLoading } = useAuth();
+  const { character, stats, traits, features, loading } = useCharacter();
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate("/auth");
+    }
+  }, [user, authLoading, navigate]);
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
+
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-indigo-900 via-purple-900 to-indigo-800 flex items-center justify-center">
+        <div className="text-white text-xl">Loading your character...</div>
+      </div>
+    );
+  }
+
+  if (!character) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-indigo-900 via-purple-900 to-indigo-800 flex items-center justify-center p-4">
+        <div className="max-w-md mx-auto bg-stone-100 rounded-lg shadow-lg p-8 text-center border-2 border-amber-700">
+          <h2 className="text-xl font-bold text-amber-800 mb-4">No Character Found</h2>
+          <p className="text-gray-600 mb-6">You haven't created a character yet. Let's begin your adventure!</p>
+          <Button 
+            onClick={() => navigate("/character-creation")}
+            className="bg-amber-600 hover:bg-amber-700"
+          >
+            Create Character
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const getClassEmoji = (characterClass: string) => {
+    switch(characterClass) {
+      case "warrior": return "⚔️";
+      case "rogue": return "🏹";
+      case "mage": return "🧙";
+      case "cleric": return "🛡️";
+      default: return "🛡️";
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-900 via-purple-900 to-indigo-800 p-4">
       <div className="max-w-md mx-auto">
         {/* Character header */}
         <div className="bg-stone-100 rounded-lg shadow-lg p-6 border-2 border-amber-700 mb-4">
-          <div className="flex items-center gap-4">
-            <div className="flex-shrink-0 bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center border-2 border-amber-600 text-3xl">
-              {character.class === "Warrior" ? "⚔️" : 
-               character.class === "Rogue" ? "🏹" :
-               character.class === "Mage" ? "🧙" : "🛡️"}
-            </div>
-            <div className="flex-1">
-              <h1 className="text-xl font-bold text-amber-800">{character.name}</h1>
-              <div className="text-sm text-gray-600">
-                Level {character.level} {character.race} {character.class}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-4">
+              <div className="flex-shrink-0 bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center border-2 border-amber-600 text-3xl">
+                {getClassEmoji(character.class)}
               </div>
-              <div className="mt-2">
-                <div className="flex justify-between text-xs text-amber-700 mb-1">
-                  <span>XP: {character.xp}/{character.xpToNextLevel}</span>
-                  <span>{Math.round(character.xp/character.xpToNextLevel*100)}%</span>
+              <div className="flex-1">
+                <h1 className="text-xl font-bold text-amber-800">{character.name}</h1>
+                <div className="text-sm text-gray-600">
+                  Level {character.level} {character.race} {character.class}
                 </div>
-                <Progress value={(character.xp/character.xpToNextLevel)*100} className="h-2 bg-amber-100" />
               </div>
             </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleSignOut}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              <LogOut size={16} />
+            </Button>
+          </div>
+          
+          <div className="mt-2">
+            <div className="flex justify-between text-xs text-amber-700 mb-1">
+              <span>XP: {character.xp}/{character.xp_to_next_level}</span>
+              <span>{Math.round(character.xp/character.xp_to_next_level*100)}%</span>
+            </div>
+            <Progress value={(character.xp/character.xp_to_next_level)*100} className="h-2 bg-amber-100" />
           </div>
         </div>
 
@@ -65,23 +105,32 @@ const CharacterSheet = () => {
           <TabsContent value="stats" className="bg-stone-100 rounded-lg p-6 border-2 border-amber-700 mt-4">
             <h2 className="text-lg font-medium text-amber-800 mb-4">Ability Scores</h2>
             
-            <div className="grid grid-cols-2 gap-6">
-              {Object.entries(character.stats).map(([statName, stat]) => (
-                <div key={statName} className="bg-stone-200 p-4 rounded-lg">
-                  <div className="flex justify-between mb-1">
-                    <span className="font-medium capitalize">{statName}</span>
-                    <span className="text-amber-700 font-bold">{stat.value}</span>
+            {stats && (
+              <div className="grid grid-cols-2 gap-6">
+                {Object.entries({
+                  strength: { value: stats.strength_value, progress: stats.strength_progress },
+                  dexterity: { value: stats.dexterity_value, progress: stats.dexterity_progress },
+                  constitution: { value: stats.constitution_value, progress: stats.constitution_progress },
+                  intelligence: { value: stats.intelligence_value, progress: stats.intelligence_progress },
+                  wisdom: { value: stats.wisdom_value, progress: stats.wisdom_progress },
+                  charisma: { value: stats.charisma_value, progress: stats.charisma_progress }
+                }).map(([statName, stat]) => (
+                  <div key={statName} className="bg-stone-200 p-4 rounded-lg">
+                    <div className="flex justify-between mb-1">
+                      <span className="font-medium capitalize">{statName}</span>
+                      <span className="text-amber-700 font-bold">{stat.value}</span>
+                    </div>
+                    <Progress value={stat.progress} className="h-2 bg-stone-300" />
+                    <div className="text-xs text-right mt-1 text-gray-600">+{Math.floor((stat.value - 10) / 2)} modifier</div>
                   </div>
-                  <Progress value={stat.progress} className="h-2 bg-stone-300" />
-                  <div className="text-xs text-right mt-1 text-gray-600">+{Math.floor((stat.value - 10) / 2)} modifier</div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
             
             <div className="mt-6">
               <h3 className="text-lg font-medium text-amber-800 mb-2">Traits</h3>
               <div className="flex flex-wrap gap-2">
-                {character.traits.map((trait) => (
+                {traits.map((trait) => (
                   <span key={trait} className="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm">
                     {trait}
                   </span>
@@ -94,14 +143,10 @@ const CharacterSheet = () => {
             <h2 className="text-lg font-medium text-amber-800 mb-4">Class Features</h2>
             
             <div className="space-y-4">
-              {character.features.map((feature) => (
-                <div key={feature} className="bg-stone-200 p-4 rounded-lg">
-                  <h3 className="font-medium text-amber-700">{feature}</h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {feature === "Basic Attack" 
-                      ? "A simple attack using your main weapon. Deals 1d6 + STR modifier damage." 
-                      : "Use your shield to block incoming attacks. Reduces damage by 1d4 + CON modifier."}
-                  </p>
+              {features.map((feature) => (
+                <div key={feature.name} className="bg-stone-200 p-4 rounded-lg">
+                  <h3 className="font-medium text-amber-700">{feature.name}</h3>
+                  <p className="text-sm text-gray-600 mt-1">{feature.description}</p>
                 </div>
               ))}
             </div>

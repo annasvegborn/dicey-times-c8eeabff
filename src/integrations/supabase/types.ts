@@ -9,7 +9,207 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      character_features: {
+        Row: {
+          character_id: string
+          created_at: string
+          feature_description: string | null
+          feature_name: string
+          id: string
+        }
+        Insert: {
+          character_id: string
+          created_at?: string
+          feature_description?: string | null
+          feature_name: string
+          id?: string
+        }
+        Update: {
+          character_id?: string
+          created_at?: string
+          feature_description?: string | null
+          feature_name?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "character_features_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      character_stats: {
+        Row: {
+          character_id: string
+          charisma_progress: number
+          charisma_value: number
+          constitution_progress: number
+          constitution_value: number
+          created_at: string
+          dexterity_progress: number
+          dexterity_value: number
+          id: string
+          intelligence_progress: number
+          intelligence_value: number
+          strength_progress: number
+          strength_value: number
+          updated_at: string
+          wisdom_progress: number
+          wisdom_value: number
+        }
+        Insert: {
+          character_id: string
+          charisma_progress?: number
+          charisma_value?: number
+          constitution_progress?: number
+          constitution_value?: number
+          created_at?: string
+          dexterity_progress?: number
+          dexterity_value?: number
+          id?: string
+          intelligence_progress?: number
+          intelligence_value?: number
+          strength_progress?: number
+          strength_value?: number
+          updated_at?: string
+          wisdom_progress?: number
+          wisdom_value?: number
+        }
+        Update: {
+          character_id?: string
+          charisma_progress?: number
+          charisma_value?: number
+          constitution_progress?: number
+          constitution_value?: number
+          created_at?: string
+          dexterity_progress?: number
+          dexterity_value?: number
+          id?: string
+          intelligence_progress?: number
+          intelligence_value?: number
+          strength_progress?: number
+          strength_value?: number
+          updated_at?: string
+          wisdom_progress?: number
+          wisdom_value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "character_stats_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: true
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      character_traits: {
+        Row: {
+          character_id: string
+          created_at: string
+          id: string
+          trait_name: string
+        }
+        Insert: {
+          character_id: string
+          created_at?: string
+          id?: string
+          trait_name: string
+        }
+        Update: {
+          character_id?: string
+          created_at?: string
+          id?: string
+          trait_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "character_traits_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      characters: {
+        Row: {
+          avatar_body_shape: string
+          avatar_hair_style: string
+          avatar_race: string
+          class: string
+          created_at: string
+          fitness_level: string
+          id: string
+          level: number
+          name: string
+          progression_mode: string
+          race: string
+          updated_at: string
+          user_id: string
+          xp: number
+          xp_to_next_level: number
+        }
+        Insert: {
+          avatar_body_shape?: string
+          avatar_hair_style?: string
+          avatar_race?: string
+          class?: string
+          created_at?: string
+          fitness_level?: string
+          id?: string
+          level?: number
+          name?: string
+          progression_mode?: string
+          race?: string
+          updated_at?: string
+          user_id: string
+          xp?: number
+          xp_to_next_level?: number
+        }
+        Update: {
+          avatar_body_shape?: string
+          avatar_hair_style?: string
+          avatar_race?: string
+          class?: string
+          created_at?: string
+          fitness_level?: string
+          id?: string
+          level?: number
+          name?: string
+          progression_mode?: string
+          race?: string
+          updated_at?: string
+          user_id?: string
+          xp?: number
+          xp_to_next_level?: number
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          id: string
+          updated_at: string
+          username: string | null
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          updated_at?: string
+          username?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          updated_at?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
