@@ -59,8 +59,15 @@ const CharacterRenderer = ({
     const loadImage = () => {
       if (!imageRef.current) {
         imageRef.current = new Image();
-        imageRef.current.onload = () => renderCharacter();
-        imageRef.current.src = '/lovable-uploads/character-atlas.png';
+        imageRef.current.onload = () => {
+          console.log('Image loaded successfully');
+          renderCharacter();
+        };
+        imageRef.current.onerror = () => {
+          console.error('Failed to load character atlas image');
+        };
+        // Use the correct path to the uploaded image
+        imageRef.current.src = '/lovable-uploads/c01a8329-36e6-4ea6-b04a-ae9e8c22895a.png';
       } else {
         renderCharacter();
       }
@@ -73,7 +80,16 @@ const CharacterRenderer = ({
     const canvas = canvasRef.current;
     const image = imageRef.current;
     
-    if (!canvas || !image) return;
+    if (!canvas || !image) {
+      console.warn('Canvas or image not ready');
+      return;
+    }
+
+    // Check if image is properly loaded
+    if (image.complete && image.naturalWidth === 0) {
+      console.error('Image failed to load or is broken');
+      return;
+    }
     
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -104,17 +120,21 @@ const CharacterRenderer = ({
       
       if (spriteData) {
         console.log(`Drawing layer ${layerName} with sprite ${spriteKey}:`, spriteData);
-        ctx.drawImage(
-          image,
-          spriteData.x,
-          spriteData.y,
-          spriteData.w,
-          spriteData.h,
-          0,
-          0,
-          size,
-          size
-        );
+        try {
+          ctx.drawImage(
+            image,
+            spriteData.x,
+            spriteData.y,
+            spriteData.w,
+            spriteData.h,
+            0,
+            0,
+            size,
+            size
+          );
+        } catch (error) {
+          console.error(`Error drawing sprite ${spriteKey}:`, error);
+        }
       } else {
         console.warn(`Missing sprite data for ${spriteKey}`);
       }
