@@ -3,12 +3,12 @@ import { useEffect, useRef } from 'react';
 
 interface CharacterRendererProps {
   race: string;
-  bodyShape: string; // We'll use 'medium' for now since that's what's in the atlas
+  bodyShape: string;
   hairStyle: string;
   characterClass: string;
   skinTone?: 'light' | 'dark';
   size?: number;
-  showDebugGrid?: boolean; // Add debug option
+  showDebugGrid?: boolean;
 }
 
 interface SpriteData {
@@ -35,7 +35,7 @@ const CharacterRenderer = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
 
-  // Atlas data loaded from your provided JSON
+  // Atlas data - all sprites are 384x384 with their own positions
   const atlasData: AtlasData = {
     "layerOrder": [
       "hair_back",
@@ -57,22 +57,6 @@ const CharacterRenderer = ({
     }
   };
 
-  // Define potential offset corrections for better alignment
-  const spriteOffsets: Record<string, { x: number; y: number }> = {
-    // Body sprites are the baseline - no offset needed
-    "human_body_light": { x: 0, y: 0 },
-    "human_body_dark": { x: 0, y: 0 },
-    "elf_body_light": { x: 0, y: 0 },
-    "elf_body_dark": { x: 0, y: 0 },
-    // Hair and outfit might need slight adjustments
-    "hair_short_back": { x: 0, y: 0 },
-    "hair_short_front": { x: 0, y: 0 },
-    "hair_long_back": { x: 0, y: 0 },
-    "hair_long_front": { x: 0, y: 0 },
-    "outfit_cleric": { x: 0, y: 0 },
-    "outfit_wizard": { x: 0, y: 0 }
-  };
-
   useEffect(() => {
     const loadImage = () => {
       if (!imageRef.current) {
@@ -84,7 +68,6 @@ const CharacterRenderer = ({
         imageRef.current.onerror = () => {
           console.error('Failed to load character atlas image');
         };
-        // Use the correct path to the uploaded image
         imageRef.current.src = '/lovable-uploads/c01a8329-36e6-4ea6-b04a-ae9e8c22895a.png';
       } else {
         renderCharacter();
@@ -103,7 +86,6 @@ const CharacterRenderer = ({
       return;
     }
 
-    // Check if image is properly loaded
     if (image.complete && image.naturalWidth === 0) {
       console.error('Image failed to load or is broken');
       return;
@@ -115,12 +97,22 @@ const CharacterRenderer = ({
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Calculate the scale factor to fit 384x384 sprites into the canvas
+    const spriteSize = 384;
+    const scale = size / spriteSize;
+    
+    // Calculate centering offset to center the scaled sprite in the canvas
+    const offsetX = (size - (spriteSize * scale)) / 2;
+    const offsetY = (size - (spriteSize * scale)) / 2;
+
+    console.log(`Canvas size: ${size}x${size}, Sprite size: ${spriteSize}x${spriteSize}, Scale: ${scale}, Offset: ${offsetX}, ${offsetY}`);
+
     // Optional: Draw debug grid
     if (showDebugGrid) {
-      ctx.strokeStyle = 'rgba(255, 0, 0, 0.3)';
+      ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
       ctx.lineWidth = 1;
       
-      // Draw center lines
+      // Draw canvas center lines
       ctx.beginPath();
       ctx.moveTo(size / 2, 0);
       ctx.lineTo(size / 2, size);
@@ -128,17 +120,24 @@ const CharacterRenderer = ({
       ctx.lineTo(size, size / 2);
       ctx.stroke();
       
-      // Draw quarter lines
-      ctx.strokeStyle = 'rgba(0, 255, 0, 0.2)';
+      // Draw sprite bounds
+      ctx.strokeStyle = 'rgba(0, 255, 0, 0.5)';
+      ctx.strokeRect(offsetX, offsetY, spriteSize * scale, spriteSize * scale);
+      
+      // Draw quarter lines within sprite bounds
+      ctx.strokeStyle = 'rgba(0, 0, 255, 0.3)';
+      const spriteLeft = offsetX;
+      const spriteTop = offsetY;
+      const spriteRight = offsetX + (spriteSize * scale);
+      const spriteBottom = offsetY + (spriteSize * scale);
+      const spriteCenterX = offsetX + (spriteSize * scale) / 2;
+      const spriteCenterY = offsetY + (spriteSize * scale) / 2;
+      
       ctx.beginPath();
-      ctx.moveTo(size / 4, 0);
-      ctx.lineTo(size / 4, size);
-      ctx.moveTo(3 * size / 4, 0);
-      ctx.lineTo(3 * size / 4, size);
-      ctx.moveTo(0, size / 4);
-      ctx.lineTo(size, size / 4);
-      ctx.moveTo(0, 3 * size / 4);
-      ctx.lineTo(size, 3 * size / 4);
+      ctx.moveTo(spriteCenterX, spriteTop);
+      ctx.lineTo(spriteCenterX, spriteBottom);
+      ctx.moveTo(spriteLeft, spriteCenterY);
+      ctx.lineTo(spriteRight, spriteCenterY);
       ctx.stroke();
     }
 
@@ -158,28 +157,27 @@ const CharacterRenderer = ({
 
     console.log('Rendering character with layers:', layerSprites);
 
-    // Render layers in order
+    // Render layers in order - all using the SAME origin point and scale
     atlasData.layerOrder.forEach(layerName => {
       const spriteKey = layerSprites[layerName as keyof typeof layerSprites];
       const spriteData = atlasData.medium[spriteKey];
       
       if (spriteData) {
-        const offset = spriteOffsets[spriteKey] || { x: 0, y: 0 };
-        const finalX = 0 + offset.x;
-        const finalY = 0 + offset.y;
+        console.log(`Drawing layer ${layerName} with sprite ${spriteKey}:`, spriteData);
         
-        console.log(`Drawing layer ${layerName} with sprite ${spriteKey}:`, spriteData, `offset: ${offset.x}, ${offset.y}`);
         try {
+          // Draw each sprite with the EXACT same destination coordinates
+          // This ensures all layers share the same origin and scale
           ctx.drawImage(
             image,
-            spriteData.x,
-            spriteData.y,
-            spriteData.w,
-            spriteData.h,
-            finalX,
-            finalY,
-            size,
-            size
+            spriteData.x,        // Source X in atlas
+            spriteData.y,        // Source Y in atlas  
+            spriteData.w,        // Source width (always 384)
+            spriteData.h,        // Source height (always 384)
+            offsetX,             // Destination X (same for all layers)
+            offsetY,             // Destination Y (same for all layers)
+            spriteSize * scale,  // Destination width (same for all layers)
+            spriteSize * scale   // Destination height (same for all layers)
           );
         } catch (error) {
           console.error(`Error drawing sprite ${spriteKey}:`, error);
