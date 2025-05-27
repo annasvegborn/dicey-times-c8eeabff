@@ -17,6 +17,7 @@ const CharacterCreation = () => {
   const { createCharacter } = useCharacter();
   const [step, setStep] = useState(1);
   const [creating, setCreating] = useState(false);
+  const [showDebugGrid, setShowDebugGrid] = useState(false); // Add debug toggle
   const [character, setCharacter] = useState({
     name: "Adventurer",
     avatar: "human",
@@ -100,7 +101,18 @@ const CharacterCreation = () => {
       <div className="max-w-2xl mx-auto bg-stone-100 rounded-lg shadow-lg p-6 border-2 border-amber-700">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-amber-800 font-serif">Create Your Character</h1>
-          <div className="text-sm text-gray-500">Step {step}/5</div>
+          <div className="flex items-center gap-4">
+            <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showDebugGrid}
+                onChange={(e) => setShowDebugGrid(e.target.checked)}
+                className="w-3 h-3"
+              />
+              Debug Grid
+            </label>
+            <div className="text-sm text-gray-500">Step {step}/5</div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -113,6 +125,7 @@ const CharacterCreation = () => {
               characterClass={character.class}
               skinTone={character.avatarCustomization.skinTone as 'light' | 'dark'}
               size={256}
+              showDebugGrid={showDebugGrid}
             />
           </div>
 

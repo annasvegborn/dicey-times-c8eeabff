@@ -8,6 +8,7 @@ interface CharacterRendererProps {
   characterClass: string;
   skinTone?: 'light' | 'dark';
   size?: number;
+  showDebugGrid?: boolean; // Add debug option
 }
 
 interface SpriteData {
@@ -28,7 +29,8 @@ const CharacterRenderer = ({
   hairStyle, 
   characterClass, 
   skinTone = 'light',
-  size = 192 
+  size = 192,
+  showDebugGrid = false
 }: CharacterRendererProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
@@ -55,6 +57,22 @@ const CharacterRenderer = ({
     }
   };
 
+  // Define potential offset corrections for better alignment
+  const spriteOffsets: Record<string, { x: number; y: number }> = {
+    // Body sprites are the baseline - no offset needed
+    "human_body_light": { x: 0, y: 0 },
+    "human_body_dark": { x: 0, y: 0 },
+    "elf_body_light": { x: 0, y: 0 },
+    "elf_body_dark": { x: 0, y: 0 },
+    // Hair and outfit might need slight adjustments
+    "hair_short_back": { x: 0, y: 0 },
+    "hair_short_front": { x: 0, y: 0 },
+    "hair_long_back": { x: 0, y: 0 },
+    "hair_long_front": { x: 0, y: 0 },
+    "outfit_cleric": { x: 0, y: 0 },
+    "outfit_wizard": { x: 0, y: 0 }
+  };
+
   useEffect(() => {
     const loadImage = () => {
       if (!imageRef.current) {
@@ -74,7 +92,7 @@ const CharacterRenderer = ({
     };
 
     loadImage();
-  }, [race, bodyShape, hairStyle, characterClass, skinTone, size]);
+  }, [race, bodyShape, hairStyle, characterClass, skinTone, size, showDebugGrid]);
 
   const renderCharacter = () => {
     const canvas = canvasRef.current;
@@ -96,6 +114,33 @@ const CharacterRenderer = ({
 
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Optional: Draw debug grid
+    if (showDebugGrid) {
+      ctx.strokeStyle = 'rgba(255, 0, 0, 0.3)';
+      ctx.lineWidth = 1;
+      
+      // Draw center lines
+      ctx.beginPath();
+      ctx.moveTo(size / 2, 0);
+      ctx.lineTo(size / 2, size);
+      ctx.moveTo(0, size / 2);
+      ctx.lineTo(size, size / 2);
+      ctx.stroke();
+      
+      // Draw quarter lines
+      ctx.strokeStyle = 'rgba(0, 255, 0, 0.2)';
+      ctx.beginPath();
+      ctx.moveTo(size / 4, 0);
+      ctx.lineTo(size / 4, size);
+      ctx.moveTo(3 * size / 4, 0);
+      ctx.lineTo(3 * size / 4, size);
+      ctx.moveTo(0, size / 4);
+      ctx.lineTo(size, size / 4);
+      ctx.moveTo(0, 3 * size / 4);
+      ctx.lineTo(size, 3 * size / 4);
+      ctx.stroke();
+    }
 
     // Build the sprite keys for this character
     const bodyKey = `${race}_body_${skinTone}`;
@@ -119,7 +164,11 @@ const CharacterRenderer = ({
       const spriteData = atlasData.medium[spriteKey];
       
       if (spriteData) {
-        console.log(`Drawing layer ${layerName} with sprite ${spriteKey}:`, spriteData);
+        const offset = spriteOffsets[spriteKey] || { x: 0, y: 0 };
+        const finalX = 0 + offset.x;
+        const finalY = 0 + offset.y;
+        
+        console.log(`Drawing layer ${layerName} with sprite ${spriteKey}:`, spriteData, `offset: ${offset.x}, ${offset.y}`);
         try {
           ctx.drawImage(
             image,
@@ -127,8 +176,8 @@ const CharacterRenderer = ({
             spriteData.y,
             spriteData.w,
             spriteData.h,
-            0,
-            0,
+            finalX,
+            finalY,
             size,
             size
           );
@@ -154,6 +203,8 @@ const CharacterRenderer = ({
         Live Preview
         <br />
         <span className="text-xs">{race} {skinTone} - {hairStyle} - {characterClass}</span>
+        {showDebugGrid && <br />}
+        {showDebugGrid && <span className="text-xs text-red-500">Debug Grid ON</span>}
       </div>
     </div>
   );
