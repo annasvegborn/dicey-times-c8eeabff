@@ -5,13 +5,22 @@ import { Label } from "@/components/ui/label";
 interface SkinToneSelectorProps {
   value: string;
   onChange: (value: string) => void;
+  availableTones?: string[];
 }
 
-const SkinToneSelector = ({ value, onChange }: SkinToneSelectorProps) => {
-  const skinTones = [
+const SkinToneSelector = ({ value, onChange, availableTones = ['light', 'dark'] }: SkinToneSelectorProps) => {
+  const allSkinTones = [
     { id: 'light', name: 'Light', color: '#F5DEB3' },
     { id: 'dark', name: 'Dark', color: '#8B4513' }
   ];
+
+  // Filter skin tones based on what's available for the current race
+  const skinTones = allSkinTones.filter(tone => availableTones.includes(tone.id));
+
+  // If current value is not available for this race, reset to first available
+  if (!availableTones.includes(value) && skinTones.length > 0) {
+    onChange(skinTones[0].id);
+  }
 
   return (
     <div>

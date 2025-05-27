@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -31,6 +30,18 @@ const CharacterCreation = () => {
       skinTone: "light"
     }
   });
+
+  // Define which skin tones are available for each race
+  const getAvailableSkinTones = (race: string): string[] => {
+    switch (race) {
+      case 'human':
+        return ['light', 'dark'];
+      case 'elf':
+        return ['light', 'dark'];
+      default:
+        return ['light'];
+    }
+  };
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -165,6 +176,7 @@ const CharacterCreation = () => {
                 <SkinToneSelector
                   value={character.avatarCustomization.skinTone}
                   onChange={(value) => handleAvatarChange("skinTone", value)}
+                  availableTones={getAvailableSkinTones(character.avatarCustomization.race)}
                 />
 
                 <div>

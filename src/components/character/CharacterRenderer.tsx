@@ -33,7 +33,7 @@ const CharacterRenderer = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
 
-  // Atlas data - in a real app, you'd load this from the JSON file
+  // Atlas data loaded from your provided JSON
   const atlasData: AtlasData = {
     "layerOrder": [
       "hair_back",
@@ -60,7 +60,7 @@ const CharacterRenderer = ({
       if (!imageRef.current) {
         imageRef.current = new Image();
         imageRef.current.onload = () => renderCharacter();
-        imageRef.current.src = '/lovable-uploads/c01a8329-36e6-4ea6-b04a-ae9e8c22895a.png';
+        imageRef.current.src = '/lovable-uploads/character-atlas.png';
       } else {
         renderCharacter();
       }
@@ -95,12 +95,15 @@ const CharacterRenderer = ({
       hair_front: hairFrontKey
     };
 
+    console.log('Rendering character with layers:', layerSprites);
+
     // Render layers in order
     atlasData.layerOrder.forEach(layerName => {
       const spriteKey = layerSprites[layerName as keyof typeof layerSprites];
       const spriteData = atlasData.medium[spriteKey];
       
       if (spriteData) {
+        console.log(`Drawing layer ${layerName} with sprite ${spriteKey}:`, spriteData);
         ctx.drawImage(
           image,
           spriteData.x,
@@ -112,6 +115,8 @@ const CharacterRenderer = ({
           size,
           size
         );
+      } else {
+        console.warn(`Missing sprite data for ${spriteKey}`);
       }
     });
   };
@@ -127,6 +132,8 @@ const CharacterRenderer = ({
       />
       <div className="text-xs text-gray-500 mt-2 text-center">
         Live Preview
+        <br />
+        <span className="text-xs">{race} {skinTone} - {hairStyle} - {characterClass}</span>
       </div>
     </div>
   );
