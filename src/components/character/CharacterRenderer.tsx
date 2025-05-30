@@ -11,16 +11,31 @@ interface CharacterRendererProps {
   showDebugGrid?: boolean;
 }
 
-interface SpriteData {
+interface SpriteFrame {
   x: number;
   y: number;
   w: number;
   h: number;
 }
 
+interface SpriteData {
+  frame: SpriteFrame;
+  spriteSourceSize: SpriteFrame;
+  sourceSize: {
+    w: number;
+    h: number;
+  };
+}
+
 interface AtlasData {
-  layerOrder: string[];
-  medium: Record<string, SpriteData>;
+  frames: Record<string, SpriteData>;
+  meta: {
+    size: {
+      w: number;
+      h: number;
+    };
+    layerOrder: string[];
+  };
 }
 
 const CharacterRenderer = ({ 
@@ -35,25 +50,201 @@ const CharacterRenderer = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
 
-  // Atlas data - all sprites are 384x384 with their own positions
+  // New atlas data with proper sprite source sizes and positioning
   const atlasData: AtlasData = {
-    "layerOrder": [
-      "hair_back",
-      "body",
-      "outfit",
-      "hair_front"
-    ],
-    "medium": {
-      "human_body_light": { "x": 0, "y": 0, "w": 384, "h": 384 },
-      "human_body_dark": { "x": 384, "y": 0, "w": 384, "h": 384 },
-      "elf_body_light": { "x": 768, "y": 0, "w": 384, "h": 384 },
-      "elf_body_dark": { "x": 1152, "y": 0, "w": 384, "h": 384 },
-      "hair_short_back": { "x": 0, "y": 384, "w": 384, "h": 384 },
-      "hair_short_front": { "x": 384, "y": 384, "w": 384, "h": 384 },
-      "hair_long_back": { "x": 768, "y": 384, "w": 384, "h": 384 },
-      "hair_long_front": { "x": 1152, "y": 384, "w": 384, "h": 384 },
-      "outfit_cleric": { "x": 0, "y": 768, "w": 384, "h": 384 },
-      "outfit_wizard": { "x": 384, "y": 768, "w": 384, "h": 384 }
+    "frames": {
+      "human_body_light": {
+        "frame": {
+          "x": 88,
+          "y": 64,
+          "w": 208,
+          "h": 296
+        },
+        "spriteSourceSize": {
+          "x": 88,
+          "y": 64,
+          "w": 208,
+          "h": 296
+        },
+        "sourceSize": {
+          "w": 384,
+          "h": 384
+        }
+      },
+      "human_body_dark": {
+        "frame": {
+          "x": 472,
+          "y": 64,
+          "w": 208,
+          "h": 296
+        },
+        "spriteSourceSize": {
+          "x": 88,
+          "y": 64,
+          "w": 208,
+          "h": 296
+        },
+        "sourceSize": {
+          "w": 384,
+          "h": 384
+        }
+      },
+      "elf_body_light": {
+        "frame": {
+          "x": 843,
+          "y": 64,
+          "w": 233,
+          "h": 296
+        },
+        "spriteSourceSize": {
+          "x": 75,
+          "y": 64,
+          "w": 233,
+          "h": 296
+        },
+        "sourceSize": {
+          "w": 384,
+          "h": 384
+        }
+      },
+      "elf_body_dark": {
+        "frame": {
+          "x": 1227,
+          "y": 64,
+          "w": 233,
+          "h": 296
+        },
+        "spriteSourceSize": {
+          "x": 75,
+          "y": 64,
+          "w": 233,
+          "h": 296
+        },
+        "sourceSize": {
+          "w": 384,
+          "h": 384
+        }
+      },
+      "hair_short_back": {
+        "frame": {
+          "x": 97,
+          "y": 444,
+          "w": 197,
+          "h": 165
+        },
+        "spriteSourceSize": {
+          "x": 97,
+          "y": 60,
+          "w": 197,
+          "h": 165
+        },
+        "sourceSize": {
+          "w": 384,
+          "h": 384
+        }
+      },
+      "hair_short_front": {
+        "frame": {
+          "x": 481,
+          "y": 444,
+          "w": 194,
+          "h": 98
+        },
+        "spriteSourceSize": {
+          "x": 97,
+          "y": 60,
+          "w": 194,
+          "h": 98
+        },
+        "sourceSize": {
+          "w": 384,
+          "h": 384
+        }
+      },
+      "hair_long_back": {
+        "frame": {
+          "x": 848,
+          "y": 440,
+          "w": 227,
+          "h": 208
+        },
+        "spriteSourceSize": {
+          "x": 80,
+          "y": 56,
+          "w": 227,
+          "h": 208
+        },
+        "sourceSize": {
+          "w": 384,
+          "h": 384
+        }
+      },
+      "hair_long_front": {
+        "frame": {
+          "x": 1244,
+          "y": 440,
+          "w": 200,
+          "h": 121
+        },
+        "spriteSourceSize": {
+          "x": 92,
+          "y": 56,
+          "w": 200,
+          "h": 121
+        },
+        "sourceSize": {
+          "w": 384,
+          "h": 384
+        }
+      },
+      "outfit_cleric": {
+        "frame": {
+          "x": 118,
+          "y": 994,
+          "w": 150,
+          "h": 134
+        },
+        "spriteSourceSize": {
+          "x": 118,
+          "y": 226,
+          "w": 150,
+          "h": 134
+        },
+        "sourceSize": {
+          "w": 384,
+          "h": 384
+        }
+      },
+      "outfit_wizard": {
+        "frame": {
+          "x": 493,
+          "y": 991,
+          "w": 166,
+          "h": 137
+        },
+        "spriteSourceSize": {
+          "x": 109,
+          "y": 223,
+          "w": 166,
+          "h": 137
+        },
+        "sourceSize": {
+          "w": 384,
+          "h": 384
+        }
+      }
+    },
+    "meta": {
+      "size": {
+        "w": 2048,
+        "h": 2048
+      },
+      "layerOrder": [
+        "hair_back",
+        "body",
+        "outfit",
+        "hair_front"
+      ]
     }
   };
 
@@ -157,27 +348,32 @@ const CharacterRenderer = ({
 
     console.log('Rendering character with layers:', layerSprites);
 
-    // Render layers in order - all using the SAME origin point and scale
-    atlasData.layerOrder.forEach(layerName => {
+    // Render layers in order using the new atlas format
+    atlasData.meta.layerOrder.forEach(layerName => {
       const spriteKey = layerSprites[layerName as keyof typeof layerSprites];
-      const spriteData = atlasData.medium[spriteKey];
+      const spriteData = atlasData.frames[spriteKey];
       
       if (spriteData) {
         console.log(`Drawing layer ${layerName} with sprite ${spriteKey}:`, spriteData);
         
         try {
-          // Draw each sprite with the EXACT same destination coordinates
-          // This ensures all layers share the same origin and scale
+          // Calculate destination position using spriteSourceSize for proper alignment
+          const destX = offsetX + (spriteData.spriteSourceSize.x * scale);
+          const destY = offsetY + (spriteData.spriteSourceSize.y * scale);
+          const destW = spriteData.frame.w * scale;
+          const destH = spriteData.frame.h * scale;
+
+          // Draw the sprite frame from the atlas
           ctx.drawImage(
             image,
-            spriteData.x,        // Source X in atlas
-            spriteData.y,        // Source Y in atlas  
-            spriteData.w,        // Source width (always 384)
-            spriteData.h,        // Source height (always 384)
-            offsetX,             // Destination X (same for all layers)
-            offsetY,             // Destination Y (same for all layers)
-            spriteSize * scale,  // Destination width (same for all layers)
-            spriteSize * scale   // Destination height (same for all layers)
+            spriteData.frame.x,    // Source X in atlas
+            spriteData.frame.y,    // Source Y in atlas  
+            spriteData.frame.w,    // Source width (actual sprite size)
+            spriteData.frame.h,    // Source height (actual sprite size)
+            destX,                 // Destination X (positioned using spriteSourceSize)
+            destY,                 // Destination Y (positioned using spriteSourceSize)
+            destW,                 // Destination width (scaled)
+            destH                  // Destination height (scaled)
           );
         } catch (error) {
           console.error(`Error drawing sprite ${spriteKey}:`, error);
