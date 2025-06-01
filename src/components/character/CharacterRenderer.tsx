@@ -1,4 +1,3 @@
-
 import { useEffect, useRef } from 'react';
 
 interface CharacterRendererProps {
@@ -23,29 +22,25 @@ const CharacterRenderer = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imagesRef = useRef<Map<string, HTMLImageElement>>(new Map());
 
-  // Available PNG sprites in the project:
+  // Available PNG sprites in the project with descriptive names:
   const sprites = {
     // Body sprites
-    "human_body_light": "/lovable-uploads/abafa214-22f1-4452-b38f-9e8742505419.png",
-    "human_body_dark": "/lovable-uploads/54564193-b186-4fa7-b2e5-4d412ed631d4.png", 
-    "elf_body_light": "/lovable-uploads/d6faf838-b1e7-486f-b827-e8a4d8db47cf.png",
-    "elf_body_dark": "/lovable-uploads/be07cca1-9bfe-4be2-a6c0-f5d0b3ea2aad.png",
+    "human_body_light": "/lovable-uploads/body-human-skin1.png",
+    "human_body_dark": "/lovable-uploads/body-human-skin2.png", 
+    "elf_body_light": "/lovable-uploads/body-elf-skin1.png",
+    "elf_body_dark": "/lovable-uploads/body-elf-skin2.png",
     
     // Brown hair sprites (for short hair)
-    "brown_hair_back": "/lovable-uploads/53655382-4a79-432b-8fbf-b65697641782.png", // Main brown hair
-    "brown_hair_front": "/lovable-uploads/217f7599-bc08-46e7-94c0-c4139c572ad5.png", // Short brown hair bangs
+    "brown_hair_back": "/lovable-uploads/hair1-brown-back.png",
+    "brown_hair_front": "/lovable-uploads/hair1-brown-front.png",
     
     // Orange hair sprites (for long hair)
-    "orange_hair_back": "/lovable-uploads/0f56c26b-feb0-4971-b037-89635ec59e8c.png", // Long orange hair back
-    "orange_hair_front": "/lovable-uploads/25e059d8-9e36-4ebc-b09e-f84824662f0b.png", // Short orange hair bangs
-    
-    // Additional sprites (Sprites-5 and Sprites-6)
-    "sprites_5": "/lovable-uploads/c01a8329-36e6-4ea6-b04a-ae9e8c22895a.png",
-    "sprites_6": "/lovable-uploads/9bd70a6d-18e6-4449-9959-072ee5dbb719.png",
+    "orange_hair_back": "/lovable-uploads/hair2-orange-back.png",
+    "orange_hair_front": "/lovable-uploads/hair2-orange-front.png",
     
     // Outfit sprites
-    "outfit_cleric": "/lovable-uploads/18a93aac-f03d-4f4e-8dc9-85bc61348996.png",
-    "outfit_wizard": "/lovable-uploads/eb86753c-4da5-4ea2-aff1-1001c2f8c7af.png"
+    "outfit_cleric": "/lovable-uploads/outfit-cleric.png",
+    "outfit_wizard": "/lovable-uploads/outfit-wizard.png"
   };
 
   useEffect(() => {
