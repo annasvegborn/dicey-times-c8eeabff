@@ -11,29 +11,14 @@ interface CharacterRendererProps {
   showDebugGrid?: boolean;
 }
 
-interface SpriteFrame {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
-
 interface SpriteData {
-  frame: SpriteFrame;
-  spriteSourceSize: SpriteFrame;
-  sourceSize: {
-    w: number;
-    h: number;
-  };
+  src: string;
+  layer: number;
 }
 
 interface AtlasData {
-  frames: Record<string, SpriteData>;
+  sprites: Record<string, SpriteData>;
   meta: {
-    size: {
-      w: number;
-      h: number;
-    };
     layerOrder: string[];
   };
 }
@@ -48,197 +33,53 @@ const CharacterRenderer = ({
   showDebugGrid = false
 }: CharacterRendererProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const imageRef = useRef<HTMLImageElement | null>(null);
+  const imagesRef = useRef<Map<string, HTMLImageElement>>(new Map());
 
-  // Updated atlas data based on the new sprite layout (384x384px sprites in a grid)
+  // New atlas data based on individual sprite images
   const atlasData: AtlasData = {
-    "frames": {
+    "sprites": {
       "human_body_light": {
-        "frame": {
-          "x": 0,
-          "y": 0,
-          "w": 384,
-          "h": 384
-        },
-        "spriteSourceSize": {
-          "x": 0,
-          "y": 0,
-          "w": 384,
-          "h": 384
-        },
-        "sourceSize": {
-          "w": 384,
-          "h": 384
-        }
+        "src": "/lovable-uploads/abafa214-22f1-4452-b38f-9e8742505419.png",
+        "layer": 1
       },
       "human_body_dark": {
-        "frame": {
-          "x": 384,
-          "y": 0,
-          "w": 384,
-          "h": 384
-        },
-        "spriteSourceSize": {
-          "x": 0,
-          "y": 0,
-          "w": 384,
-          "h": 384
-        },
-        "sourceSize": {
-          "w": 384,
-          "h": 384
-        }
+        "src": "/lovable-uploads/54564193-b186-4fa7-b2e5-4d412ed631d4.png",
+        "layer": 1
       },
       "elf_body_light": {
-        "frame": {
-          "x": 768,
-          "y": 0,
-          "w": 384,
-          "h": 384
-        },
-        "spriteSourceSize": {
-          "x": 0,
-          "y": 0,
-          "w": 384,
-          "h": 384
-        },
-        "sourceSize": {
-          "w": 384,
-          "h": 384
-        }
+        "src": "/lovable-uploads/d6faf838-b1e7-486f-b827-e8a4d8db47cf.png",
+        "layer": 1
       },
       "elf_body_dark": {
-        "frame": {
-          "x": 1152,
-          "y": 0,
-          "w": 384,
-          "h": 384
-        },
-        "spriteSourceSize": {
-          "x": 0,
-          "y": 0,
-          "w": 384,
-          "h": 384
-        },
-        "sourceSize": {
-          "w": 384,
-          "h": 384
-        }
+        "src": "/lovable-uploads/be07cca1-9bfe-4be2-a6c0-f5d0b3ea2aad.png",
+        "layer": 1
       },
       "hair_short_back": {
-        "frame": {
-          "x": 0,
-          "y": 384,
-          "w": 384,
-          "h": 384
-        },
-        "spriteSourceSize": {
-          "x": 0,
-          "y": 0,
-          "w": 384,
-          "h": 384
-        },
-        "sourceSize": {
-          "w": 384,
-          "h": 384
-        }
+        "src": "/lovable-uploads/53655382-4a79-432b-8fbf-b65697641782.png",
+        "layer": 0
       },
       "hair_short_front": {
-        "frame": {
-          "x": 384,
-          "y": 384,
-          "w": 384,
-          "h": 384
-        },
-        "spriteSourceSize": {
-          "x": 0,
-          "y": 0,
-          "w": 384,
-          "h": 384
-        },
-        "sourceSize": {
-          "w": 384,
-          "h": 384
-        }
+        "src": "/lovable-uploads/217f7599-bc08-46e7-94c0-c4139c572ad5.png",
+        "layer": 3
       },
       "hair_long_back": {
-        "frame": {
-          "x": 768,
-          "y": 384,
-          "w": 384,
-          "h": 384
-        },
-        "spriteSourceSize": {
-          "x": 0,
-          "y": 0,
-          "w": 384,
-          "h": 384
-        },
-        "sourceSize": {
-          "w": 384,
-          "h": 384
-        }
+        "src": "/lovable-uploads/0f56c26b-feb0-4971-b037-89635ec59e8c.png",
+        "layer": 0
       },
       "hair_long_front": {
-        "frame": {
-          "x": 1152,
-          "y": 384,
-          "w": 384,
-          "h": 384
-        },
-        "spriteSourceSize": {
-          "x": 0,
-          "y": 0,
-          "w": 384,
-          "h": 384
-        },
-        "sourceSize": {
-          "w": 384,
-          "h": 384
-        }
+        "src": "/lovable-uploads/25e059d8-9e36-4ebc-b09e-f84824662f0b.png",
+        "layer": 3
       },
       "outfit_cleric": {
-        "frame": {
-          "x": 0,
-          "y": 768,
-          "w": 384,
-          "h": 384
-        },
-        "spriteSourceSize": {
-          "x": 0,
-          "y": 0,
-          "w": 384,
-          "h": 384
-        },
-        "sourceSize": {
-          "w": 384,
-          "h": 384
-        }
+        "src": "/lovable-uploads/18a93aac-f03d-4f4e-8dc9-85bc61348996.png",
+        "layer": 2
       },
       "outfit_wizard": {
-        "frame": {
-          "x": 384,
-          "y": 768,
-          "w": 384,
-          "h": 384
-        },
-        "spriteSourceSize": {
-          "x": 0,
-          "y": 0,
-          "w": 384,
-          "h": 384
-        },
-        "sourceSize": {
-          "w": 384,
-          "h": 384
-        }
+        "src": "/lovable-uploads/eb86753c-4da5-4ea2-aff1-1001c2f8c7af.png",
+        "layer": 2
       }
     },
     "meta": {
-      "size": {
-        "w": 1536,
-        "h": 1152
-      },
       "layerOrder": [
         "hair_back",
         "body",
@@ -249,36 +90,50 @@ const CharacterRenderer = ({
   };
 
   useEffect(() => {
-    const loadImage = () => {
-      if (!imageRef.current) {
-        imageRef.current = new Image();
-        imageRef.current.onload = () => {
-          console.log('Image loaded successfully');
-          renderCharacter();
-        };
-        imageRef.current.onerror = () => {
-          console.error('Failed to load character atlas image');
-        };
-        imageRef.current.src = '/lovable-uploads/9bd70a6d-18e6-4449-9959-072ee5dbb719.png';
-      } else {
-        renderCharacter();
-      }
-    };
-
-    loadImage();
+    loadImages();
   }, [race, bodyShape, hairStyle, characterClass, skinTone, size, showDebugGrid]);
+
+  const loadImages = async () => {
+    const bodyKey = `${race}_body_${skinTone}`;
+    const hairBackKey = `hair_${hairStyle}_back`;
+    const hairFrontKey = `hair_${hairStyle}_front`;
+    const outfitKey = `outfit_${characterClass}`;
+
+    const requiredSprites = [bodyKey, hairBackKey, hairFrontKey, outfitKey];
+    const loadPromises: Promise<void>[] = [];
+
+    requiredSprites.forEach(spriteKey => {
+      const spriteData = atlasData.sprites[spriteKey];
+      if (spriteData && !imagesRef.current.has(spriteKey)) {
+        const promise = new Promise<void>((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => {
+            imagesRef.current.set(spriteKey, img);
+            console.log(`Loaded sprite: ${spriteKey}`);
+            resolve();
+          };
+          img.onerror = () => {
+            console.error(`Failed to load sprite: ${spriteKey}`);
+            reject(new Error(`Failed to load ${spriteKey}`));
+          };
+          img.src = spriteData.src;
+        });
+        loadPromises.push(promise);
+      }
+    });
+
+    try {
+      await Promise.all(loadPromises);
+      renderCharacter();
+    } catch (error) {
+      console.error('Error loading images:', error);
+    }
+  };
 
   const renderCharacter = () => {
     const canvas = canvasRef.current;
-    const image = imageRef.current;
-    
-    if (!canvas || !image) {
-      console.warn('Canvas or image not ready');
-      return;
-    }
-
-    if (image.complete && image.naturalWidth === 0) {
-      console.error('Image failed to load or is broken');
+    if (!canvas) {
+      console.warn('Canvas not ready');
       return;
     }
     
@@ -288,15 +143,7 @@ const CharacterRenderer = ({
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Calculate the scale factor to fit 384x384 sprites into the canvas
-    const spriteSize = 384;
-    const scale = size / spriteSize;
-    
-    // Calculate centering offset to center the scaled sprite in the canvas
-    const offsetX = (size - (spriteSize * scale)) / 2;
-    const offsetY = (size - (spriteSize * scale)) / 2;
-
-    console.log(`Canvas size: ${size}x${size}, Sprite size: ${spriteSize}x${spriteSize}, Scale: ${scale}, Offset: ${offsetX}, ${offsetY}`);
+    console.log(`Canvas size: ${size}x${size}`);
 
     // Optional: Draw debug grid
     if (showDebugGrid) {
@@ -310,26 +157,6 @@ const CharacterRenderer = ({
       ctx.moveTo(0, size / 2);
       ctx.lineTo(size, size / 2);
       ctx.stroke();
-      
-      // Draw sprite bounds
-      ctx.strokeStyle = 'rgba(0, 255, 0, 0.5)';
-      ctx.strokeRect(offsetX, offsetY, spriteSize * scale, spriteSize * scale);
-      
-      // Draw quarter lines within sprite bounds
-      ctx.strokeStyle = 'rgba(0, 0, 255, 0.3)';
-      const spriteLeft = offsetX;
-      const spriteTop = offsetY;
-      const spriteRight = offsetX + (spriteSize * scale);
-      const spriteBottom = offsetY + (spriteSize * scale);
-      const spriteCenterX = offsetX + (spriteSize * scale) / 2;
-      const spriteCenterY = offsetY + (spriteSize * scale) / 2;
-      
-      ctx.beginPath();
-      ctx.moveTo(spriteCenterX, spriteTop);
-      ctx.lineTo(spriteCenterX, spriteBottom);
-      ctx.moveTo(spriteLeft, spriteCenterY);
-      ctx.lineTo(spriteRight, spriteCenterY);
-      ctx.stroke();
     }
 
     // Build the sprite keys for this character
@@ -338,50 +165,45 @@ const CharacterRenderer = ({
     const hairFrontKey = `hair_${hairStyle}_front`;
     const outfitKey = `outfit_${characterClass}`;
 
-    // Create layer mapping
-    const layerSprites = {
-      hair_back: hairBackKey,
-      body: bodyKey,
-      outfit: outfitKey,
-      hair_front: hairFrontKey
-    };
+    // Create layer mapping with sprites
+    const layerSprites = [
+      { key: hairBackKey, layer: 0 },
+      { key: bodyKey, layer: 1 },
+      { key: outfitKey, layer: 2 },
+      { key: hairFrontKey, layer: 3 }
+    ];
 
     console.log('Rendering character with layers:', layerSprites);
 
-    // Render layers in order using the new atlas format
-    atlasData.meta.layerOrder.forEach(layerName => {
-      const spriteKey = layerSprites[layerName as keyof typeof layerSprites];
-      const spriteData = atlasData.frames[spriteKey];
-      
-      if (spriteData) {
-        console.log(`Drawing layer ${layerName} with sprite ${spriteKey}:`, spriteData);
-        
-        try {
-          // Since sprites are now full 384x384 and positioned in a grid, we can draw them directly
-          const destX = offsetX;
-          const destY = offsetY;
-          const destW = spriteSize * scale;
-          const destH = spriteSize * scale;
-
-          // Draw the sprite frame from the atlas
-          ctx.drawImage(
-            image,
-            spriteData.frame.x,    // Source X in atlas
-            spriteData.frame.y,    // Source Y in atlas  
-            spriteData.frame.w,    // Source width (384px)
-            spriteData.frame.h,    // Source height (384px)
-            destX,                 // Destination X
-            destY,                 // Destination Y
-            destW,                 // Destination width (scaled)
-            destH                  // Destination height (scaled)
-          );
-        } catch (error) {
-          console.error(`Error drawing sprite ${spriteKey}:`, error);
+    // Sort by layer order and render
+    layerSprites
+      .filter(sprite => atlasData.sprites[sprite.key])
+      .sort((a, b) => a.layer - b.layer)
+      .forEach(({ key }) => {
+        const image = imagesRef.current.get(key);
+        if (image) {
+          console.log(`Drawing layer ${key}`);
+          
+          try {
+            // Draw the sprite centered in the canvas
+            ctx.drawImage(
+              image,
+              0,                    // Source X 
+              0,                    // Source Y
+              image.width,          // Source width
+              image.height,         // Source height
+              0,                    // Destination X
+              0,                    // Destination Y
+              size,                 // Destination width (scaled to canvas)
+              size                  // Destination height (scaled to canvas)
+            );
+          } catch (error) {
+            console.error(`Error drawing sprite ${key}:`, error);
+          }
+        } else {
+          console.warn(`Missing image for ${key}`);
         }
-      } else {
-        console.warn(`Missing sprite data for ${spriteKey}`);
-      }
-    });
+      });
   };
 
   return (
