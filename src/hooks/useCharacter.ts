@@ -16,7 +16,7 @@ export interface Character {
   avatar_race: string;
   avatar_body_shape: string;
   avatar_hair_style: string;
-  avatar_skin_tone?: string;
+  avatar_skin_tone: string;
 }
 
 export interface CharacterStats {
@@ -68,7 +68,12 @@ export const useCharacter = () => {
 
       if (characterData) {
         console.log('Loaded character data:', characterData);
-        setCharacter(characterData);
+        // Ensure skin tone has a default value if it's null
+        const characterWithDefaults = {
+          ...characterData,
+          avatar_skin_tone: characterData.avatar_skin_tone || 'light'
+        };
+        setCharacter(characterWithDefaults);
 
         // Load stats
         const { data: statsData, error: statsError } = await supabase
@@ -132,7 +137,8 @@ export const useCharacter = () => {
           progression_mode: characterData.progression_mode || 'xp',
           avatar_race: characterData.avatar_race || characterData.race || 'human',
           avatar_body_shape: characterData.avatar_body_shape || 'medium',
-          avatar_hair_style: characterData.avatar_hair_style || 'short'
+          avatar_hair_style: characterData.avatar_hair_style || 'short',
+          avatar_skin_tone: characterData.avatar_skin_tone || 'light'
         })
         .select()
         .single();

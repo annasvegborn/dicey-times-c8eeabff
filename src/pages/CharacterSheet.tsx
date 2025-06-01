@@ -75,8 +75,8 @@ const CharacterSheet = () => {
     }
   };
 
-  // Ensure we have a valid skin tone, defaulting to 'light' if not available
-  const currentSkinTone = character.avatar_skin_tone || 'light';
+  // Ensure we have a valid skin tone, with proper fallback
+  const currentSkinTone = character?.avatar_skin_tone || 'light';
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-900 via-purple-900 to-indigo-800 p-4">

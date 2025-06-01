@@ -140,6 +140,7 @@ export type Database = {
           avatar_body_shape: string
           avatar_hair_style: string
           avatar_race: string
+          avatar_skin_tone: string | null
           class: string
           created_at: string
           fitness_level: string
@@ -157,6 +158,7 @@ export type Database = {
           avatar_body_shape?: string
           avatar_hair_style?: string
           avatar_race?: string
+          avatar_skin_tone?: string | null
           class?: string
           created_at?: string
           fitness_level?: string
@@ -174,6 +176,7 @@ export type Database = {
           avatar_body_shape?: string
           avatar_hair_style?: string
           avatar_race?: string
+          avatar_skin_tone?: string | null
           class?: string
           created_at?: string
           fitness_level?: string
