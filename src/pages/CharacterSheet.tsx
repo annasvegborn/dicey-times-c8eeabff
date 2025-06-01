@@ -1,17 +1,21 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useNavigate } from "react-router-dom";
 import { MapPin, Sword, Book, Backpack, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCharacter } from "@/hooks/useCharacter";
+import CharacterRenderer from "@/components/character/CharacterRenderer";
+import CharacterCustomizationSheet from "@/components/character/CharacterCustomizationSheet";
 
 const CharacterSheet = () => {
   const navigate = useNavigate();
   const { user, signOut, loading: authLoading } = useAuth();
-  const { character, stats, traits, features, loading } = useCharacter();
+  const { character, stats, traits, features, loading, updateCharacterAppearance } = useCharacter();
+  const [customizationOpen, setCustomizationOpen] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -22,6 +26,18 @@ const CharacterSheet = () => {
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
+  };
+
+  const handleAppearanceUpdate = async (newAppearance: {
+    race: string;
+    bodyShape: string;
+    hairStyle: string;
+    skinTone: string;
+  }) => {
+    if (character) {
+      await updateCharacterAppearance(character.id, newAppearance);
+      setCustomizationOpen(false);
+    }
   };
 
   if (authLoading || loading) {
@@ -66,9 +82,36 @@ const CharacterSheet = () => {
         <div className="bg-stone-100 rounded-lg shadow-lg p-6 border-2 border-amber-700 mb-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-4">
-              <div className="flex-shrink-0 bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center border-2 border-amber-600 text-3xl">
-                {getClassEmoji(character.class)}
-              </div>
+              <Sheet open={customizationOpen} onOpenChange={setCustomizationOpen}>
+                <SheetTrigger asChild>
+                  <div className="cursor-pointer hover:scale-105 transition-transform">
+                    <CharacterRenderer
+                      race={character.avatar_race}
+                      bodyShape={character.avatar_body_shape}
+                      hairStyle={character.avatar_hair_style}
+                      characterClass={character.class}
+                      skinTone={(character.avatar_race === 'human' || character.avatar_race === 'elf') ? 'light' : 'light'}
+                      size={64}
+                    />
+                  </div>
+                </SheetTrigger>
+                <SheetContent side="bottom" className="h-[80vh]">
+                  <SheetHeader>
+                    <SheetTitle>Customize Appearance</SheetTitle>
+                  </SheetHeader>
+                  <CharacterCustomizationSheet
+                    currentAppearance={{
+                      race: character.avatar_race,
+                      bodyShape: character.avatar_body_shape,
+                      hairStyle: character.avatar_hair_style,
+                      skinTone: 'light'
+                    }}
+                    characterClass={character.class}
+                    onSave={handleAppearanceUpdate}
+                    onCancel={() => setCustomizationOpen(false)}
+                  />
+                </SheetContent>
+              </Sheet>
               <div className="flex-1">
                 <h1 className="text-xl font-bold text-amber-800">{character.name}</h1>
                 <div className="text-sm text-gray-600">

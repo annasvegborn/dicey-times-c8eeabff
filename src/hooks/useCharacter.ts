@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -204,6 +203,44 @@ export const useCharacter = () => {
     }
   };
 
+  const updateCharacterAppearance = async (characterId: string, appearance: {
+    race: string;
+    bodyShape: string;
+    hairStyle: string;
+    skinTone: string;
+  }) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('characters')
+        .update({
+          avatar_race: appearance.race,
+          avatar_body_shape: appearance.bodyShape,
+          avatar_hair_style: appearance.hairStyle
+        })
+        .eq('id', characterId);
+
+      if (error) throw error;
+
+      // Reload character data to reflect changes
+      await loadCharacter();
+      
+      toast({
+        title: "Appearance updated!",
+        description: "Your character's look has been changed.",
+      });
+
+    } catch (error: any) {
+      toast({
+        title: "Error updating appearance",
+        description: error.message,
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
   return {
     character,
     stats,
@@ -211,6 +248,7 @@ export const useCharacter = () => {
     features,
     loading,
     createCharacter,
-    loadCharacter
+    loadCharacter,
+    updateCharacterAppearance
   };
 };
