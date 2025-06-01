@@ -35,7 +35,7 @@ const CharacterRenderer = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imagesRef = useRef<Map<string, HTMLImageElement>>(new Map());
 
-  // New atlas data based on individual sprite images
+  // Updated atlas data with correct hair sprite mapping
   const atlasData: AtlasData = {
     "sprites": {
       "human_body_light": {
@@ -54,18 +54,22 @@ const CharacterRenderer = ({
         "src": "/lovable-uploads/be07cca1-9bfe-4be2-a6c0-f5d0b3ea2aad.png",
         "layer": 1
       },
+      // Short brown hair (back layer)
       "hair_short_back": {
         "src": "/lovable-uploads/53655382-4a79-432b-8fbf-b65697641782.png",
         "layer": 0
       },
+      // Short brown hair (front/bangs layer)
       "hair_short_front": {
         "src": "/lovable-uploads/217f7599-bc08-46e7-94c0-c4139c572ad5.png",
         "layer": 3
       },
+      // Long orange hair (back layer)
       "hair_long_back": {
         "src": "/lovable-uploads/0f56c26b-feb0-4971-b037-89635ec59e8c.png",
         "layer": 0
       },
+      // Long orange hair (front/bangs layer)
       "hair_long_front": {
         "src": "/lovable-uploads/25e059d8-9e36-4ebc-b09e-f84824662f0b.png",
         "layer": 3
