@@ -1,4 +1,3 @@
-
 import { useEffect, useRef } from 'react';
 
 interface CharacterRendererProps {
@@ -35,7 +34,7 @@ const CharacterRenderer = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imagesRef = useRef<Map<string, HTMLImageElement>>(new Map());
 
-  // Updated atlas data with correct hair sprite mapping
+  // Updated atlas data with correct sprite file mapping
   const atlasData: AtlasData = {
     "sprites": {
       "human_body_light": {
@@ -54,14 +53,13 @@ const CharacterRenderer = ({
         "src": "/lovable-uploads/be07cca1-9bfe-4be2-a6c0-f5d0b3ea2aad.png",
         "layer": 1
       },
-      // Short brown hair (back layer)
+      // Short hair: Sprites-5 (back) and Sprites-6 (front)
       "hair_short_back": {
-        "src": "/lovable-uploads/53655382-4a79-432b-8fbf-b65697641782.png",
+        "src": "/lovable-uploads/c01a8329-36e6-4ea6-b04a-ae9e8c22895a.png",
         "layer": 0
       },
-      // Short brown hair (front/bangs layer)
       "hair_short_front": {
-        "src": "/lovable-uploads/217f7599-bc08-46e7-94c0-c4139c572ad5.png",
+        "src": "/lovable-uploads/9bd70a6d-18e6-4449-9959-072ee5dbb719.png",
         "layer": 3
       },
       // Long orange hair (back layer)
