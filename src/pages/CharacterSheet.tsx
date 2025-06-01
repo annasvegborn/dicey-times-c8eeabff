@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -35,6 +34,7 @@ const CharacterSheet = () => {
     skinTone: string;
   }) => {
     if (character) {
+      console.log('Updating character appearance:', newAppearance);
       await updateCharacterAppearance(character.id, newAppearance);
       setCustomizationOpen(false);
     }
@@ -75,6 +75,9 @@ const CharacterSheet = () => {
     }
   };
 
+  // Ensure we have a valid skin tone, defaulting to 'light' if not available
+  const currentSkinTone = character.avatar_skin_tone || 'light';
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-900 via-purple-900 to-indigo-800 p-4">
       <div className="max-w-md mx-auto">
@@ -90,7 +93,7 @@ const CharacterSheet = () => {
                       bodyShape={character.avatar_body_shape}
                       hairStyle={character.avatar_hair_style}
                       characterClass={character.class}
-                      skinTone={(character.avatar_race === 'human' || character.avatar_race === 'elf') ? 'light' : 'light'}
+                      skinTone={currentSkinTone as 'light' | 'dark'}
                       size={64}
                     />
                   </div>
@@ -104,7 +107,7 @@ const CharacterSheet = () => {
                       race: character.avatar_race,
                       bodyShape: character.avatar_body_shape,
                       hairStyle: character.avatar_hair_style,
-                      skinTone: 'light'
+                      skinTone: currentSkinTone
                     }}
                     characterClass={character.class}
                     onSave={handleAppearanceUpdate}

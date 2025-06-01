@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import CharacterRenderer from './CharacterRenderer';
-import AvatarCustomizer from './AvatarCustomizer';
 
 interface CharacterCustomizationSheetProps {
   currentAppearance: {
@@ -30,13 +29,19 @@ const CharacterCustomizationSheet = ({
   const [appearance, setAppearance] = useState(currentAppearance);
 
   const handleChange = (field: string, value: string) => {
-    setAppearance(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    console.log(`Updating ${field} to ${value}`);
+    setAppearance(prev => {
+      const updated = {
+        ...prev,
+        [field]: value
+      };
+      console.log('Updated appearance state:', updated);
+      return updated;
+    });
   };
 
   const handleSave = () => {
+    console.log('Saving appearance:', appearance);
     onSave(appearance);
   };
 

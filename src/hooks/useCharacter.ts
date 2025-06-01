@@ -66,6 +66,7 @@ export const useCharacter = () => {
       }
 
       if (characterData) {
+        console.log('Loaded character data:', characterData);
         setCharacter(characterData);
 
         // Load stats
@@ -212,19 +213,31 @@ export const useCharacter = () => {
     if (!user) return;
 
     try {
-      const { error } = await supabase
+      console.log('Updating character appearance in database:', appearance);
+      
+      const { data, error } = await supabase
         .from('characters')
         .update({
           avatar_race: appearance.race,
           avatar_body_shape: appearance.bodyShape,
-          avatar_hair_style: appearance.hairStyle
+          avatar_hair_style: appearance.hairStyle,
+          avatar_skin_tone: appearance.skinTone
         })
-        .eq('id', characterId);
+        .eq('id', characterId)
+        .select();
 
       if (error) throw error;
 
-      // Reload character data to reflect changes
-      await loadCharacter();
+      console.log('Database update successful:', data);
+
+      // Update local state immediately
+      setCharacter(prev => prev ? {
+        ...prev,
+        avatar_race: appearance.race,
+        avatar_body_shape: appearance.bodyShape,
+        avatar_hair_style: appearance.hairStyle,
+        avatar_skin_tone: appearance.skinTone
+      } : null);
       
       toast({
         title: "Appearance updated!",
@@ -232,6 +245,7 @@ export const useCharacter = () => {
       });
 
     } catch (error: any) {
+      console.error('Error updating appearance:', error);
       toast({
         title: "Error updating appearance",
         description: error.message,
