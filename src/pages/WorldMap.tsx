@@ -65,28 +65,15 @@ const WorldMap = () => {
   const selectedLoc = locations.find(loc => loc.id === selectedLocation);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-amber-100 pb-16">
+    <div className="min-h-screen bg-parchment-100 pb-20">
       {/* Header */}
-      <div className="bg-amber-700 text-amber-100 px-4 py-4 border-b-4 border-amber-900">
-        <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="sm"
-            className="text-amber-100 hover:bg-amber-800"
-          >
-            <div className="flex flex-col space-y-0.5">
-              <div className="w-5 h-0.5 bg-current"></div>
-              <div className="w-5 h-0.5 bg-current"></div>
-              <div className="w-5 h-0.5 bg-current"></div>
-            </div>
-          </Button>
-          <h1 className="text-2xl font-bold font-serif">Map</h1>
-        </div>
+      <div className="bg-parchment-500 text-parchment-50 px-4 py-4 border-b-4 border-parchment-700">
+        <h1 className="text-2xl font-bold font-serif text-center">World Map</h1>
       </div>
 
       {/* Map Area */}
       <div className="p-4 h-[calc(100vh-200px)]">
-        <div className="relative w-full h-full bg-gradient-to-b from-green-300 to-green-500 rounded-3xl border-4 border-amber-800 overflow-hidden shadow-2xl">
+        <div className="relative w-full h-full bg-gradient-to-b from-green-300 to-green-500 rounded-3xl border-4 border-parchment-500 overflow-hidden shadow-2xl">
           {/* Background elements */}
           <div className="absolute inset-0 opacity-30">
             <div className="absolute top-10 left-10 text-4xl">🌳</div>
@@ -100,7 +87,7 @@ const WorldMap = () => {
           <svg className="absolute inset-0 w-full h-full">
             <path
               d="M 50 400 Q 200 350 300 250 Q 450 150 600 200"
-              stroke="#D97706"
+              stroke="#8b7355"
               strokeWidth="8"
               fill="none"
               className="opacity-60"
@@ -120,8 +107,8 @@ const WorldMap = () => {
               <div className={`text-4xl mb-2 ${location.available ? "animate-bounce" : ""}`}>
                 {location.icon}
               </div>
-              <div className={`bg-amber-100 px-3 py-1 rounded-xl border-2 text-center font-serif font-medium text-sm ${
-                location.available ? "border-amber-700 text-amber-800" : "border-gray-400 text-gray-500"
+              <div className={`bg-parchment-50 px-3 py-1 rounded-xl border-2 text-center font-serif font-medium text-sm ${
+                location.available ? "border-parchment-500 text-parchment-700" : "border-gray-400 text-gray-500"
               }`}>
                 {location.name}
                 {location.hasQuest && (
@@ -136,29 +123,29 @@ const WorldMap = () => {
       {/* Location Detail Modal */}
       {selectedLoc && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-amber-100 rounded-3xl border-4 border-amber-800 p-6 max-w-sm w-full shadow-2xl">
+          <div className="bg-parchment-50 rounded-3xl border-4 border-parchment-500 p-6 max-w-sm w-full shadow-2xl">
             <div className="flex justify-between items-start mb-4">
               <div className="text-3xl">{selectedLoc.icon}</div>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setSelectedLocation(null)}
-                className="text-amber-800 hover:bg-amber-200"
+                className="text-parchment-700 hover:bg-parchment-200"
               >
                 <X size={20} />
               </Button>
             </div>
             
-            <h2 className="text-2xl font-bold text-amber-800 mb-2 font-serif">
+            <h2 className="text-2xl font-bold text-parchment-700 mb-2 font-serif">
               {selectedLoc.name}
             </h2>
-            <p className="text-amber-700 mb-6 font-serif">
+            <p className="text-parchment-600 mb-6 font-serif">
               {selectedLoc.description}
             </p>
 
             {selectedLoc.hasQuest && (
-              <div className="bg-amber-200 p-3 rounded-2xl border-2 border-amber-600 mb-4">
-                <p className="text-amber-800 font-serif font-medium">
+              <div className="bg-parchment-200 p-3 rounded-2xl border-2 border-parchment-400 mb-4">
+                <p className="text-parchment-700 font-serif font-medium">
                   ⚔️ Active Quest Available
                 </p>
               </div>
@@ -166,7 +153,7 @@ const WorldMap = () => {
 
             <Button
               onClick={() => handleLocationAction(selectedLoc.id)}
-              className="w-full bg-amber-700 hover:bg-amber-800 text-amber-100 font-serif text-lg py-3 rounded-2xl border-2 border-amber-900"
+              className="w-full bg-parchment-500 hover:bg-parchment-600 text-parchment-50 font-serif text-lg py-3 rounded-2xl border-2 border-parchment-700"
             >
               {selectedLoc.id === "museum" ? "View Quests" : "Enter Location"}
             </Button>
@@ -175,11 +162,11 @@ const WorldMap = () => {
       )}
 
       {/* Navigation footer */}
-      <div className="fixed bottom-0 left-0 right-0 bg-amber-800 border-t-4 border-amber-900">
+      <div className="fixed bottom-0 left-0 right-0 bg-parchment-500 border-t-4 border-parchment-700">
         <div className="max-w-md mx-auto flex justify-around">
           <Button 
             variant="ghost" 
-            className="flex-1 flex flex-col items-center py-3 text-amber-200 hover:bg-amber-700 rounded-none"
+            className="flex-1 flex flex-col items-center py-3 text-parchment-200 hover:bg-parchment-600 rounded-none"
             onClick={() => navigate("/character-sheet")}
           >
             <Book size={20} />
@@ -187,7 +174,7 @@ const WorldMap = () => {
           </Button>
           <Button 
             variant="ghost" 
-            className="flex-1 flex flex-col items-center py-3 text-amber-200 hover:bg-amber-700 rounded-none bg-amber-700"
+            className="flex-1 flex flex-col items-center py-3 text-parchment-200 hover:bg-parchment-600 rounded-none bg-parchment-600"
             onClick={() => navigate("/world-map")}
           >
             <MapPin size={20} />
@@ -195,7 +182,7 @@ const WorldMap = () => {
           </Button>
           <Button 
             variant="ghost" 
-            className="flex-1 flex flex-col items-center py-3 text-amber-200 hover:bg-amber-700 rounded-none"
+            className="flex-1 flex flex-col items-center py-3 text-parchment-200 hover:bg-parchment-600 rounded-none"
             onClick={() => navigate("/quests")}
           >
             <Sword size={20} />
@@ -203,7 +190,7 @@ const WorldMap = () => {
           </Button>
           <Button 
             variant="ghost" 
-            className="flex-1 flex flex-col items-center py-3 text-amber-200 hover:bg-amber-700 rounded-none"
+            className="flex-1 flex flex-col items-center py-3 text-parchment-200 hover:bg-parchment-600 rounded-none"
             onClick={() => navigate("/inventory")}
           >
             <Backpack size={20} />

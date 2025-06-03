@@ -37,19 +37,12 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -104,4 +97,29 @@
 
 .font-serif {
   font-family: 'Cinzel', serif;
+}
+
+/* Parchment color palette */
+.parchment-bg {
+  background-color: #f7f2e8;
+}
+
+.parchment-light {
+  background-color: #faf6ed;
+}
+
+.parchment-dark {
+  background-color: #e8dcc0;
+}
+
+.parchment-border {
+  border-color: #8b7355;
+}
+
+.parchment-text {
+  color: #4a3728;
+}
+
+.parchment-text-light {
+  color: #6b5b47;
 }

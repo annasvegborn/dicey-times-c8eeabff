@@ -59,11 +59,11 @@ const CharacterCustomizationSheet = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-amber-50">
+    <div className="flex flex-col h-full bg-parchment-100">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 min-h-0">
         {/* Left column - Character Preview */}
         <div className="flex justify-center items-start p-4">
-          <div className="bg-amber-100 rounded-3xl border-4 border-amber-700 p-6 shadow-xl">
+          <div className="bg-parchment-50 rounded-3xl border-4 border-parchment-500 p-6 shadow-xl">
             <CharacterRenderer
               race={appearance.race}
               bodyShape={appearance.bodyShape}
@@ -79,11 +79,11 @@ const CharacterCustomizationSheet = ({
         <div className="flex flex-col min-h-0">
           <ScrollArea className="flex-1 px-4">
             <div className="space-y-6 pb-4">
-              <h3 className="text-xl font-bold text-amber-800 font-serif">Race & Appearance</h3>
+              <h3 className="text-xl font-bold text-parchment-700 font-serif">Race & Appearance</h3>
               
               {/* Race Selection */}
               <div>
-                <h4 className="text-lg font-semibold text-amber-700 mb-3 font-serif">Race</h4>
+                <h4 className="text-lg font-semibold text-parchment-600 mb-3 font-serif">Race</h4>
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     { id: 'human', name: 'Human', emoji: '👤' },
@@ -94,8 +94,8 @@ const CharacterCustomizationSheet = ({
                       variant={appearance.race === race.id ? "default" : "outline"}
                       className={`flex items-center gap-2 h-12 font-serif text-base rounded-2xl border-2 ${
                         appearance.race === race.id 
-                          ? "bg-amber-700 text-amber-100 border-amber-900" 
-                          : "bg-amber-100 text-amber-800 border-amber-600 hover:bg-amber-200"
+                          ? "bg-parchment-500 text-parchment-50 border-parchment-700" 
+                          : "bg-parchment-50 text-parchment-700 border-parchment-400 hover:bg-parchment-200"
                       }`}
                       onClick={() => handleChange('race', race.id)}
                     >
@@ -108,7 +108,7 @@ const CharacterCustomizationSheet = ({
 
               {/* Skin Tone Selection */}
               <div>
-                <h4 className="text-lg font-semibold text-amber-700 mb-3 font-serif">Skin Tone</h4>
+                <h4 className="text-lg font-semibold text-parchment-600 mb-3 font-serif">Skin Tone</h4>
                 <div className="grid grid-cols-2 gap-2">
                   {getAvailableSkinTones(appearance.race).map((tone) => (
                     <Button
@@ -116,8 +116,8 @@ const CharacterCustomizationSheet = ({
                       variant={appearance.skinTone === tone ? "default" : "outline"}
                       className={`h-10 capitalize font-serif rounded-2xl border-2 ${
                         appearance.skinTone === tone 
-                          ? "bg-amber-700 text-amber-100 border-amber-900" 
-                          : "bg-amber-100 text-amber-800 border-amber-600 hover:bg-amber-200"
+                          ? "bg-parchment-500 text-parchment-50 border-parchment-700" 
+                          : "bg-parchment-50 text-parchment-700 border-parchment-400 hover:bg-parchment-200"
                       }`}
                       onClick={() => handleChange('skinTone', tone)}
                     >
@@ -129,7 +129,7 @@ const CharacterCustomizationSheet = ({
 
               {/* Hair Style Selection */}
               <div>
-                <h4 className="text-lg font-semibold text-amber-700 mb-3 font-serif">Hair Style</h4>
+                <h4 className="text-lg font-semibold text-parchment-600 mb-3 font-serif">Hair Style</h4>
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     { id: 'short', name: 'Short', emoji: '✂️' },
@@ -140,8 +140,8 @@ const CharacterCustomizationSheet = ({
                       variant={appearance.hairStyle === hair.id ? "default" : "outline"}
                       className={`flex items-center gap-2 h-12 font-serif text-base rounded-2xl border-2 ${
                         appearance.hairStyle === hair.id 
-                          ? "bg-amber-700 text-amber-100 border-amber-900" 
-                          : "bg-amber-100 text-amber-800 border-amber-600 hover:bg-amber-200"
+                          ? "bg-parchment-500 text-parchment-50 border-parchment-700" 
+                          : "bg-parchment-50 text-parchment-700 border-parchment-400 hover:bg-parchment-200"
                       }`}
                       onClick={() => handleChange('hairStyle', hair.id)}
                     >
@@ -154,7 +154,7 @@ const CharacterCustomizationSheet = ({
 
               {/* Body Shape Selection */}
               <div>
-                <h4 className="text-lg font-semibold text-amber-700 mb-3 font-serif">Body Shape</h4>
+                <h4 className="text-lg font-semibold text-parchment-600 mb-3 font-serif">Body Shape</h4>
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     { id: 'slim', name: 'Slim', emoji: '🏃' },
@@ -167,8 +167,8 @@ const CharacterCustomizationSheet = ({
                       variant={appearance.bodyShape === shape.id ? "default" : "outline"}
                       className={`flex items-center gap-2 h-12 font-serif text-base rounded-2xl border-2 ${
                         appearance.bodyShape === shape.id 
-                          ? "bg-amber-700 text-amber-100 border-amber-900" 
-                          : "bg-amber-100 text-amber-800 border-amber-600 hover:bg-amber-200"
+                          ? "bg-parchment-500 text-parchment-50 border-parchment-700" 
+                          : "bg-parchment-50 text-parchment-700 border-parchment-400 hover:bg-parchment-200"
                       }`}
                       onClick={() => handleChange('bodyShape', shape.id)}
                     >
@@ -184,17 +184,17 @@ const CharacterCustomizationSheet = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex gap-4 p-4 border-t-4 border-amber-700 bg-amber-100">
+      <div className="flex gap-4 p-4 border-t-4 border-parchment-500 bg-parchment-50">
         <Button 
           variant="outline" 
           onClick={onCancel} 
-          className="flex-1 font-serif text-lg py-3 rounded-2xl border-2 border-amber-600 text-amber-800 hover:bg-amber-200"
+          className="flex-1 font-serif text-lg py-3 rounded-2xl border-2 border-parchment-400 text-parchment-700 hover:bg-parchment-200"
         >
           Cancel
         </Button>
         <Button 
           onClick={handleSave} 
-          className="flex-1 bg-amber-700 hover:bg-amber-800 text-amber-100 font-serif text-lg py-3 rounded-2xl border-2 border-amber-900"
+          className="flex-1 bg-parchment-500 hover:bg-parchment-600 text-parchment-50 font-serif text-lg py-3 rounded-2xl border-2 border-parchment-700"
         >
           Save Changes
         </Button>

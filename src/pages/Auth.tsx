@@ -61,29 +61,29 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-900 via-purple-900 to-indigo-800 flex flex-col items-center justify-center p-6">
-      <div className="max-w-md w-full bg-stone-100 rounded-lg shadow-lg p-8 space-y-6 border-2 border-amber-700">
+    <div className="min-h-screen bg-parchment-100 flex flex-col items-center justify-center p-6">
+      <div className="max-w-md w-full bg-parchment-50 rounded-3xl shadow-2xl p-8 space-y-6 border-4 border-parchment-500">
         <div className="flex items-center gap-2 mb-6">
           <Button
             variant="ghost"
             onClick={() => navigate("/")}
-            className="p-2 hover:bg-amber-100"
+            className="p-2 hover:bg-parchment-200 text-parchment-600"
           >
-            <ArrowLeft size={20} className="text-amber-700" />
+            <ArrowLeft size={20} />
           </Button>
           <div className="flex justify-center flex-1">
-            <Shield size={48} className="text-amber-600" />
+            <Shield size={48} className="text-parchment-600" />
           </div>
         </div>
         
-        <h1 className="text-2xl font-bold text-center text-amber-800 font-serif">
+        <h1 className="text-2xl font-bold text-center text-parchment-700 font-serif">
           {isLogin ? "Welcome Back" : "Join the Quest"}
         </h1>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           {!isLogin && (
             <div>
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username" className="text-parchment-700 font-serif">Username</Label>
               <Input
                 id="username"
                 name="username"
@@ -91,13 +91,13 @@ const Auth = () => {
                 value={formData.username}
                 onChange={handleInputChange}
                 required={!isLogin}
-                className="mt-1"
+                className="mt-1 bg-parchment-200 border-2 border-parchment-400 text-parchment-700 rounded-xl font-serif"
               />
             </div>
           )}
           
           <div>
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-parchment-700 font-serif">Email</Label>
             <Input
               id="email"
               name="email"
@@ -105,12 +105,12 @@ const Auth = () => {
               value={formData.email}
               onChange={handleInputChange}
               required
-              className="mt-1"
+              className="mt-1 bg-parchment-200 border-2 border-parchment-400 text-parchment-700 rounded-xl font-serif"
             />
           </div>
           
           <div>
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password" className="text-parchment-700 font-serif">Password</Label>
             <Input
               id="password"
               name="password"
@@ -118,14 +118,14 @@ const Auth = () => {
               value={formData.password}
               onChange={handleInputChange}
               required
-              className="mt-1"
+              className="mt-1 bg-parchment-200 border-2 border-parchment-400 text-parchment-700 rounded-xl font-serif"
             />
           </div>
           
           <Button
             type="submit"
             disabled={loading}
-            className="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-3"
+            className="w-full bg-parchment-500 hover:bg-parchment-600 text-parchment-50 font-serif py-3 rounded-2xl border-2 border-parchment-700 text-lg font-medium"
           >
             {loading ? "Please wait..." : (isLogin ? "Sign In" : "Create Account")}
           </Button>
@@ -135,7 +135,7 @@ const Auth = () => {
           <Button
             variant="link"
             onClick={() => setIsLogin(!isLogin)}
-            className="text-amber-700 hover:text-amber-800"
+            className="text-parchment-600 hover:text-parchment-700 font-serif"
           >
             {isLogin ? "Need an account? Sign up" : "Already have an account? Sign in"}
           </Button>

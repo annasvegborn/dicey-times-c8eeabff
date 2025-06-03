@@ -23,6 +23,18 @@ export default {
 				'serif': ['Cinzel', 'serif'],
 			},
 			colors: {
+				parchment: {
+					50: '#faf6ed',
+					100: '#f7f2e8',
+					200: '#e8dcc0',
+					300: '#d4c299',
+					400: '#c0a872',
+					500: '#8b7355',
+					600: '#6b5b47',
+					700: '#4a3728',
+					800: '#2d1f14',
+					900: '#1a1009',
+				},
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
