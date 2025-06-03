@@ -25,7 +25,7 @@ import CharacterRenderer from "@/components/character/CharacterRenderer";
 const CharacterSheet = () => {
   const navigate = useNavigate();
   const { signOut } = useAuth();
-  const { character, loading } = useCharacter();
+  const { character, stats, loading } = useCharacter();
   const [activeTab, setActiveTab] = useState("stats");
 
   const handleSignOut = async () => {
@@ -84,7 +84,7 @@ const CharacterSheet = () => {
             </div>
             <div>
               <h2 className="text-2xl font-bold text-[#422e18] font-serif">{character.name}</h2>
-              <p className="text-[#997752] capitalize font-serif">{character.character_class} • Level {character.level}</p>
+              <p className="text-[#997752] capitalize font-serif">{character.class} • Level {character.level}</p>
               <div className="flex gap-2 mt-1">
                 <Badge className="bg-[#997752] text-[#ecd4ab] font-serif">{character.race}</Badge>
               </div>
@@ -95,10 +95,10 @@ const CharacterSheet = () => {
           <div className="mb-4">
             <div className="flex justify-between text-sm text-[#997752] mb-1 font-serif">
               <span>Experience</span>
-              <span>{character.experience_points}/1000</span>
+              <span>{character.xp}/{character.xp_to_next_level}</span>
             </div>
             <Progress 
-              value={(character.experience_points / 1000) * 100} 
+              value={(character.xp / character.xp_to_next_level) * 100} 
               className="h-3 bg-[#997752]"
             />
           </div>
@@ -139,42 +139,42 @@ const CharacterSheet = () => {
                 <Sword className="text-[#997752]" size={20} />
                 <div>
                   <div className="text-sm text-[#997752] font-serif">Strength</div>
-                  <div className="font-bold text-[#422e18] font-serif">{character.strength}</div>
+                  <div className="font-bold text-[#422e18] font-serif">{stats?.strength_value || 10}</div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <Target className="text-[#997752]" size={20} />
                 <div>
                   <div className="text-sm text-[#997752] font-serif">Dexterity</div>
-                  <div className="font-bold text-[#422e18] font-serif">{character.dexterity}</div>
+                  <div className="font-bold text-[#422e18] font-serif">{stats?.dexterity_value || 10}</div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <Heart className="text-[#997752]" size={20} />
                 <div>
                   <div className="text-sm text-[#997752] font-serif">Constitution</div>
-                  <div className="font-bold text-[#422e18] font-serif">{character.constitution}</div>
+                  <div className="font-bold text-[#422e18] font-serif">{stats?.constitution_value || 10}</div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <Brain className="text-[#997752]" size={20} />
                 <div>
                   <div className="text-sm text-[#997752] font-serif">Intelligence</div>
-                  <div className="font-bold text-[#422e18] font-serif">{character.intelligence}</div>
+                  <div className="font-bold text-[#422e18] font-serif">{stats?.intelligence_value || 10}</div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <Zap className="text-[#997752]" size={20} />
                 <div>
                   <div className="text-sm text-[#997752] font-serif">Wisdom</div>
-                  <div className="font-bold text-[#422e18] font-serif">{character.wisdom}</div>
+                  <div className="font-bold text-[#422e18] font-serif">{stats?.wisdom_value || 10}</div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <Shield className="text-[#997752]" size={20} />
                 <div>
                   <div className="text-sm text-[#997752] font-serif">Charisma</div>
-                  <div className="font-bold text-[#422e18] font-serif">{character.charisma}</div>
+                  <div className="font-bold text-[#422e18] font-serif">{stats?.charisma_value || 10}</div>
                 </div>
               </div>
             </div>
