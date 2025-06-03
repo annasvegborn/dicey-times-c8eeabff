@@ -1,7 +1,6 @@
 
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Shield } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
 
@@ -17,48 +16,46 @@ const Index = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-indigo-900 via-purple-900 to-indigo-800 flex items-center justify-center">
-        <div className="text-white text-xl">Loading...</div>
+      <div className="min-h-screen bg-gradient-to-b from-amber-50 to-amber-100 flex items-center justify-center">
+        <div className="text-amber-800 text-xl font-serif">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-900 via-purple-900 to-indigo-800 flex flex-col items-center justify-center p-6">
-      <div className="max-w-md w-full bg-stone-100 rounded-lg shadow-lg p-8 space-y-6 border-2 border-amber-700">
-        <div className="flex justify-center">
-          <Shield size={64} className="text-amber-600" />
+    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-amber-100 flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-amber-100 rounded-3xl border-4 border-amber-800 p-8 text-center shadow-2xl">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-amber-900 mb-4 font-serif">
+            FitQuest
+          </h1>
+          <h2 className="text-2xl text-amber-800 mb-2 font-serif">
+            Adventure Awaits
+          </h2>
+          <p className="text-amber-700 leading-relaxed font-serif">
+            Transform your fitness journey into an epic RPG adventure. 
+            Create your character and embark on quests that make exercise fun!
+          </p>
         </div>
-        
-        <h1 className="text-3xl font-bold text-center text-amber-800 font-serif">Quest of Fitness Realm</h1>
-        
-        <p className="text-center text-gray-700">
-          Begin your journey through the realm, where your real-world fitness adventures
-          transform into an epic fantasy campaign.
-        </p>
-        
-        <div className="pt-4">
+
+        <div className="space-y-4">
           <Button 
             onClick={() => navigate("/auth")}
-            className="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-3"
+            className="w-full bg-amber-700 hover:bg-amber-800 text-amber-100 font-serif text-lg py-6 rounded-2xl border-2 border-amber-900 shadow-lg transition-all duration-200 hover:shadow-xl"
           >
             Begin Your Quest
           </Button>
+          
+          <div className="mt-6 p-4 bg-amber-50 rounded-2xl border-2 border-amber-600">
+            <h3 className="font-bold text-amber-800 mb-2 font-serif">What is FitQuest?</h3>
+            <ul className="text-sm text-amber-700 space-y-1 font-serif">
+              <li>• Turn workouts into epic adventures</li>
+              <li>• Level up your character through exercise</li>
+              <li>• Complete quests and earn rewards</li>
+              <li>• Track progress in a fantasy world</li>
+            </ul>
+          </div>
         </div>
-        
-        <div className="pt-2">
-          <Button
-            variant="outline"
-            onClick={() => navigate("/auth")} 
-            className="w-full border-amber-600 text-amber-700 hover:bg-amber-50"
-          >
-            Continue Your Journey
-          </Button>
-        </div>
-      </div>
-      
-      <div className="mt-8 text-white text-center text-xs opacity-75">
-        Combine real-world fitness with an epic fantasy adventure
       </div>
     </div>
   );
