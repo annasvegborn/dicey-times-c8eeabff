@@ -90,8 +90,8 @@ const CharacterCreation = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-indigo-900 via-purple-900 to-indigo-800 flex items-center justify-center">
-        <div className="text-white text-xl">Loading...</div>
+      <div className="min-h-screen bg-parchment-100 flex items-center justify-center">
+        <div className="text-parchment-900 text-xl font-serif">Loading...</div>
       </div>
     );
   }
@@ -144,12 +144,12 @@ const CharacterCreation = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-900 via-purple-900 to-indigo-800 p-4">
-      <div className="max-w-2xl mx-auto bg-stone-100 rounded-lg shadow-lg p-6 border-2 border-amber-700">
+    <div className="min-h-screen bg-parchment-100 p-4">
+      <div className="max-w-2xl mx-auto bg-parchment-50 rounded-lg shadow-lg p-6 border-2 border-parchment-500">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-amber-800 font-serif">Create Your Character</h1>
+          <h1 className="text-2xl font-bold text-parchment-900 font-serif">Create Your Character</h1>
           <div className="flex items-center gap-4">
-            <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
+            <label className="flex items-center gap-2 text-xs text-parchment-700 cursor-pointer">
               <input
                 type="checkbox"
                 checked={showDebugGrid}
@@ -158,7 +158,7 @@ const CharacterCreation = () => {
               />
               Debug Grid
             </label>
-            <div className="text-sm text-gray-500">Step {step}/5</div>
+            <div className="text-sm text-parchment-600">Step {step}/5</div>
           </div>
         </div>
 

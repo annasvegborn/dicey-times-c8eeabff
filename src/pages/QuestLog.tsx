@@ -50,13 +50,13 @@ const QuestLog = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-900 via-purple-900 to-indigo-800 pb-16">
-      <div className="bg-amber-800 text-amber-50 px-4 py-3 flex justify-between items-center">
+    <div className="min-h-screen bg-parchment-100 pb-16">
+      <div className="bg-parchment-500 text-white px-4 py-3 flex justify-between items-center border-b-4 border-parchment-900">
         <h1 className="text-xl font-bold font-serif">Quest Log</h1>
         <Button 
           variant="outline" 
           size="sm"
-          className="border-amber-200 text-amber-50 hover:bg-amber-700"
+          className="border-white text-white hover:bg-parchment-600 font-serif"
           onClick={() => navigate("/daily-challenges")}
         >
           Daily Challenges
@@ -65,14 +65,14 @@ const QuestLog = () => {
 
       <div className="p-4">
         <Tabs defaultValue="active" className="mb-4">
-          <TabsList className="w-full bg-stone-200 p-1 rounded-lg">
-            <TabsTrigger value="active" className="w-1/2 relative">
+          <TabsList className="w-full bg-parchment-200 p-1 rounded-lg border-2 border-parchment-500">
+            <TabsTrigger value="active" className="w-1/2 relative font-serif data-[state=active]:bg-parchment-500 data-[state=active]:text-white">
               Active
-              <span className="absolute top-0 right-1 bg-amber-600 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center">
+              <span className="absolute top-0 right-1 bg-parchment-700 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center">
                 {activeQuests.length}
               </span>
             </TabsTrigger>
-            <TabsTrigger value="completed" className="w-1/2 relative">
+            <TabsTrigger value="completed" className="w-1/2 relative font-serif data-[state=active]:bg-parchment-500 data-[state=active]:text-white">
               Completed
               <span className="absolute top-0 right-1 bg-green-600 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center">
                 {completedQuests.length}
@@ -84,23 +84,23 @@ const QuestLog = () => {
             {activeQuests.map(quest => (
               <div 
                 key={quest.id} 
-                className="bg-stone-100 rounded-lg p-4 border-2 border-amber-700"
+                className="bg-parchment-50 rounded-lg p-4 border-2 border-parchment-500"
               >
-                <h2 className="text-lg font-bold text-amber-800">{quest.title}</h2>
-                <div className="text-sm text-amber-700 mb-2">{quest.location}</div>
-                <p className="text-gray-600 mb-4">{quest.description}</p>
+                <h2 className="text-lg font-bold text-parchment-900 font-serif">{quest.title}</h2>
+                <div className="text-sm text-parchment-700 mb-2 font-serif">{quest.location}</div>
+                <p className="text-parchment-800 mb-4 font-serif">{quest.description}</p>
                 
-                <h3 className="font-medium mb-2">Objectives:</h3>
+                <h3 className="font-medium mb-2 font-serif text-parchment-900">Objectives:</h3>
                 <div className="space-y-2 mb-4">
                   {quest.objectives.map(objective => (
                     <div 
                       key={objective.id} 
                       className={`flex items-center gap-2 p-2 rounded-lg ${
-                        objective.completed ? "bg-green-50" : "bg-stone-50"
+                        objective.completed ? "bg-green-50" : "bg-parchment-200"
                       }`}
                     >
                       <div className={`rounded-full p-0.5 ${
-                        objective.completed ? "text-green-600" : "text-amber-600"
+                        objective.completed ? "text-green-600" : "text-parchment-700"
                       }`}>
                         {objective.completed ? (
                           <CheckCircle2 className="h-5 w-5" />
@@ -108,19 +108,19 @@ const QuestLog = () => {
                           <div className="h-5 w-5 border-2 border-current rounded-full" />
                         )}
                       </div>
-                      <span className={objective.completed ? "line-through text-gray-400" : ""}>
+                      <span className={`font-serif ${objective.completed ? "line-through text-gray-400" : "text-parchment-900"}`}>
                         {objective.text}
                       </span>
                     </div>
                   ))}
                 </div>
                 
-                <h3 className="font-medium mb-2">Rewards:</h3>
+                <h3 className="font-medium mb-2 font-serif text-parchment-900">Rewards:</h3>
                 <div className="flex flex-wrap gap-2">
                   {quest.rewards.map((reward, idx) => (
                     <span 
                       key={idx} 
-                      className="bg-amber-100 text-amber-800 px-2 py-1 rounded-full text-xs"
+                      className="bg-parchment-200 text-parchment-900 px-2 py-1 rounded-full text-xs font-serif"
                     >
                       {reward}
                     </span>
@@ -129,7 +129,7 @@ const QuestLog = () => {
                 
                 <div className="mt-4 flex justify-end">
                   <Button 
-                    className="bg-amber-600 hover:bg-amber-700"
+                    className="bg-parchment-500 hover:bg-parchment-600 text-white font-serif"
                     onClick={() => navigate(`/quest/${quest.id}`)}
                   >
                     Continue Quest
@@ -143,21 +143,21 @@ const QuestLog = () => {
             {completedQuests.map(quest => (
               <div 
                 key={quest.id} 
-                className="bg-stone-100 rounded-lg p-4 border-2 border-green-700 opacity-80"
+                className="bg-parchment-50 rounded-lg p-4 border-2 border-green-700 opacity-80"
               >
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-green-600" />
-                  <h2 className="text-lg font-bold text-green-800">{quest.title}</h2>
+                  <h2 className="text-lg font-bold text-green-800 font-serif">{quest.title}</h2>
                 </div>
-                <div className="text-sm text-green-700 mb-2">{quest.location}</div>
-                <p className="text-gray-600 mb-4">{quest.description}</p>
+                <div className="text-sm text-green-700 mb-2 font-serif">{quest.location}</div>
+                <p className="text-parchment-800 mb-4 font-serif">{quest.description}</p>
                 
-                <h3 className="font-medium mb-2">Rewards Earned:</h3>
+                <h3 className="font-medium mb-2 font-serif text-parchment-900">Rewards Earned:</h3>
                 <div className="flex flex-wrap gap-2">
                   {quest.rewards.map((reward, idx) => (
                     <span 
                       key={idx} 
-                      className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs"
+                      className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-serif"
                     >
                       {reward}
                     </span>
@@ -170,39 +170,39 @@ const QuestLog = () => {
       </div>
 
       {/* Navigation footer */}
-      <div className="fixed bottom-0 left-0 right-0 bg-stone-800 border-t border-amber-900">
+      <div className="fixed bottom-0 left-0 right-0 bg-parchment-500 border-t-4 border-parchment-900">
         <div className="max-w-md mx-auto flex justify-around">
           <Button 
             variant="ghost" 
-            className="flex-1 flex flex-col items-center py-3 text-amber-200 hover:bg-stone-700 rounded-none"
+            className="flex-1 flex flex-col items-center py-3 text-white hover:bg-parchment-600 rounded-none"
             onClick={() => navigate("/character-sheet")}
           >
             <Book size={20} />
-            <span className="text-xs mt-1">Character</span>
+            <span className="text-xs mt-1 font-serif">Character</span>
           </Button>
           <Button 
             variant="ghost" 
-            className="flex-1 flex flex-col items-center py-3 text-amber-200 hover:bg-stone-700 rounded-none"
+            className="flex-1 flex flex-col items-center py-3 text-white hover:bg-parchment-600 rounded-none"
             onClick={() => navigate("/world-map")}
           >
             <MapPin size={20} />
-            <span className="text-xs mt-1">World</span>
+            <span className="text-xs mt-1 font-serif">World</span>
           </Button>
           <Button 
             variant="ghost" 
-            className="flex-1 flex flex-col items-center py-3 text-amber-200 hover:bg-stone-700 rounded-none bg-stone-700"
+            className="flex-1 flex flex-col items-center py-3 text-white hover:bg-parchment-600 rounded-none bg-parchment-600"
             onClick={() => navigate("/quests")}
           >
             <Sword size={20} />
-            <span className="text-xs mt-1">Quests</span>
+            <span className="text-xs mt-1 font-serif">Quests</span>
           </Button>
           <Button 
             variant="ghost" 
-            className="flex-1 flex flex-col items-center py-3 text-amber-200 hover:bg-stone-700 rounded-none"
+            className="flex-1 flex flex-col items-center py-3 text-white hover:bg-parchment-600 rounded-none"
             onClick={() => navigate("/inventory")}
           >
             <Backpack size={20} />
-            <span className="text-xs mt-1">Inventory</span>
+            <span className="text-xs mt-1 font-serif">Inventory</span>
           </Button>
         </div>
       </div>

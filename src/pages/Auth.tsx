@@ -67,23 +67,23 @@ const Auth = () => {
           <Button
             variant="ghost"
             onClick={() => navigate("/")}
-            className="p-2 hover:bg-parchment-200 text-parchment-600"
+            className="p-2 hover:bg-parchment-200 text-parchment-700"
           >
             <ArrowLeft size={20} />
           </Button>
           <div className="flex justify-center flex-1">
-            <Shield size={48} className="text-parchment-600" />
+            <Shield size={48} className="text-parchment-700" />
           </div>
         </div>
         
-        <h1 className="text-2xl font-bold text-center text-parchment-700 font-serif">
+        <h1 className="text-2xl font-bold text-center text-parchment-900 font-serif">
           {isLogin ? "Welcome Back" : "Join the Quest"}
         </h1>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           {!isLogin && (
             <div>
-              <Label htmlFor="username" className="text-parchment-700 font-serif">Username</Label>
+              <Label htmlFor="username" className="text-parchment-900 font-serif">Username</Label>
               <Input
                 id="username"
                 name="username"
@@ -91,13 +91,13 @@ const Auth = () => {
                 value={formData.username}
                 onChange={handleInputChange}
                 required={!isLogin}
-                className="mt-1 bg-parchment-200 border-2 border-parchment-400 text-parchment-700 rounded-xl font-serif"
+                className="mt-1 bg-parchment-200 border-2 border-parchment-500 text-parchment-900 rounded-xl font-serif"
               />
             </div>
           )}
           
           <div>
-            <Label htmlFor="email" className="text-parchment-700 font-serif">Email</Label>
+            <Label htmlFor="email" className="text-parchment-900 font-serif">Email</Label>
             <Input
               id="email"
               name="email"
@@ -105,12 +105,12 @@ const Auth = () => {
               value={formData.email}
               onChange={handleInputChange}
               required
-              className="mt-1 bg-parchment-200 border-2 border-parchment-400 text-parchment-700 rounded-xl font-serif"
+              className="mt-1 bg-parchment-200 border-2 border-parchment-500 text-parchment-900 rounded-xl font-serif"
             />
           </div>
           
           <div>
-            <Label htmlFor="password" className="text-parchment-700 font-serif">Password</Label>
+            <Label htmlFor="password" className="text-parchment-900 font-serif">Password</Label>
             <Input
               id="password"
               name="password"
@@ -118,14 +118,14 @@ const Auth = () => {
               value={formData.password}
               onChange={handleInputChange}
               required
-              className="mt-1 bg-parchment-200 border-2 border-parchment-400 text-parchment-700 rounded-xl font-serif"
+              className="mt-1 bg-parchment-200 border-2 border-parchment-500 text-parchment-900 rounded-xl font-serif"
             />
           </div>
           
           <Button
             type="submit"
             disabled={loading}
-            className="w-full bg-parchment-500 hover:bg-parchment-600 text-parchment-50 font-serif py-3 rounded-2xl border-2 border-parchment-700 text-lg font-medium"
+            className="w-full bg-parchment-500 hover:bg-parchment-600 text-white font-serif py-3 rounded-2xl border-2 border-parchment-900 text-lg font-medium"
           >
             {loading ? "Please wait..." : (isLogin ? "Sign In" : "Create Account")}
           </Button>
@@ -135,7 +135,7 @@ const Auth = () => {
           <Button
             variant="link"
             onClick={() => setIsLogin(!isLogin)}
-            className="text-parchment-600 hover:text-parchment-700 font-serif"
+            className="text-parchment-700 hover:text-parchment-900 font-serif"
           >
             {isLogin ? "Need an account? Sign up" : "Already have an account? Sign in"}
           </Button>

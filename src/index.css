@@ -98,28 +98,3 @@
 .font-serif {
   font-family: 'Cinzel', serif;
 }
-
-/* Parchment color palette */
-.parchment-bg {
-  background-color: #f7f2e8;
-}
-
-.parchment-light {
-  background-color: #faf6ed;
-}
-
-.parchment-dark {
-  background-color: #e8dcc0;
-}
-
-.parchment-border {
-  border-color: #8b7355;
-}
-
-.parchment-text {
-  color: #4a3728;
-}
-
-.parchment-text-light {
-  color: #6b5b47;
-}
