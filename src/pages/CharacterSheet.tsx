@@ -1,63 +1,54 @@
 
-import { useEffect, useState } from "react";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { 
+  User, 
+  MapPin, 
+  Scroll, 
+  Package, 
+  Settings,
+  Sword,
+  Shield,
+  Heart,
+  Zap,
+  Brain,
+  Target,
+  LogOut
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { MapPin, Sword, Book, Backpack, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCharacter } from "@/hooks/useCharacter";
 import CharacterRenderer from "@/components/character/CharacterRenderer";
-import CharacterCustomizationSheet from "@/components/character/CharacterCustomizationSheet";
 
 const CharacterSheet = () => {
   const navigate = useNavigate();
-  const { user, signOut, loading: authLoading } = useAuth();
-  const { character, stats, traits, features, loading, updateCharacterAppearance } = useCharacter();
-  const [customizationOpen, setCustomizationOpen] = useState(false);
-
-  useEffect(() => {
-    if (!authLoading && !user) {
-      navigate("/auth");
-    }
-  }, [user, authLoading, navigate]);
+  const { signOut } = useAuth();
+  const { character, loading } = useCharacter();
+  const [activeTab, setActiveTab] = useState("stats");
 
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
   };
 
-  const handleAppearanceUpdate = async (newAppearance: {
-    race: string;
-    bodyShape: string;
-    hairStyle: string;
-    skinTone: string;
-  }) => {
-    if (character) {
-      console.log('Updating character appearance:', newAppearance);
-      await updateCharacterAppearance(character.id, newAppearance);
-      setCustomizationOpen(false);
-    }
-  };
-
-  if (authLoading || loading) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-parchment-100 flex items-center justify-center">
-        <div className="text-parchment-700 text-xl font-serif">Loading your character...</div>
+      <div className="min-h-screen bg-[#ecd4ab] flex items-center justify-center">
+        <div className="text-[#422e18] text-xl font-serif">Loading character...</div>
       </div>
     );
   }
 
   if (!character) {
     return (
-      <div className="min-h-screen bg-parchment-100 flex items-center justify-center p-4">
-        <div className="max-w-md mx-auto bg-parchment-50 rounded-3xl shadow-2xl p-8 text-center border-4 border-parchment-500">
-          <h2 className="text-2xl font-bold text-parchment-700 mb-4 font-serif">No Character Found</h2>
-          <p className="text-parchment-600 mb-6 font-serif">You haven't created a character yet. Let's begin your adventure!</p>
+      <div className="min-h-screen bg-[#ecd4ab] flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-[#422e18] text-xl font-serif mb-4">No character found</h2>
           <Button 
             onClick={() => navigate("/character-creation")}
-            className="bg-parchment-500 hover:bg-parchment-600 text-parchment-50 font-serif text-lg py-3 px-6 rounded-2xl border-2 border-parchment-700"
+            className="bg-[#997752] hover:bg-[#422e18] text-[#ecd4ab] border-2 border-[#422e18] rounded-xl font-serif"
           >
             Create Character
           </Button>
@@ -66,181 +57,179 @@ const CharacterSheet = () => {
     );
   }
 
-  // Ensure we have a valid skin tone, with proper fallback
-  const currentSkinTone = character?.avatar_skin_tone || 'light';
-
   return (
-    <div className="min-h-screen bg-parchment-100 p-4">
-      <div className="max-w-md mx-auto">
-        {/* Character header */}
-        <div className="bg-parchment-50 rounded-3xl shadow-2xl p-6 border-4 border-parchment-500 mb-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-4">
-              <Sheet open={customizationOpen} onOpenChange={setCustomizationOpen}>
-                <SheetTrigger asChild>
-                  <div className="cursor-pointer hover:scale-105 transition-transform bg-parchment-200 rounded-full p-2 border-2 border-parchment-500">
-                    <CharacterRenderer
-                      race={character.avatar_race}
-                      bodyShape={character.avatar_body_shape}
-                      hairStyle={character.avatar_hair_style}
-                      characterClass={character.class}
-                      skinTone={currentSkinTone as 'light' | 'dark'}
-                      size={64}
-                    />
-                  </div>
-                </SheetTrigger>
-                <SheetContent side="bottom" className="h-[80vh] bg-parchment-100">
-                  <SheetHeader>
-                    <SheetTitle className="font-serif text-parchment-700">Customize Appearance</SheetTitle>
-                  </SheetHeader>
-                  <CharacterCustomizationSheet
-                    currentAppearance={{
-                      race: character.avatar_race,
-                      bodyShape: character.avatar_body_shape,
-                      hairStyle: character.avatar_hair_style,
-                      skinTone: currentSkinTone
-                    }}
-                    characterClass={character.class}
-                    onSave={handleAppearanceUpdate}
-                    onCancel={() => setCustomizationOpen(false)}
-                  />
-                </SheetContent>
-              </Sheet>
-              <div className="flex-1">
-                <h1 className="text-2xl font-bold text-parchment-700 font-serif">{character.name}</h1>
-                <div className="text-parchment-600 font-serif">
-                  Level {character.level} {character.race} {character.class}
-                </div>
+    <div className="min-h-screen bg-[#ecd4ab] pb-20">
+      {/* Header */}
+      <div className="bg-[#422e18] text-[#ecd4ab] px-4 py-3 flex items-center justify-between">
+        <h1 className="text-xl font-bold font-serif">Character Sheet</h1>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleSignOut}
+          className="text-[#ecd4ab] hover:bg-[#997752]"
+        >
+          <LogOut size={20} />
+        </Button>
+      </div>
+
+      {/* Character Overview */}
+      <div className="p-4">
+        <div className="bg-[#ecd4ab] rounded-3xl p-6 border-4 border-[#422e18] mb-4 shadow-2xl">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-20 h-20 bg-[#997752] rounded-full border-4 border-[#422e18] flex items-center justify-center overflow-hidden">
+              <CharacterRenderer 
+                character={character}
+                size="small"
+              />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-[#422e18] font-serif">{character.name}</h2>
+              <p className="text-[#997752] capitalize font-serif">{character.character_class} • Level {character.level}</p>
+              <div className="flex gap-2 mt-1">
+                <Badge className="bg-[#997752] text-[#ecd4ab] font-serif">{character.race}</Badge>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleSignOut}
-              className="text-parchment-600 hover:text-parchment-700 hover:bg-parchment-200"
-            >
-              <LogOut size={16} />
-            </Button>
           </div>
-          
-          <div className="mt-2">
-            <div className="flex justify-between text-sm text-parchment-600 mb-2 font-serif">
-              <span>XP: {character.xp}/{character.xp_to_next_level}</span>
-              <span>{Math.round(character.xp/character.xp_to_next_level*100)}%</span>
+
+          {/* XP Progress */}
+          <div className="mb-4">
+            <div className="flex justify-between text-sm text-[#997752] mb-1 font-serif">
+              <span>Experience</span>
+              <span>{character.experience_points}/1000</span>
             </div>
-            <Progress value={(character.xp/character.xp_to_next_level)*100} className="h-3 bg-parchment-200" />
+            <Progress 
+              value={(character.experience_points / 1000) * 100} 
+              className="h-3 bg-[#997752]"
+            />
           </div>
         </div>
 
-        {/* Main character tabs */}
-        <Tabs defaultValue="stats" className="mb-4">
-          <TabsList className="w-full bg-parchment-200 p-1 rounded-2xl border-2 border-parchment-500">
-            <TabsTrigger 
-              value="stats" 
-              className="w-1/2 font-serif data-[state=active]:bg-parchment-500 data-[state=active]:text-parchment-50 rounded-xl"
-            >
-              Stats
-            </TabsTrigger>
-            <TabsTrigger 
-              value="features" 
-              className="w-1/2 font-serif data-[state=active]:bg-parchment-500 data-[state=active]:text-parchment-50 rounded-xl"
-            >
-              Features
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="stats" className="bg-parchment-50 rounded-3xl p-6 border-4 border-parchment-500 mt-4 shadow-xl">
-            <h2 className="text-xl font-bold text-parchment-700 mb-4 font-serif">Ability Scores</h2>
-            
-            {stats && (
-              <div className="grid grid-cols-2 gap-6">
-                {Object.entries({
-                  strength: { value: stats.strength_value, progress: stats.strength_progress },
-                  dexterity: { value: stats.dexterity_value, progress: stats.dexterity_progress },
-                  constitution: { value: stats.constitution_value, progress: stats.constitution_progress },
-                  intelligence: { value: stats.intelligence_value, progress: stats.intelligence_progress },
-                  wisdom: { value: stats.wisdom_value, progress: stats.wisdom_progress },
-                  charisma: { value: stats.charisma_value, progress: stats.charisma_progress }
-                }).map(([statName, stat]) => (
-                  <div key={statName} className="bg-parchment-200 p-4 rounded-2xl border-2 border-parchment-500">
-                    <div className="flex justify-between mb-2">
-                      <span className="font-semibold capitalize font-serif text-parchment-700">{statName}</span>
-                      <span className="text-parchment-700 font-bold text-lg">{stat.value}</span>
-                    </div>
-                    <Progress value={stat.progress} className="h-2 bg-parchment-300" />
-                    <div className="text-xs text-right mt-1 text-parchment-600 font-serif">+{Math.floor((stat.value - 10) / 2)} modifier</div>
-                  </div>
-                ))}
-              </div>
-            )}
-            
-            <div className="mt-6">
-              <h3 className="text-lg font-semibold text-parchment-700 mb-3 font-serif">Traits</h3>
-              <div className="flex flex-wrap gap-2">
-                {traits.map((trait) => (
-                  <span key={trait} className="bg-parchment-300 text-parchment-700 px-3 py-1 rounded-full text-sm font-serif border border-parchment-500">
-                    {trait}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="features" className="bg-parchment-50 rounded-3xl p-6 border-4 border-parchment-500 mt-4 shadow-xl">
-            <h2 className="text-xl font-bold text-parchment-700 mb-4 font-serif">Class Features</h2>
-            
-            <div className="space-y-4">
-              {features.map((feature) => (
-                <div key={feature.name} className="bg-parchment-200 p-4 rounded-2xl border-2 border-parchment-500">
-                  <h3 className="font-semibold text-parchment-700 font-serif text-lg">{feature.name}</h3>
-                  <p className="text-parchment-600 mt-2 font-serif">{feature.description}</p>
+        {/* Tab Navigation */}
+        <div className="flex bg-[#997752] rounded-3xl p-1 mb-4 border-4 border-[#422e18]">
+          <Button
+            variant={activeTab === "stats" ? "default" : "ghost"}
+            onClick={() => setActiveTab("stats")}
+            className={`flex-1 font-serif rounded-2xl ${
+              activeTab === "stats" 
+                ? "bg-[#422e18] text-[#ecd4ab]" 
+                : "text-[#ecd4ab] hover:bg-[#422e18]"
+            }`}
+          >
+            Stats
+          </Button>
+          <Button
+            variant={activeTab === "equipment" ? "default" : "ghost"}
+            onClick={() => setActiveTab("equipment")}
+            className={`flex-1 font-serif rounded-2xl ${
+              activeTab === "equipment" 
+                ? "bg-[#422e18] text-[#ecd4ab]" 
+                : "text-[#ecd4ab] hover:bg-[#422e18]"
+            }`}
+          >
+            Equipment
+          </Button>
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === "stats" && (
+          <div className="bg-[#ecd4ab] rounded-3xl p-6 border-4 border-[#422e18] mb-4 shadow-2xl">
+            <h3 className="text-[#422e18] font-serif font-bold mb-4">Character Stats</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center gap-2">
+                <Sword className="text-[#997752]" size={20} />
+                <div>
+                  <div className="text-sm text-[#997752] font-serif">Strength</div>
+                  <div className="font-bold text-[#422e18] font-serif">{character.strength}</div>
                 </div>
-              ))}
+              </div>
+              <div className="flex items-center gap-2">
+                <Target className="text-[#997752]" size={20} />
+                <div>
+                  <div className="text-sm text-[#997752] font-serif">Dexterity</div>
+                  <div className="font-bold text-[#422e18] font-serif">{character.dexterity}</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Heart className="text-[#997752]" size={20} />
+                <div>
+                  <div className="text-sm text-[#997752] font-serif">Constitution</div>
+                  <div className="font-bold text-[#422e18] font-serif">{character.constitution}</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Brain className="text-[#997752]" size={20} />
+                <div>
+                  <div className="text-sm text-[#997752] font-serif">Intelligence</div>
+                  <div className="font-bold text-[#422e18] font-serif">{character.intelligence}</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Zap className="text-[#997752]" size={20} />
+                <div>
+                  <div className="text-sm text-[#997752] font-serif">Wisdom</div>
+                  <div className="font-bold text-[#422e18] font-serif">{character.wisdom}</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Shield className="text-[#997752]" size={20} />
+                <div>
+                  <div className="text-sm text-[#997752] font-serif">Charisma</div>
+                  <div className="font-bold text-[#422e18] font-serif">{character.charisma}</div>
+                </div>
+              </div>
             </div>
-            
-            <div className="mt-6 p-4 bg-parchment-200 border-2 border-parchment-400 rounded-2xl">
-              <h3 className="text-parchment-700 font-semibold font-serif">Unlock More Features</h3>
-              <p className="text-parchment-600 mt-1 font-serif">Complete fitness activities to level up and unlock new abilities!</p>
-            </div>
-          </TabsContent>
-        </Tabs>
-        
-        {/* Navigation footer */}
-        <div className="fixed bottom-0 left-0 right-0 bg-parchment-500 border-t-4 border-parchment-700">
-          <div className="max-w-md mx-auto flex justify-around">
-            <Button 
-              variant="ghost" 
-              className="flex-1 flex flex-col items-center py-3 text-parchment-200 hover:bg-parchment-600 rounded-none bg-parchment-600"
-              onClick={() => navigate("/character-sheet")}
-            >
-              <Book size={20} />
-              <span className="text-xs mt-1 font-serif">Character</span>
-            </Button>
-            <Button 
-              variant="ghost" 
-              className="flex-1 flex flex-col items-center py-3 text-parchment-200 hover:bg-parchment-600 rounded-none"
-              onClick={() => navigate("/world-map")}
-            >
-              <MapPin size={20} />
-              <span className="text-xs mt-1 font-serif">World</span>
-            </Button>
-            <Button 
-              variant="ghost" 
-              className="flex-1 flex flex-col items-center py-3 text-parchment-200 hover:bg-parchment-600 rounded-none"
-              onClick={() => navigate("/quests")}
-            >
-              <Sword size={20} />
-              <span className="text-xs mt-1 font-serif">Quests</span>
-            </Button>
-            <Button 
-              variant="ghost" 
-              className="flex-1 flex flex-col items-center py-3 text-parchment-200 hover:bg-parchment-600 rounded-none"
-              onClick={() => navigate("/inventory")}
-            >
-              <Backpack size={20} />
-              <span className="text-xs mt-1 font-serif">Inventory</span>
-            </Button>
           </div>
+        )}
+
+        {activeTab === "equipment" && (
+          <div className="bg-[#ecd4ab] rounded-3xl p-6 border-4 border-[#422e18] mb-4 shadow-2xl">
+            <h3 className="text-[#422e18] font-serif font-bold mb-4">Equipment</h3>
+            <div className="text-center text-[#997752] font-serif">
+              No equipment yet. Complete quests to earn gear!
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-[#422e18] border-t-4 border-[#997752] p-4">
+        <div className="flex justify-around max-w-md mx-auto">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/world-map")}
+            className="flex flex-col items-center gap-1 text-[#ecd4ab] hover:bg-[#997752] font-serif"
+          >
+            <MapPin size={20} />
+            <span className="text-xs">Map</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/quests")}
+            className="flex flex-col items-center gap-1 text-[#ecd4ab] hover:bg-[#997752] font-serif"
+          >
+            <Scroll size={20} />
+            <span className="text-xs">Quests</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/inventory")}
+            className="flex flex-col items-center gap-1 text-[#ecd4ab] hover:bg-[#997752] font-serif"
+          >
+            <Package size={20} />
+            <span className="text-xs">Inventory</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/step-tracker")}
+            className="flex flex-col items-center gap-1 text-[#ecd4ab] hover:bg-[#997752] font-serif"
+          >
+            <Settings size={20} />
+            <span className="text-xs">Tracker</span>
+          </Button>
         </div>
       </div>
     </div>
