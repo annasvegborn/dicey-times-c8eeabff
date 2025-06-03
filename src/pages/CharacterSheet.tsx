@@ -78,8 +78,12 @@ const CharacterSheet = () => {
           <div className="flex items-center gap-4 mb-4">
             <div className="w-20 h-20 bg-[#997752] rounded-full border-4 border-[#422e18] flex items-center justify-center overflow-hidden">
               <CharacterRenderer 
-                character={character}
-                size="small"
+                race={character.avatar_race || character.race}
+                bodyShape={character.avatar_body_shape || 'medium'}
+                hairStyle={character.avatar_hair_style || 'short'}
+                characterClass={character.class}
+                skinTone={(character.avatar_skin_tone || 'light') as 'light' | 'dark'}
+                size={80}
               />
             </div>
             <div>

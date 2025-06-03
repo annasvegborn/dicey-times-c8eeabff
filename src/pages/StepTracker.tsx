@@ -1,210 +1,133 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { ArrowLeft, Activity, Target, Trophy, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { MapPin, Sword, Book, Backpack, Footprints, Award } from "lucide-react";
 
 const StepTracker = () => {
   const navigate = useNavigate();
-  const [steps, setSteps] = useState(0);
-  const [dailyGoal] = useState(5000);
-  const [destinations] = useState([
-    { name: "Windmill", steps: 1000, icon: "🏮", reached: false },
-    { name: "Forest Shrine", steps: 2500, icon: "⛩️", reached: false },
-    { name: "Lake Serenity", steps: 5000, icon: "🏞️", reached: false },
-    { name: "Mountain Pass", steps: 7500, icon: "⛰️", reached: false },
-    { name: "Ancient Tower", steps: 10000, icon: "🏰", reached: false },
-  ]);
-  
-  // Simulate step counting (in a real app, this would use device sensors)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // Add random steps (10-50) every few seconds to simulate walking
-      if (Math.random() > 0.7) {
-        setSteps(prev => prev + Math.floor(Math.random() * 40) + 10);
-      }
-    }, 3000);
-    
-    return () => clearInterval(interval);
-  }, []);
-  
-  const getNextDestination = () => {
-    for (const destination of destinations) {
-      if (steps < destination.steps) {
-        const stepsLeft = destination.steps - steps;
-        return { destination, stepsLeft };
-      }
-    }
-    return null;
-  };
-  
-  const nextDest = getNextDestination();
-  const progress = nextDest 
-    ? (steps / nextDest.destination.steps) * 100
-    : 100;
+  const [todaySteps, setTodaySteps] = useState(5420);
+  const [todayGoal] = useState(8000);
+  const [weeklyGoal] = useState(56000);
+  const [weeklySteps] = useState(38250);
+
+  // Calculate progress percentages
+  const dailyProgress = Math.min((todaySteps / todayGoal) * 100, 100);
+  const weeklyProgress = Math.min((weeklySteps / weeklyGoal) * 100, 100);
+
+  // Mock achievements
+  const achievements = [
+    { name: "First Steps", description: "Take your first 1000 steps", unlocked: true },
+    { name: "Daily Walker", description: "Reach 8000 steps in a day", unlocked: false },
+    { name: "Weekly Warrior", description: "Complete weekly step goal", unlocked: false },
+    { name: "Month Champion", description: "30 days of hitting daily goals", unlocked: false }
+  ];
 
   return (
-    <div className="min-h-screen bg-parchment-100 pb-16">
-      <div className="bg-parchment-500 text-white px-4 py-3 flex justify-between items-center border-b-4 border-parchment-900">
+    <div className="min-h-screen bg-[#ecd4ab]">
+      {/* Header */}
+      <div className="bg-[#422e18] text-[#ecd4ab] px-4 py-3 flex items-center">
+        <Button 
+          variant="ghost" 
+          size="icon"
+          onClick={() => navigate("/character-sheet")}
+          className="text-[#ecd4ab] hover:bg-[#997752] mr-2"
+        >
+          <ArrowLeft size={20} />
+        </Button>
         <h1 className="text-xl font-bold font-serif">Step Tracker</h1>
-        <div className="flex items-center gap-2">
-          <Footprints size={18} />
-          <span className="text-sm font-serif">{steps.toLocaleString()} steps</span>
-        </div>
       </div>
 
-      {/* Daily progress */}
-      <div className="p-4">
-        <div className="bg-parchment-50 rounded-lg p-4 border-2 border-parchment-500 mb-4">
-          <div className="flex justify-between mb-1">
-            <span className="font-medium font-serif text-parchment-900">Daily Goal</span>
-            <span className="text-parchment-700 font-serif">{steps.toLocaleString()} / {dailyGoal.toLocaleString()}</span>
-          </div>
-          <div className="h-4 bg-parchment-200 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-parchment-500 transition-all duration-500" 
-              style={{ width: `${Math.min(100, (steps / dailyGoal) * 100)}%` }}
-            ></div>
+      <div className="p-4 space-y-4">
+        {/* Today's Steps */}
+        <div className="bg-[#ecd4ab] rounded-3xl p-6 border-4 border-[#422e18] shadow-2xl">
+          <div className="flex items-center gap-3 mb-4">
+            <Activity className="text-[#997752]" size={24} />
+            <h2 className="text-xl font-bold text-[#422e18] font-serif">Today's Steps</h2>
           </div>
           
-          {steps >= dailyGoal && (
-            <div className="mt-2 flex items-center gap-2 text-green-600 text-sm">
-              <Award size={16} />
-              <span className="font-serif">Daily goal completed! +25 XP awarded</span>
-            </div>
-          )}
+          <div className="text-center mb-4">
+            <div className="text-4xl font-bold text-[#422e18] font-serif">{todaySteps.toLocaleString()}</div>
+            <div className="text-[#997752] font-serif">of {todayGoal.toLocaleString()} goal</div>
+          </div>
+
+          <Progress value={dailyProgress} className="h-4 mb-2" />
+          <div className="text-center text-[#997752] font-serif">{dailyProgress.toFixed(1)}% complete</div>
         </div>
-        
-        {/* Map view */}
-        <div className="bg-parchment-50 rounded-lg overflow-hidden border-2 border-parchment-500">
-          <div className="relative h-60 bg-parchment-200">
-            {/* Path */}
-            <div className="absolute top-1/2 left-0 right-0 h-2 bg-parchment-500/30 z-0"></div>
-            
-            {/* Destinations */}
-            {destinations.map((dest, index) => (
-              <div 
-                key={index}
-                className={`absolute top-1/2 transform -translate-y-1/2 flex flex-col items-center`}
-                style={{ left: `${(dest.steps / 10000) * 100}%` }}
-              >
-                <div className={`text-2xl mb-1 ${steps >= dest.steps ? "animate-bounce" : "opacity-50"}`}>
-                  {dest.icon}
+
+        {/* Weekly Progress */}
+        <div className="bg-[#ecd4ab] rounded-3xl p-6 border-4 border-[#422e18] shadow-2xl">
+          <div className="flex items-center gap-3 mb-4">
+            <Calendar className="text-[#997752]" size={24} />
+            <h2 className="text-xl font-bold text-[#422e18] font-serif">This Week</h2>
+          </div>
+          
+          <div className="text-center mb-4">
+            <div className="text-2xl font-bold text-[#422e18] font-serif">{weeklySteps.toLocaleString()}</div>
+            <div className="text-[#997752] font-serif">of {weeklyGoal.toLocaleString()} weekly goal</div>
+          </div>
+
+          <Progress value={weeklyProgress} className="h-4 mb-2" />
+          <div className="text-center text-[#997752] font-serif">{weeklyProgress.toFixed(1)}% complete</div>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-[#ecd4ab] rounded-3xl p-4 border-4 border-[#422e18] shadow-2xl text-center">
+            <div className="text-2xl font-bold text-[#422e18] font-serif">2.1</div>
+            <div className="text-[#997752] text-sm font-serif">Miles Today</div>
+          </div>
+          <div className="bg-[#ecd4ab] rounded-3xl p-4 border-4 border-[#422e18] shadow-2xl text-center">
+            <div className="text-2xl font-bold text-[#422e18] font-serif">247</div>
+            <div className="text-[#997752] text-sm font-serif">Calories Burned</div>
+          </div>
+        </div>
+
+        {/* Achievements */}
+        <div className="bg-[#ecd4ab] rounded-3xl p-6 border-4 border-[#422e18] shadow-2xl">
+          <div className="flex items-center gap-3 mb-4">
+            <Trophy className="text-[#997752]" size={24} />
+            <h2 className="text-xl font-bold text-[#422e18] font-serif">Achievements</h2>
+          </div>
+          
+          <div className="space-y-3">
+            {achievements.map((achievement, index) => (
+              <div key={index} className={`flex items-center gap-3 p-3 rounded-2xl border-2 ${
+                achievement.unlocked 
+                  ? "bg-green-50 border-green-300" 
+                  : "bg-gray-50 border-gray-300"
+              }`}>
+                <div className={`text-xl ${achievement.unlocked ? "text-green-600" : "text-gray-400"}`}>
+                  🏆
                 </div>
-                <div className={`text-xs px-2 py-1 rounded font-serif ${
-                  steps >= dest.steps 
-                    ? "bg-parchment-500 text-white" 
-                    : "bg-parchment-200 text-parchment-700"
-                }`}>
-                  {dest.name}
+                <div className="flex-1">
+                  <div className={`font-bold font-serif ${
+                    achievement.unlocked ? "text-green-800" : "text-gray-600"
+                  }`}>
+                    {achievement.name}
+                  </div>
+                  <div className={`text-sm font-serif ${
+                    achievement.unlocked ? "text-green-600" : "text-gray-500"
+                  }`}>
+                    {achievement.description}
+                  </div>
                 </div>
+                {achievement.unlocked && (
+                  <div className="text-green-600 text-sm font-serif">✓</div>
+                )}
               </div>
             ))}
-            
-            {/* Player position */}
-            <div 
-              className="absolute top-1/2 transform -translate-y-1/2 z-10"
-              style={{ left: `${(steps / 10000) * 100}%` }}
-            >
-              <div className="text-3xl">🧙</div>
-            </div>
-          </div>
-          
-          {/* Next destination info */}
-          <div className="p-4">
-            {nextDest ? (
-              <>
-                <h3 className="font-medium text-parchment-900 font-serif">Next Destination: {nextDest.destination.name}</h3>
-                <div className="flex justify-between text-sm text-parchment-700 mb-1 mt-2 font-serif">
-                  <span>{steps.toLocaleString()} steps traveled</span>
-                  <span>{nextDest.destination.steps.toLocaleString()} steps total</span>
-                </div>
-                <div className="h-3 bg-parchment-200 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-parchment-500"
-                    style={{ width: `${progress}%` }}
-                  ></div>
-                </div>
-                <div className="mt-3 text-center text-sm">
-                  <span className="text-parchment-700 font-medium font-serif">{nextDest.stepsLeft.toLocaleString()} steps left</span> 
-                  <span className="font-serif text-parchment-800"> to reach {nextDest.destination.name}</span>
-                </div>
-              </>
-            ) : (
-              <div className="text-center py-3">
-                <h3 className="font-medium text-green-700 mb-2 font-serif">All destinations reached!</h3>
-                <p className="text-sm text-parchment-700 font-serif">You've reached all destinations on this path. New areas will unlock tomorrow!</p>
-              </div>
-            )}
           </div>
         </div>
-        
-        {/* Rewards section */}
-        <div className="bg-parchment-50 rounded-lg p-4 border-2 border-parchment-500 mt-4">
-          <h3 className="font-medium text-parchment-900 mb-2 font-serif">Step Rewards</h3>
-          <div className="space-y-2">
-            <div className="flex justify-between items-center p-2 bg-parchment-200 rounded-lg">
-              <span className="font-serif text-parchment-900">1,000 steps</span>
-              <span className={`px-2 py-1 rounded text-xs font-medium font-serif ${
-                steps >= 1000 ? "bg-green-600 text-white" : "bg-parchment-300 text-parchment-700"
-              }`}>
-                {steps >= 1000 ? "Claimed" : "Pending"}
-              </span>
-            </div>
-            <div className="flex justify-between items-center p-2 bg-parchment-200 rounded-lg">
-              <span className="font-serif text-parchment-900">5,000 steps</span>
-              <span className={`px-2 py-1 rounded text-xs font-medium font-serif ${
-                steps >= 5000 ? "bg-green-600 text-white" : "bg-parchment-300 text-parchment-700"
-              }`}>
-                {steps >= 5000 ? "Claimed" : "Pending"}
-              </span>
-            </div>
-            <div className="flex justify-between items-center p-2 bg-parchment-200 rounded-lg">
-              <span className="font-serif text-parchment-900">10,000 steps</span>
-              <span className={`px-2 py-1 rounded text-xs font-medium font-serif ${
-                steps >= 10000 ? "bg-green-600 text-white" : "bg-parchment-300 text-parchment-700"
-              }`}>
-                {steps >= 10000 ? "Claimed" : "Pending"}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Navigation footer */}
-      <div className="fixed bottom-0 left-0 right-0 bg-parchment-500 border-t-4 border-parchment-900">
-        <div className="max-w-md mx-auto flex justify-around">
+        {/* Action Button */}
+        <div className="text-center pt-4">
           <Button 
-            variant="ghost" 
-            className="flex-1 flex flex-col items-center py-3 text-white hover:bg-parchment-600 rounded-none"
-            onClick={() => navigate("/character-sheet")}
+            className="bg-[#997752] hover:bg-[#422e18] text-[#ecd4ab] border-2 border-[#422e18] rounded-xl font-serif px-8 py-3"
           >
-            <Book size={20} />
-            <span className="text-xs mt-1 font-serif">Character</span>
-          </Button>
-          <Button 
-            variant="ghost" 
-            className="flex-1 flex flex-col items-center py-3 text-white hover:bg-parchment-600 rounded-none"
-            onClick={() => navigate("/world-map")}
-          >
-            <MapPin size={20} />
-            <span className="text-xs mt-1 font-serif">World</span>
-          </Button>
-          <Button 
-            variant="ghost" 
-            className="flex-1 flex flex-col items-center py-3 text-white hover:bg-parchment-600 rounded-none"
-            onClick={() => navigate("/quests")}
-          >
-            <Sword size={20} />
-            <span className="text-xs mt-1 font-serif">Quests</span>
-          </Button>
-          <Button 
-            variant="ghost" 
-            className="flex-1 flex flex-col items-center py-3 text-white hover:bg-parchment-600 rounded-none"
-            onClick={() => navigate("/inventory")}
-          >
-            <Backpack size={20} />
-            <span className="text-xs mt-1 font-serif">Inventory</span>
+            <Target className="mr-2" size={20} />
+            Set New Goal
           </Button>
         </div>
       </div>
