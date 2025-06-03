@@ -27,7 +27,7 @@ const DiceRoller = ({ sides, modifier = 0, label, onRoll, disabled }: DiceRoller
       setLastRoll({ roll, result });
       setIsRolling(false);
       onRoll(result, roll);
-    }, 1000);
+    }, 800);
   };
 
   return (
@@ -35,7 +35,7 @@ const DiceRoller = ({ sides, modifier = 0, label, onRoll, disabled }: DiceRoller
       <Button
         onClick={handleRoll}
         disabled={disabled || isRolling}
-        className="bg-amber-600 hover:bg-amber-700 flex items-center gap-2"
+        className="bg-parchment-600 hover:bg-parchment-700 text-parchment-50 border-2 border-parchment-800 rounded-xl font-serif flex items-center gap-2"
       >
         <Dices size={16} />
         {isRolling ? "Rolling..." : label}
@@ -43,10 +43,10 @@ const DiceRoller = ({ sides, modifier = 0, label, onRoll, disabled }: DiceRoller
       
       {lastRoll && (
         <div className="text-center">
-          <div className="text-2xl font-bold text-amber-400">
+          <div className="text-2xl font-bold text-parchment-800 font-serif">
             {lastRoll.roll}
           </div>
-          <div className="text-xs text-stone-300">
+          <div className="text-xs text-parchment-700 font-serif">
             d{sides} + {modifier} = {lastRoll.result}
           </div>
         </div>

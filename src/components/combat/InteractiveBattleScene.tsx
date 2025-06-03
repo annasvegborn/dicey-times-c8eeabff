@@ -2,8 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import { Shield, Sword, Zap, Brain } from "lucide-react";
-import DiceRoller from "./DiceRoller";
+import { Shield, Sword, Zap, Brain, Heart, Target } from "lucide-react";
 
 type BattleProps = {
   enemyName: string;
@@ -12,244 +11,200 @@ type BattleProps = {
   onDefeat: () => void;
 }
 
-type BattlePhase = "initiative" | "player-attack" | "enemy-turn" | "player-defense" | "victory" | "defeat";
+type BattlePhase = "combat" | "victory" | "defeat";
 
 const InteractiveBattleScene = ({ enemyName, enemyImage, onVictory, onDefeat }: BattleProps) => {
-  const [phase, setPhase] = useState<BattlePhase>("initiative");
+  const [phase, setPhase] = useState<BattlePhase>("combat");
   const [playerHealth, setPlayerHealth] = useState(100);
   const [enemyHealth, setEnemyHealth] = useState(100);
-  const [log, setLog] = useState<string[]>(["Battle begins! Roll for initiative!"]);
-  const [playerWonInitiative, setPlayerWonInitiative] = useState<boolean | null>(null);
-  const [pendingAttack, setPendingAttack] = useState<"heavy" | "quick" | null>(null);
+  const [log, setLog] = useState<string[]>([`Battle begins against ${enemyName}!`]);
+  const [roundCount, setRoundCount] = useState(1);
   
   const addLogMessage = (message: string) => {
-    setLog(prev => [...prev, message]);
+    setLog(prev => [...prev.slice(-2), message]);
   };
   
-  const handleInitiativeRoll = (result: number, roll: number) => {
-    const enemyRoll = Math.floor(Math.random() * 20) + 1;
-    const enemyResult = enemyRoll + 1; // Enemy DEX modifier
+  const rollDice = (sides: number) => Math.floor(Math.random() * sides) + 1;
+  
+  const executeAction = (actionType: "attack" | "defend" | "special" | "heal") => {
+    let playerDamage = 0;
+    let playerHealing = 0;
+    let enemyDamage = rollDice(12) + 5; // Enemy always attacks back
     
-    if (result >= enemyResult) {
-      setPlayerWonInitiative(true);
-      addLogMessage(`You rolled ${roll}+2=${result} vs enemy's ${enemyRoll}+1=${enemyResult}. You go first!`);
-      setTimeout(() => setPhase("player-attack"), 1500);
-    } else {
-      setPlayerWonInitiative(false);
-      addLogMessage(`You rolled ${roll}+2=${result} vs enemy's ${enemyRoll}+1=${enemyResult}. Enemy goes first!`);
-      setTimeout(() => handleEnemyAttack(), 1500);
+    // Player action
+    switch (actionType) {
+      case "attack":
+        playerDamage = rollDice(20) + 10;
+        addLogMessage(`You strike for ${playerDamage} damage!`);
+        break;
+      case "defend":
+        enemyDamage = Math.max(1, enemyDamage - 8);
+        addLogMessage(`You defend, reducing incoming damage!`);
+        break;
+      case "special":
+        if (rollDice(20) > 10) {
+          playerDamage = rollDice(25) + 15;
+          addLogMessage(`Critical hit! You deal ${playerDamage} damage!`);
+        } else {
+          addLogMessage(`Your special attack misses!`);
+        }
+        break;
+      case "heal":
+        playerHealing = rollDice(15) + 10;
+        addLogMessage(`You recover ${playerHealing} health!`);
+        enemyDamage = Math.floor(enemyDamage * 1.5); // Enemy hits harder when you heal
+        break;
     }
-  };
-  
-  const handleAttackChoice = (attackType: "heavy" | "quick") => {
-    setPendingAttack(attackType);
-    addLogMessage(`You prepare a ${attackType === "heavy" ? "Heavy Strike" : "Quick Jab"}. Roll for attack!`);
-  };
-  
-  const handleAttackRoll = (result: number, roll: number) => {
-    if (!pendingAttack) return;
     
-    // Simple hit/miss system - need 8+ to hit
-    if (result >= 8) {
-      let damage;
-      if (pendingAttack === "heavy") {
-        damage = Math.floor(Math.random() * 8) + 1 + 3; // 1d8+3
-        addLogMessage(`Hit! Your heavy strike deals ${damage} damage!`);
-      } else {
-        damage = Math.floor(Math.random() * 6) + 1 + 2; // 1d6+2
-        addLogMessage(`Hit! Your quick jab deals ${damage} damage!`);
-      }
-      
-      const newEnemyHealth = Math.max(0, enemyHealth - damage);
-      setEnemyHealth(newEnemyHealth);
-      
+    // Apply damage and healing
+    const newEnemyHealth = Math.max(0, enemyHealth - playerDamage);
+    const newPlayerHealth = Math.min(100, Math.max(0, playerHealth + playerHealing - enemyDamage));
+    
+    setEnemyHealth(newEnemyHealth);
+    setPlayerHealth(newPlayerHealth);
+    
+    // Enemy counterattack message
+    if (newEnemyHealth > 0) {
+      addLogMessage(`${enemyName} retaliates for ${enemyDamage} damage!`);
+    }
+    
+    // Check win/lose conditions
+    setTimeout(() => {
       if (newEnemyHealth <= 0) {
-        addLogMessage(`You defeated the ${enemyName}!`);
+        addLogMessage(`Victory! You defeated ${enemyName}!`);
         setPhase("victory");
         setTimeout(() => onVictory(), 2000);
-        return;
-      }
-    } else {
-      addLogMessage(`Miss! Your attack fails to connect.`);
-    }
-    
-    setPendingAttack(null);
-    setTimeout(() => handleEnemyAttack(), 1500);
-  };
-  
-  const handleEnemyAttack = () => {
-    setPhase("enemy-turn");
-    addLogMessage(`${enemyName} attacks!`);
-    
-    setTimeout(() => {
-      const damage = Math.floor(Math.random() * 6) + 1 + 1; // 1d6+1
-      addLogMessage(`${enemyName} deals ${damage} damage!`);
-      
-      const newPlayerHealth = Math.max(0, playerHealth - damage);
-      setPlayerHealth(newPlayerHealth);
-      
-      if (newPlayerHealth <= 0) {
-        addLogMessage(`You were defeated!`);
+      } else if (newPlayerHealth <= 0) {
+        addLogMessage(`Defeat! ${enemyName} has bested you!`);
         setPhase("defeat");
         setTimeout(() => onDefeat(), 2000);
-        return;
+      } else {
+        setRoundCount(prev => prev + 1);
       }
-      
-      setTimeout(() => setPhase("player-defense"), 1000);
-    }, 1000);
-  };
-  
-  const handleDefenseChoice = (defenseType: "block" | "counter") => {
-    if (defenseType === "block") {
-      addLogMessage("You raise your shield and prepare for the next round!");
-    } else {
-      addLogMessage("You study your opponent, looking for an opening to counter!");
-    }
-    
-    setTimeout(() => setPhase("player-attack"), 1500);
+    }, 1500);
   };
 
   return (
-    <div className="max-w-md mx-auto bg-stone-900 rounded-lg p-4 border-2 border-amber-700 text-stone-100">
+    <div className="max-w-md mx-auto bg-parchment-50 rounded-3xl p-6 border-4 border-parchment-800 text-parchment-900 shadow-2xl">
+      {/* Health bars */}
       <div className="flex justify-between mb-6">
         <div>
-          <div className="text-amber-400 font-medium">You</div>
-          <div className="w-24 h-3 bg-gray-700 rounded-full mt-1">
+          <div className="text-parchment-800 font-serif font-bold">Hero</div>
+          <div className="w-24 h-4 bg-parchment-200 rounded-full mt-1 border-2 border-parchment-700">
             <div 
-              className="h-full bg-green-600 rounded-full" 
+              className="h-full bg-green-600 rounded-full transition-all duration-500" 
               style={{ width: `${playerHealth}%` }}
             ></div>
           </div>
-          <div className="text-xs text-green-400 mt-1">{playerHealth}/100</div>
+          <div className="text-xs text-parchment-700 mt-1 font-serif">{playerHealth}/100</div>
         </div>
         
-        <div className="text-xl">⚔️</div>
+        <div className="text-2xl">⚔️</div>
         
         <div className="text-right">
-          <div className="text-red-400 font-medium">{enemyName}</div>
-          <div className="w-24 h-3 bg-gray-700 rounded-full mt-1 ml-auto">
+          <div className="text-parchment-800 font-serif font-bold">{enemyName}</div>
+          <div className="w-24 h-4 bg-parchment-200 rounded-full mt-1 ml-auto border-2 border-parchment-700">
             <div 
-              className="h-full bg-red-600 rounded-full" 
+              className="h-full bg-red-600 rounded-full transition-all duration-500" 
               style={{ width: `${enemyHealth}%` }}
             ></div>
           </div>
-          <div className="text-xs text-red-400 mt-1">{enemyHealth}/100</div>
+          <div className="text-xs text-parchment-700 mt-1 font-serif">{enemyHealth}/100</div>
         </div>
       </div>
       
+      {/* Enemy display */}
       <div className="flex justify-center mb-6">
-        <div className="text-5xl">{enemyImage}</div>
+        <div className="text-6xl bg-parchment-100 rounded-full p-4 border-3 border-parchment-600">
+          {enemyImage}
+        </div>
       </div>
       
-      <div className="bg-stone-800 border border-amber-900 rounded-lg p-3 mb-6 h-32 overflow-y-auto">
+      {/* Combat log */}
+      <div className="bg-parchment-100 border-3 border-parchment-600 rounded-2xl p-4 mb-6 h-24 overflow-y-auto">
         {log.map((message, index) => (
-          <div key={index} className="text-sm mb-1">
+          <div key={index} className="text-sm mb-1 font-serif text-parchment-800">
             {message}
           </div>
         ))}
       </div>
       
-      <div className="mb-4">
-        <div className="text-center text-amber-400 font-medium mb-4">
-          {phase === "initiative" && "Roll for Initiative"}
-          {phase === "player-attack" && "Your Attack"}
-          {phase === "enemy-turn" && "Enemy Turn"}
-          {phase === "player-defense" && "Choose Defense"}
-          {(phase === "victory" || phase === "defeat") && "Battle Complete"}
-        </div>
-        
-        {phase === "initiative" && (
-          <div className="flex justify-center">
-            <DiceRoller
-              sides={20}
-              modifier={2}
-              label="Roll Initiative (d20+2)"
-              onRoll={handleInitiativeRoll}
-            />
-          </div>
-        )}
-        
-        {phase === "player-attack" && !pendingAttack && (
-          <div className="grid grid-cols-2 gap-3">
-            <HoverCard>
-              <HoverCardTrigger asChild>
-                <Button 
-                  className="bg-red-700 hover:bg-red-800 flex items-center gap-2"
-                  onClick={() => handleAttackChoice("heavy")}
-                >
-                  <Sword size={16} /> Heavy Strike
-                </Button>
-              </HoverCardTrigger>
-              <HoverCardContent className="w-64 bg-stone-800 text-stone-100 border-amber-900">
-                <p className="text-sm">A powerful attack using your Strength. Deals 1d8+3 damage. Needs 8+ to hit.</p>
-              </HoverCardContent>
-            </HoverCard>
-            
-            <HoverCard>
-              <HoverCardTrigger asChild>
-                <Button 
-                  className="bg-blue-700 hover:bg-blue-800 flex items-center gap-2"
-                  onClick={() => handleAttackChoice("quick")}
-                >
-                  <Zap size={16} /> Quick Jab
-                </Button>
-              </HoverCardTrigger>
-              <HoverCardContent className="w-64 bg-stone-800 text-stone-100 border-amber-900">
-                <p className="text-sm">A fast attack using your Dexterity. Deals 1d6+2 damage. Needs 8+ to hit.</p>
-              </HoverCardContent>
-            </HoverCard>
-          </div>
-        )}
-        
-        {phase === "player-attack" && pendingAttack && (
-          <div className="flex justify-center">
-            <DiceRoller
-              sides={20}
-              modifier={pendingAttack === "heavy" ? 3 : 2}
-              label={`Roll Attack (d20+${pendingAttack === "heavy" ? 3 : 2})`}
-              onRoll={handleAttackRoll}
-            />
-          </div>
-        )}
-        
-        {phase === "enemy-turn" && (
-          <div className="text-center text-stone-300">
-            <div className="animate-pulse">Enemy is attacking...</div>
-          </div>
-        )}
-        
-        {phase === "player-defense" && (
-          <div className="grid grid-cols-2 gap-3">
-            <HoverCard>
-              <HoverCardTrigger asChild>
-                <Button 
-                  className="bg-amber-600 hover:bg-amber-700 flex items-center gap-2"
-                  onClick={() => handleDefenseChoice("block")}
-                >
-                  <Shield size={16} /> Prepare Defense
-                </Button>
-              </HoverCardTrigger>
-              <HoverCardContent className="w-64 bg-stone-800 text-stone-100 border-amber-900">
-                <p className="text-sm">Ready yourself for the next round of combat.</p>
-              </HoverCardContent>
-            </HoverCard>
-            
-            <HoverCard>
-              <HoverCardTrigger asChild>
-                <Button 
-                  className="bg-purple-700 hover:bg-purple-800 flex items-center gap-2"
-                  onClick={() => handleDefenseChoice("counter")}
-                >
-                  <Brain size={16} /> Study Enemy
-                </Button>
-              </HoverCardTrigger>
-              <HoverCardContent className="w-64 bg-stone-800 text-stone-100 border-amber-900">
-                <p className="text-sm">Analyze your opponent's fighting style for the next attack.</p>
-              </HoverCardContent>
-            </HoverCard>
-          </div>
-        )}
+      {/* Round counter */}
+      <div className="text-center text-parchment-700 font-serif font-bold mb-4">
+        Round {roundCount}
       </div>
+      
+      {/* Action buttons */}
+      {phase === "combat" && (
+        <div className="grid grid-cols-2 gap-3">
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <Button 
+                className="bg-parchment-600 hover:bg-parchment-700 text-parchment-50 border-2 border-parchment-800 rounded-xl font-serif flex items-center gap-2"
+                onClick={() => executeAction("attack")}
+              >
+                <Sword size={16} /> Attack
+              </Button>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-64 bg-parchment-100 text-parchment-800 border-parchment-700 font-serif">
+              <p className="text-sm">A reliable strike. Deals 1d20+10 damage.</p>
+            </HoverCardContent>
+          </HoverCard>
+          
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <Button 
+                className="bg-parchment-600 hover:bg-parchment-700 text-parchment-50 border-2 border-parchment-800 rounded-xl font-serif flex items-center gap-2"
+                onClick={() => executeAction("defend")}
+              >
+                <Shield size={16} /> Defend
+              </Button>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-64 bg-parchment-100 text-parchment-800 border-parchment-700 font-serif">
+              <p className="text-sm">Reduce incoming damage by 8 points.</p>
+            </HoverCardContent>
+          </HoverCard>
+          
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <Button 
+                className="bg-parchment-700 hover:bg-parchment-800 text-parchment-50 border-2 border-parchment-900 rounded-xl font-serif flex items-center gap-2"
+                onClick={() => executeAction("special")}
+              >
+                <Target size={16} /> Special
+              </Button>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-64 bg-parchment-100 text-parchment-800 border-parchment-700 font-serif">
+              <p className="text-sm">Risky but powerful! 50% chance for 1d25+15 damage.</p>
+            </HoverCardContent>
+          </HoverCard>
+          
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <Button 
+                className="bg-green-700 hover:bg-green-800 text-parchment-50 border-2 border-parchment-800 rounded-xl font-serif flex items-center gap-2"
+                onClick={() => executeAction("heal")}
+              >
+                <Heart size={16} /> Heal
+              </Button>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-64 bg-parchment-100 text-parchment-800 border-parchment-700 font-serif">
+              <p className="text-sm">Restore 1d15+10 health, but enemy attacks harder!</p>
+            </HoverCardContent>
+          </HoverCard>
+        </div>
+      )}
+      
+      {(phase === "victory" || phase === "defeat") && (
+        <div className="text-center">
+          <div className={`text-2xl font-serif font-bold ${phase === "victory" ? "text-green-700" : "text-red-700"}`}>
+            {phase === "victory" ? "Victory!" : "Defeat!"}
+          </div>
+          <div className="text-parchment-700 font-serif mt-2">
+            {phase === "victory" ? "Returning to quest..." : "Try again when you're stronger..."}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
