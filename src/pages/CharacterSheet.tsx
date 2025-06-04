@@ -48,7 +48,7 @@ const CharacterSheet = () => {
           <h2 className="text-[#422e18] text-xl font-serif mb-4">No character found</h2>
           <Button 
             onClick={() => navigate("/character-creation")}
-            className="bg-[#997752] hover:bg-[#422e18] text-[#ecd4ab] border-2 border-[#422e18] rounded-xl font-serif"
+            className="bg-[#997752] hover:bg-[#422e18] text-[#ecd4ab] rounded-xl font-serif shadow-lg hover:shadow-xl transition-shadow"
           >
             Create Character
           </Button>
@@ -60,13 +60,13 @@ const CharacterSheet = () => {
   return (
     <div className="min-h-screen bg-[#ecd4ab] pb-20">
       {/* Header */}
-      <div className="bg-[#422e18] text-[#ecd4ab] px-4 py-3 flex items-center justify-between">
+      <div className="bg-[#422e18] text-[#ecd4ab] px-4 py-3 flex items-center justify-between shadow-lg">
         <h1 className="text-xl font-bold font-serif">Character Sheet</h1>
         <Button
           variant="ghost"
           size="icon"
           onClick={handleSignOut}
-          className="text-[#ecd4ab] hover:bg-[#997752]"
+          className="text-[#ecd4ab] hover:bg-[#997752] rounded-xl"
         >
           <LogOut size={20} />
         </Button>
@@ -74,9 +74,9 @@ const CharacterSheet = () => {
 
       {/* Character Overview */}
       <div className="p-4">
-        <div className="bg-[#ecd4ab] rounded-3xl p-6 border-4 border-[#422e18] mb-4 shadow-2xl">
+        <div className="bg-[#ecd4ab] rounded-3xl p-6 mb-4 shadow-xl">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-20 h-20 bg-[#997752] rounded-full border-4 border-[#422e18] flex items-center justify-center overflow-hidden">
+            <div className="w-20 h-20 bg-[#997752] rounded-full flex items-center justify-center overflow-hidden shadow-lg">
               <CharacterRenderer 
                 race={character.avatar_race || character.race}
                 bodyShape={character.avatar_body_shape || 'medium'}
@@ -90,7 +90,7 @@ const CharacterSheet = () => {
               <h2 className="text-2xl font-bold text-[#422e18] font-serif">{character.name}</h2>
               <p className="text-[#997752] capitalize font-serif">{character.class} • Level {character.level}</p>
               <div className="flex gap-2 mt-1">
-                <Badge className="bg-[#997752] text-[#ecd4ab] font-serif">{character.race}</Badge>
+                <Badge className="bg-[#997752] text-[#ecd4ab] font-serif shadow-md">{character.race}</Badge>
               </div>
             </div>
           </div>
@@ -103,19 +103,19 @@ const CharacterSheet = () => {
             </div>
             <Progress 
               value={(character.xp / character.xp_to_next_level) * 100} 
-              className="h-3 bg-[#997752]"
+              className="h-3 bg-[#997752] shadow-inner"
             />
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex bg-[#997752] rounded-3xl p-1 mb-4 border-4 border-[#422e18]">
+        <div className="flex bg-[#997752] rounded-3xl p-1 mb-4 shadow-lg">
           <Button
             variant={activeTab === "stats" ? "default" : "ghost"}
             onClick={() => setActiveTab("stats")}
             className={`flex-1 font-serif rounded-2xl ${
               activeTab === "stats" 
-                ? "bg-[#422e18] text-[#ecd4ab]" 
+                ? "bg-[#422e18] text-[#ecd4ab] shadow-md" 
                 : "text-[#ecd4ab] hover:bg-[#422e18]"
             }`}
           >
@@ -126,7 +126,7 @@ const CharacterSheet = () => {
             onClick={() => setActiveTab("equipment")}
             className={`flex-1 font-serif rounded-2xl ${
               activeTab === "equipment" 
-                ? "bg-[#422e18] text-[#ecd4ab]" 
+                ? "bg-[#422e18] text-[#ecd4ab] shadow-md" 
                 : "text-[#ecd4ab] hover:bg-[#422e18]"
             }`}
           >
@@ -136,7 +136,7 @@ const CharacterSheet = () => {
 
         {/* Tab Content */}
         {activeTab === "stats" && (
-          <div className="bg-[#ecd4ab] rounded-3xl p-6 border-4 border-[#422e18] mb-4 shadow-2xl">
+          <div className="bg-[#ecd4ab] rounded-3xl p-6 mb-4 shadow-xl">
             <h3 className="text-[#422e18] font-serif font-bold mb-4">Character Stats</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex items-center gap-2">
@@ -186,7 +186,7 @@ const CharacterSheet = () => {
         )}
 
         {activeTab === "equipment" && (
-          <div className="bg-[#ecd4ab] rounded-3xl p-6 border-4 border-[#422e18] mb-4 shadow-2xl">
+          <div className="bg-[#ecd4ab] rounded-3xl p-6 mb-4 shadow-xl">
             <h3 className="text-[#422e18] font-serif font-bold mb-4">Equipment</h3>
             <div className="text-center text-[#997752] font-serif">
               No equipment yet. Complete quests to earn gear!
@@ -196,13 +196,13 @@ const CharacterSheet = () => {
       </div>
 
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-[#422e18] border-t-4 border-[#997752] p-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-[#422e18] p-4 shadow-2xl">
         <div className="flex justify-around max-w-md mx-auto">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => navigate("/world-map")}
-            className="flex flex-col items-center gap-1 text-[#ecd4ab] hover:bg-[#997752] font-serif"
+            className="flex flex-col items-center gap-1 text-[#ecd4ab] hover:bg-[#997752] font-serif rounded-xl"
           >
             <MapPin size={20} />
             <span className="text-xs">Map</span>
@@ -211,7 +211,7 @@ const CharacterSheet = () => {
             variant="ghost"
             size="sm"
             onClick={() => navigate("/quests")}
-            className="flex flex-col items-center gap-1 text-[#ecd4ab] hover:bg-[#997752] font-serif"
+            className="flex flex-col items-center gap-1 text-[#ecd4ab] hover:bg-[#997752] font-serif rounded-xl"
           >
             <Scroll size={20} />
             <span className="text-xs">Quests</span>
@@ -220,7 +220,7 @@ const CharacterSheet = () => {
             variant="ghost"
             size="sm"
             onClick={() => navigate("/inventory")}
-            className="flex flex-col items-center gap-1 text-[#ecd4ab] hover:bg-[#997752] font-serif"
+            className="flex flex-col items-center gap-1 text-[#ecd4ab] hover:bg-[#997752] font-serif rounded-xl"
           >
             <Package size={20} />
             <span className="text-xs">Inventory</span>
@@ -229,7 +229,7 @@ const CharacterSheet = () => {
             variant="ghost"
             size="sm"
             onClick={() => navigate("/step-tracker")}
-            className="flex flex-col items-center gap-1 text-[#ecd4ab] hover:bg-[#997752] font-serif"
+            className="flex flex-col items-center gap-1 text-[#ecd4ab] hover:bg-[#997752] font-serif rounded-xl"
           >
             <Settings size={20} />
             <span className="text-xs">Tracker</span>

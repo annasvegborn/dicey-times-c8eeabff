@@ -63,7 +63,7 @@ const CharacterCustomizationSheet = ({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 min-h-0">
         {/* Left column - Character Preview */}
         <div className="flex justify-center items-start p-4">
-          <div className="bg-parchment-50 rounded-3xl border-4 border-parchment-500 p-6 shadow-xl">
+          <div className="bg-parchment-50 rounded-3xl p-6 shadow-xl">
             <CharacterRenderer
               race={appearance.race}
               bodyShape={appearance.bodyShape}
@@ -92,10 +92,10 @@ const CharacterCustomizationSheet = ({
                     <Button
                       key={race.id}
                       variant={appearance.race === race.id ? "default" : "outline"}
-                      className={`flex items-center gap-2 h-12 font-serif text-base rounded-2xl border-2 ${
+                      className={`flex items-center gap-2 h-12 font-serif text-base rounded-2xl shadow-md hover:shadow-lg transition-shadow ${
                         appearance.race === race.id 
-                          ? "bg-parchment-500 text-parchment-50 border-parchment-700" 
-                          : "bg-parchment-50 text-parchment-700 border-parchment-400 hover:bg-parchment-200"
+                          ? "bg-parchment-500 text-parchment-50" 
+                          : "bg-parchment-50 text-parchment-700 hover:bg-parchment-200"
                       }`}
                       onClick={() => handleChange('race', race.id)}
                     >
@@ -114,10 +114,10 @@ const CharacterCustomizationSheet = ({
                     <Button
                       key={tone}
                       variant={appearance.skinTone === tone ? "default" : "outline"}
-                      className={`h-10 capitalize font-serif rounded-2xl border-2 ${
+                      className={`h-10 capitalize font-serif rounded-2xl shadow-md hover:shadow-lg transition-shadow ${
                         appearance.skinTone === tone 
-                          ? "bg-parchment-500 text-parchment-50 border-parchment-700" 
-                          : "bg-parchment-50 text-parchment-700 border-parchment-400 hover:bg-parchment-200"
+                          ? "bg-parchment-500 text-parchment-50" 
+                          : "bg-parchment-50 text-parchment-700 hover:bg-parchment-200"
                       }`}
                       onClick={() => handleChange('skinTone', tone)}
                     >
@@ -138,10 +138,10 @@ const CharacterCustomizationSheet = ({
                     <Button
                       key={hair.id}
                       variant={appearance.hairStyle === hair.id ? "default" : "outline"}
-                      className={`flex items-center gap-2 h-12 font-serif text-base rounded-2xl border-2 ${
+                      className={`flex items-center gap-2 h-12 font-serif text-base rounded-2xl shadow-md hover:shadow-lg transition-shadow ${
                         appearance.hairStyle === hair.id 
-                          ? "bg-parchment-500 text-parchment-50 border-parchment-700" 
-                          : "bg-parchment-50 text-parchment-700 border-parchment-400 hover:bg-parchment-200"
+                          ? "bg-parchment-500 text-parchment-50" 
+                          : "bg-parchment-50 text-parchment-700 hover:bg-parchment-200"
                       }`}
                       onClick={() => handleChange('hairStyle', hair.id)}
                     >
@@ -165,10 +165,10 @@ const CharacterCustomizationSheet = ({
                     <Button
                       key={shape.id}
                       variant={appearance.bodyShape === shape.id ? "default" : "outline"}
-                      className={`flex items-center gap-2 h-12 font-serif text-base rounded-2xl border-2 ${
+                      className={`flex items-center gap-2 h-12 font-serif text-base rounded-2xl shadow-md hover:shadow-lg transition-shadow ${
                         appearance.bodyShape === shape.id 
-                          ? "bg-parchment-500 text-parchment-50 border-parchment-700" 
-                          : "bg-parchment-50 text-parchment-700 border-parchment-400 hover:bg-parchment-200"
+                          ? "bg-parchment-500 text-parchment-50" 
+                          : "bg-parchment-50 text-parchment-700 hover:bg-parchment-200"
                       }`}
                       onClick={() => handleChange('bodyShape', shape.id)}
                     >
@@ -184,17 +184,17 @@ const CharacterCustomizationSheet = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex gap-4 p-4 border-t-4 border-parchment-500 bg-parchment-50">
+      <div className="flex gap-4 p-4 bg-parchment-50 shadow-lg">
         <Button 
           variant="outline" 
           onClick={onCancel} 
-          className="flex-1 font-serif text-lg py-3 rounded-2xl border-2 border-parchment-400 text-parchment-700 hover:bg-parchment-200"
+          className="flex-1 font-serif text-lg py-3 rounded-2xl text-parchment-700 hover:bg-parchment-200 shadow-md hover:shadow-lg transition-shadow"
         >
           Cancel
         </Button>
         <Button 
           onClick={handleSave} 
-          className="flex-1 bg-parchment-500 hover:bg-parchment-600 text-parchment-50 font-serif text-lg py-3 rounded-2xl border-2 border-parchment-700"
+          className="flex-1 bg-parchment-500 hover:bg-parchment-600 text-parchment-50 font-serif text-lg py-3 rounded-2xl shadow-lg hover:shadow-xl transition-shadow"
         >
           Save Changes
         </Button>
