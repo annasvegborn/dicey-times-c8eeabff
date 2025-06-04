@@ -25,14 +25,14 @@ const StepTracker = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#ecd4ab]">
+    <div className="min-h-screen bg-parchment-50">
       {/* Header */}
-      <div className="bg-[#422e18] text-[#ecd4ab] px-4 py-3 flex items-center shadow-lg">
+      <div className="bg-gradient-to-r from-slate-700 to-slate-800 text-white px-4 py-4 flex items-center shadow-lg">
         <Button 
           variant="ghost" 
           size="icon"
           onClick={() => navigate("/character-sheet")}
-          className="text-[#ecd4ab] hover:bg-[#997752] mr-2 rounded-xl"
+          className="text-white hover:bg-slate-600 mr-2 rounded-xl"
         >
           <ArrowLeft size={20} />
         </Button>
@@ -41,59 +41,59 @@ const StepTracker = () => {
 
       <div className="p-4 space-y-4">
         {/* Today's Steps */}
-        <div className="bg-[#ecd4ab] rounded-3xl p-6 shadow-xl">
+        <div className="bg-white rounded-2xl p-6 shadow-lg">
           <div className="flex items-center gap-3 mb-4">
-            <Activity className="text-[#997752]" size={24} />
-            <h2 className="text-xl font-bold text-[#422e18] font-serif">Today's Steps</h2>
+            <Activity className="text-parchment-600" size={24} />
+            <h2 className="text-xl font-bold text-parchment-800 font-serif">Today's Steps</h2>
           </div>
           
           <div className="text-center mb-4">
-            <div className="text-4xl font-bold text-[#422e18] font-serif">{todaySteps.toLocaleString()}</div>
-            <div className="text-[#997752] font-serif">of {todayGoal.toLocaleString()} goal</div>
+            <div className="text-4xl font-bold text-parchment-800 font-serif">{todaySteps.toLocaleString()}</div>
+            <div className="text-parchment-600 font-serif">of {todayGoal.toLocaleString()} goal</div>
           </div>
 
           <Progress value={dailyProgress} className="h-4 mb-2 shadow-inner" />
-          <div className="text-center text-[#997752] font-serif">{dailyProgress.toFixed(1)}% complete</div>
+          <div className="text-center text-parchment-600 font-serif">{dailyProgress.toFixed(1)}% complete</div>
         </div>
 
         {/* Weekly Progress */}
-        <div className="bg-[#ecd4ab] rounded-3xl p-6 shadow-xl">
+        <div className="bg-white rounded-2xl p-6 shadow-lg">
           <div className="flex items-center gap-3 mb-4">
-            <Calendar className="text-[#997752]" size={24} />
-            <h2 className="text-xl font-bold text-[#422e18] font-serif">This Week</h2>
+            <Calendar className="text-parchment-600" size={24} />
+            <h2 className="text-xl font-bold text-parchment-800 font-serif">This Week</h2>
           </div>
           
           <div className="text-center mb-4">
-            <div className="text-2xl font-bold text-[#422e18] font-serif">{weeklySteps.toLocaleString()}</div>
-            <div className="text-[#997752] font-serif">of {weeklyGoal.toLocaleString()} weekly goal</div>
+            <div className="text-2xl font-bold text-parchment-800 font-serif">{weeklySteps.toLocaleString()}</div>
+            <div className="text-parchment-600 font-serif">of {weeklyGoal.toLocaleString()} weekly goal</div>
           </div>
 
           <Progress value={weeklyProgress} className="h-4 mb-2 shadow-inner" />
-          <div className="text-center text-[#997752] font-serif">{weeklyProgress.toFixed(1)}% complete</div>
+          <div className="text-center text-parchment-600 font-serif">{weeklyProgress.toFixed(1)}% complete</div>
         </div>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="bg-[#ecd4ab] rounded-3xl p-4 shadow-xl text-center">
-            <div className="text-2xl font-bold text-[#422e18] font-serif">2.1</div>
-            <div className="text-[#997752] text-sm font-serif">Miles Today</div>
+          <div className="bg-white rounded-2xl p-4 shadow-lg text-center">
+            <div className="text-2xl font-bold text-parchment-800 font-serif">2.1</div>
+            <div className="text-parchment-600 text-sm font-serif">Miles Today</div>
           </div>
-          <div className="bg-[#ecd4ab] rounded-3xl p-4 shadow-xl text-center">
-            <div className="text-2xl font-bold text-[#422e18] font-serif">247</div>
-            <div className="text-[#997752] text-sm font-serif">Calories Burned</div>
+          <div className="bg-white rounded-2xl p-4 shadow-lg text-center">
+            <div className="text-2xl font-bold text-parchment-800 font-serif">247</div>
+            <div className="text-parchment-600 text-sm font-serif">Calories Burned</div>
           </div>
         </div>
 
         {/* Achievements */}
-        <div className="bg-[#ecd4ab] rounded-3xl p-6 shadow-xl">
+        <div className="bg-white rounded-2xl p-6 shadow-lg">
           <div className="flex items-center gap-3 mb-4">
-            <Trophy className="text-[#997752]" size={24} />
-            <h2 className="text-xl font-bold text-[#422e18] font-serif">Achievements</h2>
+            <Trophy className="text-parchment-600" size={24} />
+            <h2 className="text-xl font-bold text-parchment-800 font-serif">Achievements</h2>
           </div>
           
           <div className="space-y-3">
             {achievements.map((achievement, index) => (
-              <div key={index} className={`flex items-center gap-3 p-3 rounded-2xl shadow-md ${
+              <div key={index} className={`flex items-center gap-3 p-3 rounded-xl shadow-sm ${
                 achievement.unlocked 
                   ? "bg-green-50" 
                   : "bg-gray-50"
@@ -124,7 +124,7 @@ const StepTracker = () => {
         {/* Action Button */}
         <div className="text-center pt-4">
           <Button 
-            className="bg-[#997752] hover:bg-[#422e18] text-[#ecd4ab] rounded-xl font-serif px-8 py-3 shadow-lg hover:shadow-xl transition-shadow"
+            className="bg-parchment-600 hover:bg-parchment-700 text-white rounded-xl font-serif px-8 py-3 shadow-lg hover:shadow-xl transition-all"
           >
             <Target className="mr-2" size={20} />
             Set New Goal

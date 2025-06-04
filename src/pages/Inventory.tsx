@@ -45,28 +45,28 @@ const Inventory = () => {
       case "rare": return "bg-blue-100 text-blue-800";
       case "epic": return "bg-purple-100 text-purple-800";
       case "legendary": return "bg-yellow-100 text-yellow-800";
-      default: return "bg-[#997752] text-[#ecd4ab]";
+      default: return "bg-parchment-600 text-white";
     }
   };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case "weapon": return <Sword className="text-[#997752]" size={16} />;
-      case "armor": return <Shield className="text-[#997752]" size={16} />;
-      case "consumable": return <Heart className="text-[#997752]" size={16} />;
-      default: return <Package className="text-[#997752]" size={16} />;
+      case "weapon": return <Sword className="text-parchment-600" size={16} />;
+      case "armor": return <Shield className="text-parchment-600" size={16} />;
+      case "consumable": return <Heart className="text-parchment-600" size={16} />;
+      default: return <Package className="text-parchment-600" size={16} />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#ecd4ab]">
+    <div className="min-h-screen bg-parchment-50">
       {/* Header */}
-      <div className="bg-[#422e18] text-[#ecd4ab] px-4 py-3 flex items-center shadow-lg">
+      <div className="bg-gradient-to-r from-slate-700 to-slate-800 text-white px-4 py-4 flex items-center shadow-lg">
         <Button 
           variant="ghost" 
           size="icon"
           onClick={() => navigate("/character-sheet")}
-          className="text-[#ecd4ab] hover:bg-[#997752] mr-2 rounded-xl"
+          className="text-white hover:bg-slate-600 mr-2 rounded-xl"
         >
           <ArrowLeft size={20} />
         </Button>
@@ -75,13 +75,13 @@ const Inventory = () => {
 
       <div className="p-4">
         {/* Inventory Stats */}
-        <div className="bg-[#ecd4ab] rounded-3xl p-4 mb-4 shadow-xl">
+        <div className="bg-white rounded-2xl p-4 mb-4 shadow-lg">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <Package className="text-[#997752]" size={20} />
-              <span className="text-[#422e18] font-serif font-bold">Items</span>
+              <Package className="text-parchment-600" size={20} />
+              <span className="text-parchment-800 font-serif font-bold">Items</span>
             </div>
-            <span className="text-[#997752] font-serif">{inventoryItems.length}/50</span>
+            <span className="text-parchment-600 font-serif">{inventoryItems.length}/50</span>
           </div>
         </div>
 
@@ -89,22 +89,22 @@ const Inventory = () => {
         {inventoryItems.length > 0 ? (
           <div className="space-y-4">
             {inventoryItems.map((item) => (
-              <div key={item.id} className="bg-[#ecd4ab] rounded-3xl p-6 shadow-xl">
+              <div key={item.id} className="bg-white rounded-2xl p-6 shadow-lg">
                 <div className="flex items-start gap-4">
                   <div className="text-3xl">{item.icon}</div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <h3 className="text-lg font-bold text-[#422e18] font-serif">{item.name}</h3>
+                      <h3 className="text-lg font-bold text-parchment-800 font-serif">{item.name}</h3>
                       {item.quantity > 1 && (
-                        <Badge className="bg-[#997752] text-[#ecd4ab] font-serif shadow-md">
+                        <Badge className="bg-parchment-600 text-white font-serif shadow-sm">
                           x{item.quantity}
                         </Badge>
                       )}
                     </div>
-                    <p className="text-[#997752] mb-3 font-serif">{item.description}</p>
+                    <p className="text-parchment-600 mb-3 font-serif">{item.description}</p>
                     <div className="flex items-center gap-2">
                       {getTypeIcon(item.type)}
-                      <Badge className={`font-serif shadow-md capitalize ${getRarityColor(item.rarity)}`}>
+                      <Badge className={`font-serif shadow-sm capitalize ${getRarityColor(item.rarity)}`}>
                         {item.rarity}
                       </Badge>
                     </div>
@@ -112,14 +112,14 @@ const Inventory = () => {
                   <div className="flex flex-col gap-2">
                     <Button
                       size="sm"
-                      className="bg-[#997752] hover:bg-[#422e18] text-[#ecd4ab] rounded-xl font-serif shadow-lg hover:shadow-xl transition-shadow"
+                      className="bg-parchment-600 hover:bg-parchment-700 text-white rounded-xl font-serif shadow-lg hover:shadow-xl transition-all"
                     >
                       Use
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-[#422e18] hover:bg-[#997752] hover:text-[#ecd4ab] rounded-xl font-serif shadow-md hover:shadow-lg transition-shadow"
+                      className="text-parchment-800 hover:bg-parchment-600 hover:text-white rounded-xl font-serif shadow-sm hover:shadow-lg transition-all"
                     >
                       Drop
                     </Button>
@@ -129,10 +129,10 @@ const Inventory = () => {
             ))}
           </div>
         ) : (
-          <div className="bg-[#ecd4ab] rounded-3xl p-8 shadow-xl text-center">
-            <Package className="mx-auto text-[#997752] mb-4" size={48} />
-            <h3 className="text-xl font-bold text-[#422e18] mb-2 font-serif">Empty Inventory</h3>
-            <p className="text-[#997752] font-serif">Complete quests to earn items and equipment!</p>
+          <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+            <Package className="mx-auto text-parchment-600 mb-4" size={48} />
+            <h3 className="text-xl font-bold text-parchment-800 mb-2 font-serif">Empty Inventory</h3>
+            <p className="text-parchment-600 font-serif">Complete quests to earn items and equipment!</p>
           </div>
         )}
       </div>

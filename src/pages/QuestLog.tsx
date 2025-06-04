@@ -1,58 +1,73 @@
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Clock, Trophy, MapPin } from "lucide-react";
+import { ArrowLeft, Scroll, MapPin, Clock, Sword, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const QuestLog = () => {
   const navigate = useNavigate();
-  const [activeFilter, setActiveFilter] = useState("all");
 
+  // Sample quest data - this would come from your game state
   const quests = [
     {
-      id: "village-siege",
-      title: "Defend Oakvale Village",
-      description: "The village is under attack by bandits. Help defend the innocent villagers.",
+      id: 1,
+      title: "Village Under Siege",
+      description: "Help defend Oakvale Village from goblin raiders",
       status: "active",
-      difficulty: "Medium",
       location: "Oakvale Village",
-      xpReward: 150,
-      timeEstimate: "15-20 min"
-    },
-    {
-      id: "forest-disturbance",
-      title: "Investigate the Forest Disturbance",
-      description: "Strange noises have been coming from Whisperwind Forest. Find the source.",
-      status: "available",
       difficulty: "Easy",
-      location: "Whisperwind Forest",
       xpReward: 100,
-      timeEstimate: "10-15 min"
+      progress: 2,
+      maxProgress: 3,
+      objectives: [
+        { text: "Speak to the Village Elder", completed: true },
+        { text: "Defeat 5 Goblin Raiders", completed: true },
+        { text: "Return to Village Elder", completed: false }
+      ]
     },
     {
-      id: "dragon-peak",
-      title: "Scale Dragon's Peak",
-      description: "A legendary challenge awaits at the highest mountain in the realm.",
-      status: "locked",
-      difficulty: "Hard",
+      id: 2,
+      title: "Forest Disturbance",
+      description: "Investigate strange noises coming from Whisperwind Forest",
+      status: "available",
+      location: "Whisperwind Forest",
+      difficulty: "Medium",
+      xpReward: 250,
+      progress: 0,
+      maxProgress: 4,
+      objectives: [
+        { text: "Enter Whisperwind Forest", completed: false },
+        { text: "Find the source of disturbance", completed: false },
+        { text: "Investigate the ancient ruins", completed: false },
+        { text: "Report back to town", completed: false }
+      ]
+    },
+    {
+      id: 3,
+      title: "The Lost Artifact",
+      description: "A powerful artifact has been stolen from the mage tower",
+      status: "completed",
       location: "Dragon's Peak",
-      xpReward: 300,
-      timeEstimate: "30-45 min"
+      difficulty: "Hard",
+      xpReward: 500,
+      progress: 5,
+      maxProgress: 5,
+      objectives: [
+        { text: "Gather information about the thief", completed: true },
+        { text: "Track the thief to Dragon's Peak", completed: true },
+        { text: "Navigate the mountain caves", completed: true },
+        { text: "Defeat the corrupted mage", completed: true },
+        { text: "Return the artifact", completed: true }
+      ]
     }
   ];
 
-  const filteredQuests = activeFilter === "all" 
-    ? quests 
-    : quests.filter(quest => quest.status === activeFilter);
-
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "active": return "bg-green-500";
-      case "available": return "bg-[#997752]";
-      case "locked": return "bg-gray-400";
-      case "completed": return "bg-blue-500";
-      default: return "bg-[#997752]";
+      case "active": return "bg-blue-100 text-blue-800";
+      case "available": return "bg-green-100 text-green-800";
+      case "completed": return "bg-gray-100 text-gray-800";
+      default: return "bg-parchment-600 text-white";
     }
   };
 
@@ -61,112 +76,147 @@ const QuestLog = () => {
       case "Easy": return "bg-green-100 text-green-800";
       case "Medium": return "bg-yellow-100 text-yellow-800";
       case "Hard": return "bg-red-100 text-red-800";
-      default: return "bg-[#997752] text-[#ecd4ab]";
+      default: return "bg-parchment-600 text-white";
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "active": return <Clock className="text-blue-600" size={16} />;
+      case "available": return <Scroll className="text-green-600" size={16} />;
+      case "completed": return <CheckCircle className="text-gray-600" size={16} />;
+      default: return <Scroll className="text-parchment-600" size={16} />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#ecd4ab]">
+    <div className="min-h-screen bg-parchment-50">
       {/* Header */}
-      <div className="bg-[#422e18] text-[#ecd4ab] px-4 py-3 flex items-center shadow-lg">
+      <div className="bg-gradient-to-r from-slate-700 to-slate-800 text-white px-4 py-4 flex items-center shadow-lg">
         <Button 
           variant="ghost" 
           size="icon"
           onClick={() => navigate("/character-sheet")}
-          className="text-[#ecd4ab] hover:bg-[#997752] mr-2 rounded-xl"
+          className="text-white hover:bg-slate-600 mr-2 rounded-xl"
         >
           <ArrowLeft size={20} />
         </Button>
         <h1 className="text-xl font-bold font-serif">Quest Log</h1>
       </div>
 
-      {/* Filter Tabs */}
       <div className="p-4">
-        <div className="flex bg-[#997752] rounded-3xl p-1 mb-4 shadow-lg">
-          <Button
-            variant={activeFilter === "all" ? "default" : "ghost"}
-            onClick={() => setActiveFilter("all")}
-            className={`flex-1 font-serif rounded-2xl ${
-              activeFilter === "all" 
-                ? "bg-[#422e18] text-[#ecd4ab] shadow-md" 
-                : "text-[#ecd4ab] hover:bg-[#422e18]"
-            }`}
-          >
-            All
-          </Button>
-          <Button
-            variant={activeFilter === "active" ? "default" : "ghost"}
-            onClick={() => setActiveFilter("active")}
-            className={`flex-1 font-serif rounded-2xl ${
-              activeFilter === "active" 
-                ? "bg-[#422e18] text-[#ecd4ab] shadow-md" 
-                : "text-[#ecd4ab] hover:bg-[#422e18]"
-            }`}
-          >
-            Active
-          </Button>
-          <Button
-            variant={activeFilter === "available" ? "default" : "ghost"}
-            onClick={() => setActiveFilter("available")}
-            className={`flex-1 font-serif rounded-2xl ${
-              activeFilter === "available" 
-                ? "bg-[#422e18] text-[#ecd4ab] shadow-md" 
-                : "text-[#ecd4ab] hover:bg-[#422e18]"
-            }`}
-          >
-            Available
-          </Button>
+        {/* Quest Summary */}
+        <div className="bg-white rounded-2xl p-4 mb-4 shadow-lg">
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div>
+              <div className="text-2xl font-bold text-parchment-800 font-serif">
+                {quests.filter(q => q.status === "active").length}
+              </div>
+              <div className="text-parchment-600 text-sm font-serif">Active</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-parchment-800 font-serif">
+                {quests.filter(q => q.status === "available").length}
+              </div>
+              <div className="text-parchment-600 text-sm font-serif">Available</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-parchment-800 font-serif">
+                {quests.filter(q => q.status === "completed").length}
+              </div>
+              <div className="text-parchment-600 text-sm font-serif">Completed</div>
+            </div>
+          </div>
         </div>
 
         {/* Quest List */}
         <div className="space-y-4">
-          {filteredQuests.map((quest) => (
-            <div key={quest.id} className="bg-[#ecd4ab] rounded-3xl p-6 shadow-xl">
-              <div className="flex justify-between items-start mb-3">
+          {quests.map((quest) => (
+            <div key={quest.id} className="bg-white rounded-2xl p-6 shadow-lg">
+              <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
+                  <h3 className="text-lg font-bold text-parchment-800 font-serif mb-1">{quest.title}</h3>
+                  <p className="text-parchment-600 text-sm font-serif mb-2">{quest.description}</p>
                   <div className="flex items-center gap-2 mb-2">
-                    <h3 className="text-lg font-bold text-[#422e18] font-serif">{quest.title}</h3>
-                    <div className={`w-3 h-3 rounded-full ${getStatusColor(quest.status)} shadow-sm`}></div>
+                    <MapPin className="text-parchment-600" size={14} />
+                    <span className="text-parchment-600 text-sm font-serif">{quest.location}</span>
                   </div>
-                  <p className="text-[#997752] mb-3 font-serif">{quest.description}</p>
                 </div>
               </div>
 
-              {/* Quest Details */}
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="flex items-center gap-2">
-                  <MapPin className="text-[#997752]" size={16} />
-                  <span className="text-sm text-[#422e18] font-serif">{quest.location}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="text-[#997752]" size={16} />
-                  <span className="text-sm text-[#422e18] font-serif">{quest.timeEstimate}</span>
-                </div>
+              <div className="flex items-center gap-2 mb-3">
+                {getStatusIcon(quest.status)}
+                <Badge className={`font-serif shadow-sm capitalize ${getStatusColor(quest.status)}`}>
+                  {quest.status}
+                </Badge>
+                <Badge className={`font-serif shadow-sm ${getDifficultyColor(quest.difficulty)}`}>
+                  {quest.difficulty}
+                </Badge>
+                <span className="text-parchment-600 text-sm font-serif ml-auto">{quest.xpReward} XP</span>
               </div>
 
-              {/* Badges and Rewards */}
-              <div className="flex justify-between items-center">
-                <div className="flex gap-2">
-                  <Badge className={`font-serif shadow-md ${getDifficultyColor(quest.difficulty)}`}>
-                    {quest.difficulty}
-                  </Badge>
-                  <Badge className="bg-[#997752] text-[#ecd4ab] font-serif shadow-md">
-                    <Trophy size={12} className="mr-1" />
-                    {quest.xpReward} XP
-                  </Badge>
+              {/* Progress Bar */}
+              {quest.status !== "available" && (
+                <div className="mb-3">
+                  <div className="flex justify-between text-sm text-parchment-600 mb-1 font-serif">
+                    <span>Progress</span>
+                    <span>{quest.progress}/{quest.maxProgress}</span>
+                  </div>
+                  <div className="w-full bg-parchment-100 rounded-full h-2 shadow-inner">
+                    <div 
+                      className="bg-parchment-600 h-2 rounded-full" 
+                      style={{ width: `${(quest.progress / quest.maxProgress) * 100}%` }}
+                    ></div>
+                  </div>
                 </div>
-                
-                <Button
-                  onClick={() => navigate(`/quest/${quest.id}`)}
-                  disabled={quest.status === "locked"}
-                  className={`font-serif rounded-2xl shadow-lg hover:shadow-xl transition-shadow ${
-                    quest.status === "locked" 
-                      ? "bg-gray-400 text-gray-600 cursor-not-allowed" 
-                      : "bg-[#997752] hover:bg-[#422e18] text-[#ecd4ab]"
-                  }`}
-                >
-                  {quest.status === "active" ? "Continue" : quest.status === "locked" ? "Locked" : "Start Quest"}
-                </Button>
+              )}
+
+              {/* Objectives */}
+              <div className="space-y-1">
+                {quest.objectives.map((objective, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <div className={`w-3 h-3 rounded-full ${
+                      objective.completed ? "bg-green-500" : "bg-gray-300"
+                    }`}></div>
+                    <span className={`text-sm font-serif ${
+                      objective.completed ? "text-gray-500 line-through" : "text-parchment-700"
+                    }`}>
+                      {objective.text}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Action Button */}
+              <div className="mt-4 flex justify-end">
+                {quest.status === "available" && (
+                  <Button 
+                    size="sm"
+                    onClick={() => navigate(`/quest/${quest.id}`)}
+                    className="bg-parchment-600 hover:bg-parchment-700 text-white rounded-xl font-serif shadow-lg hover:shadow-xl transition-all"
+                  >
+                    Start Quest
+                  </Button>
+                )}
+                {quest.status === "active" && (
+                  <Button 
+                    size="sm"
+                    onClick={() => navigate(`/quest/${quest.id}`)}
+                    className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-serif shadow-lg hover:shadow-xl transition-all"
+                  >
+                    Continue
+                  </Button>
+                )}
+                {quest.status === "completed" && (
+                  <Button 
+                    size="sm"
+                    variant="outline"
+                    onClick={() => navigate(`/quest/${quest.id}`)}
+                    className="text-parchment-800 hover:bg-parchment-600 hover:text-white rounded-xl font-serif shadow-sm hover:shadow-lg transition-all"
+                  >
+                    View Details
+                  </Button>
+                )}
               </div>
             </div>
           ))}
