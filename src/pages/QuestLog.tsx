@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Scroll, MapPin, Clock, Sword, CheckCircle } from "lucide-react";
@@ -10,7 +9,7 @@ const QuestLog = () => {
   // Sample quest data - this would come from your game state
   const quests = [
     {
-      id: 1,
+      id: "village-siege",
       title: "Village Under Siege",
       description: "Help defend Oakvale Village from goblin raiders",
       status: "active",
@@ -26,7 +25,7 @@ const QuestLog = () => {
       ]
     },
     {
-      id: 2,
+      id: "forest-disturbance",
       title: "Forest Disturbance",
       description: "Investigate strange noises coming from Whisperwind Forest",
       status: "available",
@@ -43,7 +42,7 @@ const QuestLog = () => {
       ]
     },
     {
-      id: 3,
+      id: "lost-artifact",
       title: "The Lost Artifact",
       description: "A powerful artifact has been stolen from the mage tower",
       status: "completed",
@@ -67,7 +66,7 @@ const QuestLog = () => {
       case "active": return "bg-blue-100 text-blue-800";
       case "available": return "bg-green-100 text-green-800";
       case "completed": return "bg-gray-100 text-gray-800";
-      default: return "bg-parchment-600 text-white";
+      default: return "bg-slate-600 text-white";
     }
   };
 
@@ -76,7 +75,7 @@ const QuestLog = () => {
       case "Easy": return "bg-green-100 text-green-800";
       case "Medium": return "bg-yellow-100 text-yellow-800";
       case "Hard": return "bg-red-100 text-red-800";
-      default: return "bg-parchment-600 text-white";
+      default: return "bg-slate-600 text-white";
     }
   };
 
@@ -85,19 +84,19 @@ const QuestLog = () => {
       case "active": return <Clock className="text-blue-600" size={16} />;
       case "available": return <Scroll className="text-green-600" size={16} />;
       case "completed": return <CheckCircle className="text-gray-600" size={16} />;
-      default: return <Scroll className="text-parchment-600" size={16} />;
+      default: return <Scroll className="text-slate-600" size={16} />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-parchment-50">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-slate-700 to-slate-800 text-white px-4 py-4 flex items-center shadow-lg">
+      <div className="bg-gradient-to-r from-slate-600 to-slate-700 text-white px-4 py-4 flex items-center shadow-lg">
         <Button 
           variant="ghost" 
           size="icon"
           onClick={() => navigate("/character-sheet")}
-          className="text-white hover:bg-slate-600 mr-2 rounded-xl"
+          className="text-white hover:bg-slate-500 mr-2 rounded-xl"
         >
           <ArrowLeft size={20} />
         </Button>
@@ -109,22 +108,22 @@ const QuestLog = () => {
         <div className="bg-white rounded-2xl p-4 mb-4 shadow-lg">
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
-              <div className="text-2xl font-bold text-parchment-800 font-serif">
+              <div className="text-2xl font-bold text-gray-800 font-serif">
                 {quests.filter(q => q.status === "active").length}
               </div>
-              <div className="text-parchment-600 text-sm font-serif">Active</div>
+              <div className="text-gray-600 text-sm font-serif">Active</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-parchment-800 font-serif">
+              <div className="text-2xl font-bold text-gray-800 font-serif">
                 {quests.filter(q => q.status === "available").length}
               </div>
-              <div className="text-parchment-600 text-sm font-serif">Available</div>
+              <div className="text-gray-600 text-sm font-serif">Available</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-parchment-800 font-serif">
+              <div className="text-2xl font-bold text-gray-800 font-serif">
                 {quests.filter(q => q.status === "completed").length}
               </div>
-              <div className="text-parchment-600 text-sm font-serif">Completed</div>
+              <div className="text-gray-600 text-sm font-serif">Completed</div>
             </div>
           </div>
         </div>
@@ -135,11 +134,11 @@ const QuestLog = () => {
             <div key={quest.id} className="bg-white rounded-2xl p-6 shadow-lg">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold text-parchment-800 font-serif mb-1">{quest.title}</h3>
-                  <p className="text-parchment-600 text-sm font-serif mb-2">{quest.description}</p>
+                  <h3 className="text-lg font-bold text-gray-800 font-serif mb-1">{quest.title}</h3>
+                  <p className="text-gray-600 text-sm font-serif mb-2">{quest.description}</p>
                   <div className="flex items-center gap-2 mb-2">
-                    <MapPin className="text-parchment-600" size={14} />
-                    <span className="text-parchment-600 text-sm font-serif">{quest.location}</span>
+                    <MapPin className="text-gray-600" size={14} />
+                    <span className="text-gray-600 text-sm font-serif">{quest.location}</span>
                   </div>
                 </div>
               </div>
@@ -152,19 +151,19 @@ const QuestLog = () => {
                 <Badge className={`font-serif shadow-sm ${getDifficultyColor(quest.difficulty)}`}>
                   {quest.difficulty}
                 </Badge>
-                <span className="text-parchment-600 text-sm font-serif ml-auto">{quest.xpReward} XP</span>
+                <span className="text-gray-600 text-sm font-serif ml-auto">{quest.xpReward} XP</span>
               </div>
 
               {/* Progress Bar */}
               {quest.status !== "available" && (
                 <div className="mb-3">
-                  <div className="flex justify-between text-sm text-parchment-600 mb-1 font-serif">
+                  <div className="flex justify-between text-sm text-gray-600 mb-1 font-serif">
                     <span>Progress</span>
                     <span>{quest.progress}/{quest.maxProgress}</span>
                   </div>
-                  <div className="w-full bg-parchment-100 rounded-full h-2 shadow-inner">
+                  <div className="w-full bg-gray-100 rounded-full h-2 shadow-inner">
                     <div 
-                      className="bg-parchment-600 h-2 rounded-full" 
+                      className="bg-slate-600 h-2 rounded-full" 
                       style={{ width: `${(quest.progress / quest.maxProgress) * 100}%` }}
                     ></div>
                   </div>
@@ -179,7 +178,7 @@ const QuestLog = () => {
                       objective.completed ? "bg-green-500" : "bg-gray-300"
                     }`}></div>
                     <span className={`text-sm font-serif ${
-                      objective.completed ? "text-gray-500 line-through" : "text-parchment-700"
+                      objective.completed ? "text-gray-500 line-through" : "text-gray-700"
                     }`}>
                       {objective.text}
                     </span>
@@ -193,7 +192,7 @@ const QuestLog = () => {
                   <Button 
                     size="sm"
                     onClick={() => navigate(`/quest/${quest.id}`)}
-                    className="bg-parchment-600 hover:bg-parchment-700 text-white rounded-xl font-serif shadow-lg hover:shadow-xl transition-all"
+                    className="bg-slate-600 hover:bg-slate-700 text-white rounded-xl font-serif shadow-lg hover:shadow-xl transition-all"
                   >
                     Start Quest
                   </Button>
@@ -212,7 +211,7 @@ const QuestLog = () => {
                     size="sm"
                     variant="outline"
                     onClick={() => navigate(`/quest/${quest.id}`)}
-                    className="text-parchment-800 hover:bg-parchment-600 hover:text-white rounded-xl font-serif shadow-sm hover:shadow-lg transition-all"
+                    className="text-gray-800 hover:bg-slate-600 hover:text-white rounded-xl font-serif shadow-sm hover:shadow-lg transition-all"
                   >
                     View Details
                   </Button>

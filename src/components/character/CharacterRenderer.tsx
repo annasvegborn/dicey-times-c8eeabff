@@ -1,3 +1,4 @@
+
 import { useEffect, useRef } from 'react';
 
 interface CharacterRendererProps {
@@ -102,24 +103,10 @@ const CharacterRenderer = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Clear canvas
+    // Clear canvas with transparent background
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     console.log(`Canvas size: ${size}x${size}`);
-
-    // Optional: Draw debug grid
-    if (showDebugGrid) {
-      ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
-      ctx.lineWidth = 1;
-      
-      // Draw canvas center lines
-      ctx.beginPath();
-      ctx.moveTo(size / 2, 0);
-      ctx.lineTo(size / 2, size);
-      ctx.moveTo(0, size / 2);
-      ctx.lineTo(size, size / 2);
-      ctx.stroke();
-    }
 
     // Build the sprite keys for this character
     const bodyKey = `${race}_body_${skinTone}`;
@@ -182,16 +169,9 @@ const CharacterRenderer = ({
         ref={canvasRef}
         width={size}
         height={size}
-        className="border-2 border-amber-600 rounded-lg bg-amber-50"
+        className="rounded-lg"
         style={{ imageRendering: 'pixelated' }}
       />
-      <div className="text-xs text-gray-500 mt-2 text-center">
-        Live Preview
-        <br />
-        <span className="text-xs">{race} {skinTone} - {hairStyle} - {characterClass}</span>
-        {showDebugGrid && <br />}
-        {showDebugGrid && <span className="text-xs text-red-500">Debug Grid ON</span>}
-      </div>
     </div>
   );
 };

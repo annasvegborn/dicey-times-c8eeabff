@@ -59,11 +59,11 @@ const CharacterCustomizationSheet = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-parchment-100">
+    <div className="flex flex-col h-full bg-gray-50">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 min-h-0">
         {/* Left column - Character Preview */}
         <div className="flex justify-center items-start p-4">
-          <div className="bg-parchment-50 rounded-3xl p-6 shadow-xl">
+          <div className="bg-white rounded-3xl p-6 shadow-lg">
             <CharacterRenderer
               race={appearance.race}
               bodyShape={appearance.bodyShape}
@@ -79,11 +79,11 @@ const CharacterCustomizationSheet = ({
         <div className="flex flex-col min-h-0">
           <ScrollArea className="flex-1 px-4">
             <div className="space-y-6 pb-4">
-              <h3 className="text-xl font-bold text-parchment-700 font-serif">Race & Appearance</h3>
+              <h3 className="text-xl font-bold text-gray-700 font-serif">Race & Appearance</h3>
               
               {/* Race Selection */}
               <div>
-                <h4 className="text-lg font-semibold text-parchment-600 mb-3 font-serif">Race</h4>
+                <h4 className="text-lg font-semibold text-gray-600 mb-3 font-serif">Race</h4>
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     { id: 'human', name: 'Human', emoji: '👤' },
@@ -94,8 +94,8 @@ const CharacterCustomizationSheet = ({
                       variant={appearance.race === race.id ? "default" : "outline"}
                       className={`flex items-center gap-2 h-12 font-serif text-base rounded-2xl shadow-md hover:shadow-lg transition-shadow ${
                         appearance.race === race.id 
-                          ? "bg-parchment-500 text-parchment-50" 
-                          : "bg-parchment-50 text-parchment-700 hover:bg-parchment-200"
+                          ? "bg-slate-600 text-white" 
+                          : "bg-white text-gray-700 hover:bg-gray-100"
                       }`}
                       onClick={() => handleChange('race', race.id)}
                     >
@@ -108,7 +108,7 @@ const CharacterCustomizationSheet = ({
 
               {/* Skin Tone Selection */}
               <div>
-                <h4 className="text-lg font-semibold text-parchment-600 mb-3 font-serif">Skin Tone</h4>
+                <h4 className="text-lg font-semibold text-gray-600 mb-3 font-serif">Skin Tone</h4>
                 <div className="grid grid-cols-2 gap-2">
                   {getAvailableSkinTones(appearance.race).map((tone) => (
                     <Button
@@ -116,8 +116,8 @@ const CharacterCustomizationSheet = ({
                       variant={appearance.skinTone === tone ? "default" : "outline"}
                       className={`h-10 capitalize font-serif rounded-2xl shadow-md hover:shadow-lg transition-shadow ${
                         appearance.skinTone === tone 
-                          ? "bg-parchment-500 text-parchment-50" 
-                          : "bg-parchment-50 text-parchment-700 hover:bg-parchment-200"
+                          ? "bg-slate-600 text-white" 
+                          : "bg-white text-gray-700 hover:bg-gray-100"
                       }`}
                       onClick={() => handleChange('skinTone', tone)}
                     >
@@ -129,7 +129,7 @@ const CharacterCustomizationSheet = ({
 
               {/* Hair Style Selection */}
               <div>
-                <h4 className="text-lg font-semibold text-parchment-600 mb-3 font-serif">Hair Style</h4>
+                <h4 className="text-lg font-semibold text-gray-600 mb-3 font-serif">Hair Style</h4>
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     { id: 'short', name: 'Short', emoji: '✂️' },
@@ -140,40 +140,13 @@ const CharacterCustomizationSheet = ({
                       variant={appearance.hairStyle === hair.id ? "default" : "outline"}
                       className={`flex items-center gap-2 h-12 font-serif text-base rounded-2xl shadow-md hover:shadow-lg transition-shadow ${
                         appearance.hairStyle === hair.id 
-                          ? "bg-parchment-500 text-parchment-50" 
-                          : "bg-parchment-50 text-parchment-700 hover:bg-parchment-200"
+                          ? "bg-slate-600 text-white" 
+                          : "bg-white text-gray-700 hover:bg-gray-100"
                       }`}
                       onClick={() => handleChange('hairStyle', hair.id)}
                     >
                       <span className="text-lg">{hair.emoji}</span>
                       {hair.name}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Body Shape Selection */}
-              <div>
-                <h4 className="text-lg font-semibold text-parchment-600 mb-3 font-serif">Body Shape</h4>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { id: 'slim', name: 'Slim', emoji: '🏃' },
-                    { id: 'medium', name: 'Medium', emoji: '🚶' },
-                    { id: 'muscular', name: 'Muscular', emoji: '💪' },
-                    { id: 'heavy', name: 'Heavy', emoji: '🧍' }
-                  ].map((shape) => (
-                    <Button
-                      key={shape.id}
-                      variant={appearance.bodyShape === shape.id ? "default" : "outline"}
-                      className={`flex items-center gap-2 h-12 font-serif text-base rounded-2xl shadow-md hover:shadow-lg transition-shadow ${
-                        appearance.bodyShape === shape.id 
-                          ? "bg-parchment-500 text-parchment-50" 
-                          : "bg-parchment-50 text-parchment-700 hover:bg-parchment-200"
-                      }`}
-                      onClick={() => handleChange('bodyShape', shape.id)}
-                    >
-                      <span className="text-lg">{shape.emoji}</span>
-                      {shape.name}
                     </Button>
                   ))}
                 </div>
@@ -184,17 +157,17 @@ const CharacterCustomizationSheet = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex gap-4 p-4 bg-parchment-50 shadow-lg">
+      <div className="flex gap-4 p-4 bg-gray-50 shadow-lg">
         <Button 
           variant="outline" 
           onClick={onCancel} 
-          className="flex-1 font-serif text-lg py-3 rounded-2xl text-parchment-700 hover:bg-parchment-200 shadow-md hover:shadow-lg transition-shadow"
+          className="flex-1 font-serif text-lg py-3 rounded-2xl text-gray-700 hover:bg-gray-100 shadow-md hover:shadow-lg transition-shadow"
         >
           Cancel
         </Button>
         <Button 
           onClick={handleSave} 
-          className="flex-1 bg-parchment-500 hover:bg-parchment-600 text-parchment-50 font-serif text-lg py-3 rounded-2xl shadow-lg hover:shadow-xl transition-shadow"
+          className="flex-1 bg-slate-600 hover:bg-slate-700 text-white font-serif text-lg py-3 rounded-2xl shadow-lg hover:shadow-xl transition-shadow"
         >
           Save Changes
         </Button>
