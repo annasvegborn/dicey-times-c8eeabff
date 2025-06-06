@@ -57,55 +57,78 @@ const RegionalMap = ({
     }
   };
 
+  // Calculate the display dimensions - map fills screen width
+  const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 1024;
+  const displayWidth = screenWidth;
+  const displayHeight = (displayWidth * mapHeight) / mapWidth;
+
+  // Calculate scaling factors for positioning markers correctly
+  const scaleX = displayWidth / mapWidth;
+  const scaleY = displayHeight / mapHeight;
+
+  console.log(`Map scaling: ${mapWidth}x${mapHeight} -> ${displayWidth}x${displayHeight}`);
+  console.log(`Scale factors: scaleX=${scaleX}, scaleY=${scaleY}`);
+
   return (
-    <div className="relative w-full bg-white rounded-2xl overflow-hidden shadow-xl">
-      {/* Map Image - exact aspect ratio with no extra space */}
+    <div className="relative w-full bg-white overflow-hidden shadow-xl">
+      {/* Map Image - fills full screen width */}
       <div 
         className="relative w-full"
         style={{ 
-          aspectRatio: `${mapWidth}/${mapHeight}`,
-          maxWidth: '100%'
+          width: `${displayWidth}px`,
+          height: `${displayHeight}px`
         }}
       >
         <img 
           src={mapImage} 
           alt={`${regionId} region map`}
           className="w-full h-full object-cover"
-          style={{ display: 'block' }}
+          style={{ 
+            display: 'block',
+            width: `${displayWidth}px`,
+            height: `${displayHeight}px`
+          }}
         />
         
-        {/* Interactive locations */}
-        {locations.map((location) => (
-          <button
-            key={location.id}
-            className={`absolute transform -translate-x-1/2 -translate-y-1/2 group w-4 h-4 rounded-full shadow-lg transition-all duration-200 z-10 ${getLocationColor(location)}`}
-            style={{ 
-              left: `${(location.x / mapWidth) * 100}%`, 
-              top: `${(location.y / mapHeight) * 100}%` 
-            }}
-            onClick={() => handleLocationClick(location)}
-          >
-            <div className="w-full h-full rounded-full opacity-90 group-hover:scale-125 transition-transform"></div>
-            <div className="absolute top-6 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-              <div className="bg-white text-slate-800 text-xs px-2 py-1 rounded-lg font-serif whitespace-nowrap shadow-lg border">
-                {location.name}
-                {location.questId && (
-                  <div className="text-slate-600 text-xs">
-                    {location.completed ? "Quest Complete" : "Click to view quest"}
-                  </div>
-                )}
+        {/* Interactive locations - scaled coordinates */}
+        {locations.map((location) => {
+          const scaledX = location.x * scaleX;
+          const scaledY = location.y * scaleY;
+          
+          console.log(`Location ${location.name}: original(${location.x}, ${location.y}) -> scaled(${scaledX}, ${scaledY})`);
+          
+          return (
+            <button
+              key={location.id}
+              className={`absolute transform -translate-x-1/2 -translate-y-1/2 group w-4 h-4 rounded-full shadow-lg transition-all duration-200 z-10 ${getLocationColor(location)}`}
+              style={{ 
+                left: `${scaledX}px`, 
+                top: `${scaledY}px` 
+              }}
+              onClick={() => handleLocationClick(location)}
+            >
+              <div className="w-full h-full rounded-full opacity-90 group-hover:scale-125 transition-transform"></div>
+              <div className="absolute top-6 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                <div className="bg-white text-slate-800 text-xs px-2 py-1 rounded-lg font-serif whitespace-nowrap shadow-lg border">
+                  {location.name}
+                  {location.questId && (
+                    <div className="text-slate-600 text-xs">
+                      {location.completed ? "Quest Complete" : "Click to view quest"}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </button>
-        ))}
+            </button>
+          );
+        })}
 
-        {/* Character position */}
+        {/* Character position - scaled coordinates */}
         {characterPosition && character && (
           <div
             className="absolute transform -translate-x-1/2 -translate-y-1/2 z-20"
             style={{ 
-              left: `${(characterPosition.x / mapWidth) * 100}%`, 
-              top: `${(characterPosition.y / mapHeight) * 100}%` 
+              left: `${characterPosition.x * scaleX}px`, 
+              top: `${characterPosition.y * scaleY}px` 
             }}
           >
             <div className="relative group">

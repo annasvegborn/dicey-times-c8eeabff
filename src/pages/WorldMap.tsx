@@ -93,23 +93,21 @@ const WorldMap = () => {
         <h1 className="text-xl font-bold font-serif">World Map - Baelershire Region</h1>
       </div>
 
-      {/* Map Container - Fixed to match map aspect ratio */}
-      <div className="p-4 flex justify-center">
-        <div style={{ width: '100%', maxWidth: '100vw' }}>
-          <RegionalMap
-            regionId="baelershire"
-            mapImage="/lovable-uploads/0fbe99d0-6956-4564-b834-75082e430b67.png"
-            mapWidth={2024}
-            mapHeight={1536}
-            locations={baelershireLocations}
-            characterPosition={characterPosition}
-            onLocationClick={handleLocationClick}
-          />
-        </div>
+      {/* Map Container - Full width, no padding or constraints */}
+      <div className="w-full">
+        <RegionalMap
+          regionId="baelershire"
+          mapImage="/lovable-uploads/0fbe99d0-6956-4564-b834-75082e430b67.png"
+          mapWidth={2024}
+          mapHeight={1536}
+          locations={baelershireLocations}
+          characterPosition={characterPosition}
+          onLocationClick={handleLocationClick}
+        />
       </div>
 
-      {/* Legend */}
-      <div className="mx-4 bg-white rounded-2xl p-4 shadow-lg">
+      {/* Legend - positioned over the map */}
+      <div className="fixed bottom-20 left-4 right-4 bg-white rounded-2xl p-4 shadow-lg z-30 max-w-sm">
         <h2 className="text-slate-800 font-serif font-bold mb-3">Legend</h2>
         <div className="space-y-2">
           <div className="flex items-center gap-2">
@@ -136,7 +134,7 @@ const WorldMap = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="fixed bottom-4 right-4">
+      <div className="fixed bottom-4 right-4 z-30">
         <Button 
           onClick={() => navigate("/quests")}
           className="bg-slate-600 hover:bg-slate-700 text-white rounded-xl font-serif shadow-lg hover:shadow-xl transition-all"
