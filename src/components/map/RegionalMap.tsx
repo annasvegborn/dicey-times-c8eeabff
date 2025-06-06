@@ -59,12 +59,19 @@ const RegionalMap = ({
 
   return (
     <div className="relative w-full bg-white rounded-2xl overflow-hidden shadow-xl">
-      {/* Map Image - maintain aspect ratio */}
-      <div className="relative" style={{ aspectRatio: `${mapWidth}/${mapHeight}` }}>
+      {/* Map Image - exact aspect ratio with no extra space */}
+      <div 
+        className="relative w-full"
+        style={{ 
+          aspectRatio: `${mapWidth}/${mapHeight}`,
+          maxWidth: '100%'
+        }}
+      >
         <img 
           src={mapImage} 
           alt={`${regionId} region map`}
-          className="w-full h-full object-contain"
+          className="w-full h-full object-cover"
+          style={{ display: 'block' }}
         />
         
         {/* Interactive locations */}
@@ -101,22 +108,22 @@ const RegionalMap = ({
               top: `${(characterPosition.y / mapHeight) * 100}%` 
             }}
           >
-            <div className="relative">
+            <div className="relative group">
               {/* Character marker */}
-              <div className="w-8 h-8 bg-purple-500 rounded-full shadow-lg flex items-center justify-center border-2 border-white">
-                <div className="w-6 h-6 rounded-full overflow-hidden">
+              <div className="w-10 h-10 bg-purple-500 rounded-full shadow-lg flex items-center justify-center border-2 border-white">
+                <div className="w-8 h-8 rounded-full overflow-hidden">
                   <CharacterRenderer
                     race={character.avatar_race || character.race}
                     bodyShape={character.avatar_body_shape || 'medium'}
                     hairStyle={character.avatar_hair_style || 'short'}
                     characterClass={character.class}
                     skinTone={(character.avatar_skin_tone || 'light') as 'light' | 'dark'}
-                    size={24}
+                    size={32}
                   />
                 </div>
               </div>
               {/* Character tooltip */}
-              <div className="absolute top-10 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="absolute top-12 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <div className="bg-white text-slate-800 text-xs px-2 py-1 rounded-lg font-serif whitespace-nowrap shadow-lg border">
                   {character.name}
                 </div>

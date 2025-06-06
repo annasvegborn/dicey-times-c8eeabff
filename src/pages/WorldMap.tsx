@@ -28,7 +28,7 @@ const WorldMap = () => {
       y: 266, 
       questId: "village-siege",
       type: "quest" as const,
-      completed: false // You can make this dynamic based on actual quest status
+      completed: false
     },
     { 
       id: "city-castle", 
@@ -42,7 +42,7 @@ const WorldMap = () => {
       name: "Chapel", 
       x: 777, 
       y: 949, 
-      questId: "forest-disturbance",
+      questId: "chapel-mystery",
       type: "quest" as const,
       completed: false
     },
@@ -52,6 +52,15 @@ const WorldMap = () => {
       x: 241, 
       y: 1233, 
       type: "landmark" as const 
+    },
+    { 
+      id: "whisperwind-forest", 
+      name: "Whisperwind Forest", 
+      x: 216, 
+      y: 472, 
+      questId: "forest-disturbance",
+      type: "quest" as const,
+      completed: false
     }
   ];
 
@@ -84,17 +93,19 @@ const WorldMap = () => {
         <h1 className="text-xl font-bold font-serif">World Map - Baelershire Region</h1>
       </div>
 
-      {/* Map Container */}
-      <div className="p-4">
-        <RegionalMap
-          regionId="baelershire"
-          mapImage="/lovable-uploads/0fbe99d0-6956-4564-b834-75082e430b67.png"
-          mapWidth={2024}
-          mapHeight={1536}
-          locations={baelershireLocations}
-          characterPosition={characterPosition}
-          onLocationClick={handleLocationClick}
-        />
+      {/* Map Container - Fixed to match map aspect ratio */}
+      <div className="p-4 flex justify-center">
+        <div style={{ width: '100%', maxWidth: '100vw' }}>
+          <RegionalMap
+            regionId="baelershire"
+            mapImage="/lovable-uploads/0fbe99d0-6956-4564-b834-75082e430b67.png"
+            mapWidth={2024}
+            mapHeight={1536}
+            locations={baelershireLocations}
+            characterPosition={characterPosition}
+            onLocationClick={handleLocationClick}
+          />
+        </div>
       </div>
 
       {/* Legend */}

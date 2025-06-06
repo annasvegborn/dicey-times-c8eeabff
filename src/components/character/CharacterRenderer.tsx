@@ -1,3 +1,4 @@
+
 import { useEffect, useRef } from 'react';
 
 interface CharacterRendererProps {
@@ -16,11 +17,14 @@ const CharacterRenderer = ({
   hairStyle, 
   characterClass, 
   skinTone = 'light',
-  size = 256, // Increased default size for better quality
+  size = 256,
   showDebugGrid = false
 }: CharacterRendererProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imagesRef = useRef<Map<string, HTMLImageElement>>(new Map());
+
+  // For small thumbnails, use a higher internal resolution and scale down
+  const internalSize = size < 64 ? size * 4 : size;
 
   // Available PNG sprites in the project with descriptive names:
   const sprites = {
@@ -105,7 +109,7 @@ const CharacterRenderer = ({
     // Clear canvas with transparent background
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    console.log(`Canvas size: ${size}x${size}`);
+    console.log(`Canvas size: ${internalSize}x${internalSize}`);
 
     // Build the sprite keys for this character
     const bodyKey = `${race}_body_${skinTone}`;
@@ -141,6 +145,12 @@ const CharacterRenderer = ({
           console.log(`Drawing layer ${key}`);
           
           try {
+            // For small thumbnails, use smoother scaling
+            if (size < 64) {
+              ctx.imageSmoothingEnabled = true;
+              ctx.imageSmoothingQuality = 'high';
+            }
+            
             // Draw the sprite centered in the canvas
             ctx.drawImage(
               image,
@@ -150,8 +160,8 @@ const CharacterRenderer = ({
               image.height,         // Source height
               0,                    // Destination X
               0,                    // Destination Y
-              size,                 // Destination width (scaled to canvas)
-              size                  // Destination height (scaled to canvas)
+              internalSize,         // Destination width (scaled to canvas)
+              internalSize          // Destination height (scaled to canvas)
             );
           } catch (error) {
             console.error(`Error drawing sprite ${key}:`, error);
@@ -166,13 +176,15 @@ const CharacterRenderer = ({
     <div className="flex flex-col items-center">
       <canvas
         ref={canvasRef}
-        width={size}
-        height={size}
+        width={internalSize}
+        height={internalSize}
         className="rounded-lg"
         style={{ 
-          imageRendering: 'auto', // Changed from 'pixelated' to 'auto' for smoother rendering
+          imageRendering: size < 64 ? 'auto' : 'auto',
           maxWidth: '100%',
-          height: 'auto'
+          height: 'auto',
+          width: `${size}px`,
+          height: `${size}px`
         }}
       />
     </div>
