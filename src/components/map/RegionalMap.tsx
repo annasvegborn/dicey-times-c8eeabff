@@ -106,11 +106,11 @@ const RegionalMap = ({
               <div className="w-8 h-8 bg-purple-500 rounded-full shadow-lg flex items-center justify-center border-2 border-white">
                 <div className="w-6 h-6 rounded-full overflow-hidden">
                   <CharacterRenderer
-                    race={character.race}
-                    bodyShape={character.bodyShape}
-                    hairStyle={character.hairStyle}
-                    characterClass={character.characterClass}
-                    skinTone={character.skinTone}
+                    race={character.avatar_race || character.race}
+                    bodyShape={character.avatar_body_shape || 'medium'}
+                    hairStyle={character.avatar_hair_style || 'short'}
+                    characterClass={character.class}
+                    skinTone={(character.avatar_skin_tone || 'light') as 'light' | 'dark'}
                     size={24}
                   />
                 </div>
