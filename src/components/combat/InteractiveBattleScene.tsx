@@ -90,70 +90,70 @@ const InteractiveBattleScene = ({ enemyName, enemyImage, onVictory, onDefeat }: 
   };
 
   return (
-    <div className="w-full max-w-md mx-auto bg-[#ecd4ab] rounded-3xl p-6 border-4 border-[#422e18] text-[#422e18] shadow-2xl">
+    <div className="w-full max-w-md mx-auto bg-white rounded-3xl p-6 shadow-xl text-slate-800">
       {/* Health bars */}
       <div className="flex justify-between mb-6">
         <div className="w-24">
-          <div className="text-[#422e18] font-serif font-bold">Hero</div>
-          <div className="w-24 h-4 bg-[#997752] rounded-full mt-1 border-2 border-[#422e18]">
+          <div className="text-slate-800 font-serif font-bold">Hero</div>
+          <div className="w-24 h-4 bg-slate-200 rounded-full mt-1 border-2 border-slate-300">
             <div 
-              className="h-full bg-green-600 rounded-full transition-all duration-500" 
+              className="h-full bg-green-500 rounded-full transition-all duration-500" 
               style={{ width: `${playerHealth}%` }}
             ></div>
           </div>
-          <div className="text-xs text-[#997752] mt-1 font-serif">{playerHealth}/100</div>
+          <div className="text-xs text-slate-600 mt-1 font-serif">{playerHealth}/100</div>
         </div>
         
         <div className="text-2xl">⚔️</div>
         
         <div className="text-right w-24">
-          <div className="text-[#422e18] font-serif font-bold">{enemyName}</div>
-          <div className="w-24 h-4 bg-[#997752] rounded-full mt-1 ml-auto border-2 border-[#422e18]">
+          <div className="text-slate-800 font-serif font-bold">{enemyName}</div>
+          <div className="w-24 h-4 bg-slate-200 rounded-full mt-1 ml-auto border-2 border-slate-300">
             <div 
-              className="h-full bg-red-600 rounded-full transition-all duration-500" 
+              className="h-full bg-red-500 rounded-full transition-all duration-500" 
               style={{ width: `${enemyHealth}%` }}
             ></div>
           </div>
-          <div className="text-xs text-[#997752] mt-1 font-serif">{enemyHealth}/100</div>
+          <div className="text-xs text-slate-600 mt-1 font-serif">{enemyHealth}/100</div>
         </div>
       </div>
       
       {/* Enemy display */}
       <div className="flex justify-center mb-6">
-        <div className="text-6xl bg-[#997752] rounded-full p-4 border-3 border-[#422e18]">
+        <div className="text-6xl bg-slate-100 rounded-full p-4 border-3 border-slate-300 shadow-lg">
           {enemyImage}
         </div>
       </div>
       
-      {/* Combat log - fixed height to prevent layout shifts */}
-      <div className="bg-[#997752] border-3 border-[#422e18] rounded-2xl p-4 mb-6 h-24 overflow-y-auto">
+      {/* Combat log */}
+      <div className="bg-slate-100 border-3 border-slate-300 rounded-2xl p-4 mb-6 h-24 overflow-y-auto shadow-inner">
         {log.map((message, index) => (
-          <div key={index} className="text-sm mb-1 font-serif text-[#ecd4ab]">
+          <div key={index} className="text-sm mb-1 font-serif text-slate-700">
             {message}
           </div>
         ))}
       </div>
       
       {/* Round counter */}
-      <div className="text-center text-[#997752] font-serif font-bold mb-4">
+      <div className="text-center text-slate-600 font-serif font-bold mb-4">
         Round {roundCount}
       </div>
       
-      {/* Action buttons - fixed grid to maintain width */}
+      {/* Action buttons */}
       <div className="grid grid-cols-2 gap-3 h-32">
         {phase === "combat" && (
           <>
             <HoverCard>
               <HoverCardTrigger asChild>
                 <Button 
-                  className="bg-[#997752] hover:bg-[#422e18] text-[#ecd4ab] border-2 border-[#422e18] rounded-xl font-serif flex items-center gap-2"
+                  className="bg-slate-600 hover:bg-slate-700 text-white border-2 border-slate-300 rounded-xl font-serif flex items-center gap-2 shadow-sm"
                   onClick={() => executeAction("attack")}
                   disabled={isProcessing}
                 >
                   <Sword size={16} /> Attack
                 </Button>
               </HoverCardTrigger>
-              <HoverCardContent className="w-64 bg-[#ecd4ab] text-[#422e18] border-[#422e18] font-serif">
+              <HoverCardContent className="w-64 bg-white text-slate-800 border-slate-300 font-serif shadow-lg">
                 <p className="text-sm">A reliable strike. Deals 1d15+8 damage.</p>
               </HoverCardContent>
             </HoverCard>
@@ -161,14 +161,14 @@ const InteractiveBattleScene = ({ enemyName, enemyImage, onVictory, onDefeat }: 
             <HoverCard>
               <HoverCardTrigger asChild>
                 <Button 
-                  className="bg-[#997752] hover:bg-[#422e18] text-[#ecd4ab] border-2 border-[#422e18] rounded-xl font-serif flex items-center gap-2"
+                  className="bg-slate-600 hover:bg-slate-700 text-white border-2 border-slate-300 rounded-xl font-serif flex items-center gap-2 shadow-sm"
                   onClick={() => executeAction("defend")}
                   disabled={isProcessing}
                 >
                   <Shield size={16} /> Defend
                 </Button>
               </HoverCardTrigger>
-              <HoverCardContent className="w-64 bg-[#ecd4ab] text-[#422e18] border-[#422e18] font-serif">
+              <HoverCardContent className="w-64 bg-white text-slate-800 border-slate-300 font-serif shadow-lg">
                 <p className="text-sm">Reduce incoming damage by 6 points.</p>
               </HoverCardContent>
             </HoverCard>
@@ -176,14 +176,14 @@ const InteractiveBattleScene = ({ enemyName, enemyImage, onVictory, onDefeat }: 
             <HoverCard>
               <HoverCardTrigger asChild>
                 <Button 
-                  className="bg-[#422e18] hover:bg-[#997752] text-[#ecd4ab] border-2 border-[#422e18] rounded-xl font-serif flex items-center gap-2"
+                  className="bg-blue-600 hover:bg-blue-700 text-white border-2 border-slate-300 rounded-xl font-serif flex items-center gap-2 shadow-sm"
                   onClick={() => executeAction("special")}
                   disabled={isProcessing}
                 >
                   <Target size={16} /> Special
                 </Button>
               </HoverCardTrigger>
-              <HoverCardContent className="w-64 bg-[#ecd4ab] text-[#422e18] border-[#422e18] font-serif">
+              <HoverCardContent className="w-64 bg-white text-slate-800 border-slate-300 font-serif shadow-lg">
                 <p className="text-sm">Risky but powerful! 60% chance for 1d20+12 damage.</p>
               </HoverCardContent>
             </HoverCard>
@@ -191,14 +191,14 @@ const InteractiveBattleScene = ({ enemyName, enemyImage, onVictory, onDefeat }: 
             <HoverCard>
               <HoverCardTrigger asChild>
                 <Button 
-                  className="bg-green-700 hover:bg-green-800 text-[#ecd4ab] border-2 border-[#422e18] rounded-xl font-serif flex items-center gap-2"
+                  className="bg-green-600 hover:bg-green-700 text-white border-2 border-slate-300 rounded-xl font-serif flex items-center gap-2 shadow-sm"
                   onClick={() => executeAction("heal")}
                   disabled={isProcessing}
                 >
                   <Heart size={16} /> Heal
                 </Button>
               </HoverCardTrigger>
-              <HoverCardContent className="w-64 bg-[#ecd4ab] text-[#422e18] border-[#422e18] font-serif">
+              <HoverCardContent className="w-64 bg-white text-slate-800 border-slate-300 font-serif shadow-lg">
                 <p className="text-sm">Restore 1d12+8 health, but enemy attacks harder!</p>
               </HoverCardContent>
             </HoverCard>
@@ -208,10 +208,10 @@ const InteractiveBattleScene = ({ enemyName, enemyImage, onVictory, onDefeat }: 
         {(phase === "victory" || phase === "defeat") && (
           <div className="col-span-2 flex items-center justify-center">
             <div className="text-center">
-              <div className={`text-2xl font-serif font-bold ${phase === "victory" ? "text-green-700" : "text-red-700"}`}>
+              <div className={`text-2xl font-serif font-bold ${phase === "victory" ? "text-green-600" : "text-red-600"}`}>
                 {phase === "victory" ? "Victory!" : "Defeat!"}
               </div>
-              <div className="text-[#997752] font-serif mt-2">
+              <div className="text-slate-600 font-serif mt-2">
                 {phase === "victory" ? "Returning to quest..." : "Try again when you're stronger..."}
               </div>
             </div>

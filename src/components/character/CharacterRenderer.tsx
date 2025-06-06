@@ -1,4 +1,3 @@
-
 import { useEffect, useRef } from 'react';
 
 interface CharacterRendererProps {
@@ -17,7 +16,7 @@ const CharacterRenderer = ({
   hairStyle, 
   characterClass, 
   skinTone = 'light',
-  size = 192,
+  size = 256, // Increased default size for better quality
   showDebugGrid = false
 }: CharacterRendererProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -170,7 +169,11 @@ const CharacterRenderer = ({
         width={size}
         height={size}
         className="rounded-lg"
-        style={{ imageRendering: 'pixelated' }}
+        style={{ 
+          imageRendering: 'auto', // Changed from 'pixelated' to 'auto' for smoother rendering
+          maxWidth: '100%',
+          height: 'auto'
+        }}
       />
     </div>
   );

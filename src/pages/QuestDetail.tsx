@@ -95,15 +95,22 @@ const QuestDetail = () => {
         obj.id === objectiveId ? { ...obj, completed: true } : obj
       );
       
-      // Check if all objectives are completed
       const allCompleted = updatedObjectives.every(obj => obj.completed);
       
       if (allCompleted) {
+        // Update the quest repository to persist completion
+        if (questId && questRepository[questId]) {
+          questRepository[questId] = { ...questRepository[questId], objectives: updatedObjectives };
+        }
         toast({
           title: "Quest Completed!",
           description: `You've completed "${prev.title}"!`,
         });
       } else {
+        // Update the quest repository to persist progress
+        if (questId && questRepository[questId]) {
+          questRepository[questId] = { ...questRepository[questId], objectives: updatedObjectives };
+        }
         toast({
           title: "Objective Completed",
           description: "Progress saved!",
@@ -140,6 +147,11 @@ const QuestDetail = () => {
         }
         return obj;
       });
+
+      // Update the quest repository to persist progress
+      if (questId && questRepository[questId]) {
+        questRepository[questId] = { ...questRepository[questId], objectives: updatedObjectives };
+      }
       
       return { ...prev, objectives: updatedObjectives };
     });
@@ -177,23 +189,23 @@ const QuestDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#ecd4ab] flex items-center justify-center">
-        <div className="text-[#422e18] font-serif text-xl">Loading quest details...</div>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-slate-700 font-serif text-xl">Loading quest details...</div>
       </div>
     );
   }
 
   if (!quest) {
     return (
-      <div className="min-h-screen bg-[#ecd4ab] flex items-center justify-center">
-        <div className="text-[#422e18] font-serif text-xl">Quest not found</div>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-slate-700 font-serif text-xl">Quest not found</div>
       </div>
     );
   }
 
   if (inBattle && battleEnemy) {
     return (
-      <div className="min-h-screen bg-[#ecd4ab] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
         <InteractiveBattleScene
           enemyName={battleEnemy.name}
           enemyImage={battleEnemy.image}
@@ -205,14 +217,14 @@ const QuestDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#ecd4ab] pb-16">
+    <div className="min-h-screen bg-slate-50 pb-16">
       {/* Header */}
-      <div className="bg-[#422e18] text-[#ecd4ab] px-4 py-3 flex items-center">
+      <div className="bg-gradient-to-r from-slate-600 to-slate-700 text-white px-4 py-3 flex items-center shadow-lg">
         <Button 
           variant="ghost" 
           size="icon"
           onClick={() => navigate("/quests")}
-          className="text-[#ecd4ab] hover:bg-[#997752] mr-2"
+          className="text-white hover:bg-slate-500 mr-2 rounded-xl"
         >
           <ArrowLeft size={20} />
         </Button>
@@ -221,17 +233,17 @@ const QuestDetail = () => {
       
       {/* Quest content */}
       <div className="p-4 max-w-md mx-auto">
-        <div className="bg-[#ecd4ab] rounded-3xl p-6 border-4 border-[#422e18] mb-4 shadow-2xl">
+        <div className="bg-white rounded-3xl p-6 shadow-xl mb-4">
           <div className="flex items-center mb-2">
             <div className={`w-3 h-3 rounded-full ${quest.difficulty === 'easy' ? 'bg-green-600' : 
               quest.difficulty === 'medium' ? 'bg-yellow-600' : 'bg-red-600'}`} />
-            <span className="text-sm ml-2 text-[#997752] capitalize font-serif">{quest.difficulty || 'normal'} difficulty</span>
+            <span className="text-sm ml-2 text-slate-600 capitalize font-serif">{quest.difficulty || 'normal'} difficulty</span>
           </div>
           
-          <h2 className="text-[#422e18] text-lg font-medium font-serif">{quest.location}</h2>
-          <p className="text-[#997752] mt-2 mb-4 font-serif">{quest.description}</p>
+          <h2 className="text-slate-800 text-lg font-medium font-serif">{quest.location}</h2>
+          <p className="text-slate-600 mt-2 mb-4 font-serif">{quest.description}</p>
           
-          <h3 className="text-[#422e18] font-medium flex items-center gap-1 mb-3 font-serif">
+          <h3 className="text-slate-800 font-medium flex items-center gap-1 mb-3 font-serif">
             <Clock size={16} />
             <span>Objectives</span>
           </h3>
@@ -240,11 +252,11 @@ const QuestDetail = () => {
             {quest.objectives.map((objective) => (
               <div 
                 key={objective.id} 
-                className={`border-2 ${objective.completed ? 'border-green-600 bg-green-50' : 'border-[#997752] bg-[#ecd4ab]'} 
-                  rounded-2xl p-4 transition-colors`}
+                className={`border-2 ${objective.completed ? 'border-green-500 bg-green-50' : 'border-slate-300 bg-white'} 
+                  rounded-2xl p-4 transition-colors shadow-sm`}
               >
                 <div className="flex items-start gap-3">
-                  <div className={`mt-1 ${objective.completed ? 'text-green-600' : 'text-[#422e18]'}`}>
+                  <div className={`mt-1 ${objective.completed ? 'text-green-600' : 'text-slate-700'}`}>
                     {objective.completed ? (
                       <CheckCircle2 size={20} />
                     ) : (
@@ -252,19 +264,19 @@ const QuestDetail = () => {
                     )}
                   </div>
                   <div className="flex-1">
-                    <p className={`font-serif ${objective.completed ? 'text-[#997752] line-through' : 'text-[#422e18]'}`}>
+                    <p className={`font-serif ${objective.completed ? 'text-slate-500 line-through' : 'text-slate-800'}`}>
                       {objective.text}
                     </p>
                     
                     {objective.activityType === 'walk' && objective.target && !objective.completed && (
                       <div className="mt-2">
-                        <div className="flex justify-between text-xs text-[#997752] mb-1 font-serif">
+                        <div className="flex justify-between text-xs text-slate-600 mb-1 font-serif">
                           <span>{objective.progress || 0}m / {objective.target}m</span>
                           <span>{Math.round(((objective.progress || 0) / objective.target) * 100)}%</span>
                         </div>
                         <Progress 
                           value={((objective.progress || 0) / objective.target) * 100} 
-                          className="h-2 bg-[#997752]"
+                          className="h-2"
                         />
                       </div>
                     )}
@@ -274,7 +286,7 @@ const QuestDetail = () => {
                         {objective.id === "fight-1" ? (
                           <Button 
                             size="sm" 
-                            className="text-xs py-1 bg-red-700 border-2 border-[#422e18] text-[#ecd4ab] hover:bg-red-800 font-serif rounded-xl"
+                            className="text-xs py-1 bg-red-600 hover:bg-red-700 text-white font-serif rounded-xl shadow-sm"
                             onClick={() => startBattle("Bandit Leader", "🗡️")}
                           >
                             Start Battle
@@ -283,21 +295,21 @@ const QuestDetail = () => {
                           <div className="grid grid-cols-3 gap-2">
                             <Button 
                               size="sm" 
-                              className="text-xs py-1 bg-[#997752] text-[#ecd4ab] border-2 border-[#422e18] hover:bg-[#422e18] font-serif rounded-xl"
+                              className="text-xs py-1 bg-slate-600 hover:bg-slate-700 text-white font-serif rounded-xl shadow-sm"
                               onClick={() => trackProgress(objective.id, Math.round(objective.target! * 0.25))}
                             >
                               +25%
                             </Button>
                             <Button 
                               size="sm" 
-                              className="text-xs py-1 bg-[#997752] text-[#ecd4ab] border-2 border-[#422e18] hover:bg-[#422e18] font-serif rounded-xl"
+                              className="text-xs py-1 bg-slate-600 hover:bg-slate-700 text-white font-serif rounded-xl shadow-sm"
                               onClick={() => trackProgress(objective.id, Math.round(objective.target! * 0.5))}
                             >
                               +50%
                             </Button>
                             <Button 
                               size="sm" 
-                              className="text-xs py-1 bg-[#997752] text-[#ecd4ab] border-2 border-[#422e18] hover:bg-[#422e18] font-serif rounded-xl"
+                              className="text-xs py-1 bg-slate-600 hover:bg-slate-700 text-white font-serif rounded-xl shadow-sm"
                               onClick={() => trackProgress(objective.id, objective.target!)}
                             >
                               Complete
@@ -306,7 +318,7 @@ const QuestDetail = () => {
                         ) : (
                           <Button 
                             size="sm" 
-                            className="text-xs py-1 bg-[#997752] text-[#ecd4ab] border-2 border-[#422e18] hover:bg-[#422e18] font-serif rounded-xl"
+                            className="text-xs py-1 bg-slate-600 hover:bg-slate-700 text-white font-serif rounded-xl shadow-sm"
                             onClick={() => completeObjective(objective.id)}
                           >
                             Mark as Complete
@@ -320,7 +332,7 @@ const QuestDetail = () => {
             ))}
           </div>
           
-          <h3 className="text-[#422e18] font-medium flex items-center gap-1 mb-3 font-serif">
+          <h3 className="text-slate-800 font-medium flex items-center gap-1 mb-3 font-serif">
             <Trophy size={16} />
             <span>Rewards</span>
           </h3>
@@ -329,7 +341,7 @@ const QuestDetail = () => {
             {quest.rewards.map((reward, idx) => (
               <span 
                 key={idx} 
-                className="bg-[#997752] text-[#ecd4ab] px-3 py-1 rounded-full text-sm font-serif"
+                className="bg-slate-600 text-white px-3 py-1 rounded-full text-sm font-serif shadow-sm"
               >
                 {reward}
               </span>
@@ -338,7 +350,7 @@ const QuestDetail = () => {
           
           <div className="flex justify-end">
             <Button 
-              className="border-2 border-[#422e18] text-[#422e18] bg-[#ecd4ab] hover:bg-[#997752] hover:text-[#ecd4ab] font-serif rounded-xl"
+              className="bg-slate-600 hover:bg-slate-700 text-white font-serif rounded-xl shadow-sm"
               onClick={() => navigate("/world-map")}
             >
               View on Map

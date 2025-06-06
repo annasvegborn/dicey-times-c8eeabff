@@ -4,12 +4,15 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import RegionalMap from "@/components/map/RegionalMap";
+import CharacterRenderer from "@/components/character/CharacterRenderer";
+import { useCharacter } from "@/hooks/useCharacter";
 
 const WorldMap = () => {
   const navigate = useNavigate();
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+  const { character } = useCharacter();
 
-  // Define locations for Baelershire region
+  // Define locations for Baelershire region with quest completion status
   const baelershireLocations = [
     { 
       id: "mountain-path", 
@@ -24,7 +27,8 @@ const WorldMap = () => {
       x: 784, 
       y: 266, 
       questId: "village-siege",
-      type: "quest" as const 
+      type: "quest" as const,
+      completed: false // You can make this dynamic based on actual quest status
     },
     { 
       id: "city-castle", 
@@ -39,7 +43,8 @@ const WorldMap = () => {
       x: 777, 
       y: 949, 
       questId: "forest-disturbance",
-      type: "quest" as const 
+      type: "quest" as const,
+      completed: false
     },
     { 
       id: "village-beberty", 
@@ -50,6 +55,9 @@ const WorldMap = () => {
     }
   ];
 
+  // Character's current position (you can make this dynamic)
+  const characterPosition = { x: 775, y: 583 }; // Starting at City Castle
+
   const handleLocationClick = (location: any) => {
     setSelectedLocation(location.id);
     console.log("Location clicked:", location);
@@ -57,13 +65,12 @@ const WorldMap = () => {
     if (location.questId) {
       navigate(`/quest/${location.questId}`);
     } else {
-      // Handle other location types (travel, landmarks)
       console.log(`Clicked on ${location.type}: ${location.name}`);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50">
       {/* Header */}
       <div className="bg-gradient-to-r from-slate-600 to-slate-700 text-white px-4 py-4 flex items-center shadow-lg">
         <Button 
@@ -85,25 +92,34 @@ const WorldMap = () => {
           mapWidth={2024}
           mapHeight={1536}
           locations={baelershireLocations}
+          characterPosition={characterPosition}
           onLocationClick={handleLocationClick}
         />
       </div>
 
       {/* Legend */}
       <div className="mx-4 bg-white rounded-2xl p-4 shadow-lg">
-        <h2 className="text-gray-800 font-serif font-bold mb-3">Legend</h2>
+        <h2 className="text-slate-800 font-serif font-bold mb-3">Legend</h2>
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-red-500 rounded-full shadow-sm"></div>
-            <span className="text-gray-800 text-sm font-serif">Quest Location</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-blue-500 rounded-full shadow-sm"></div>
-            <span className="text-gray-800 text-sm font-serif">Travel Point</span>
+            <span className="text-slate-700 text-sm font-serif">Active Quest</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-green-500 rounded-full shadow-sm"></div>
-            <span className="text-gray-800 text-sm font-serif">Landmark</span>
+            <span className="text-slate-700 text-sm font-serif">Completed Quest</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-blue-500 rounded-full shadow-sm"></div>
+            <span className="text-slate-700 text-sm font-serif">Travel Point</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-amber-500 rounded-full shadow-sm"></div>
+            <span className="text-slate-700 text-sm font-serif">Landmark</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-purple-500 rounded-full shadow-sm"></div>
+            <span className="text-slate-700 text-sm font-serif">Your Location</span>
           </div>
         </div>
       </div>
