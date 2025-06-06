@@ -57,7 +57,7 @@ const RegionalMap = ({
     }
   };
 
-  // Calculate the display dimensions - map fills screen width
+  // Calculate the display dimensions - map fills screen width, height scales proportionally
   const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 1024;
   const displayWidth = screenWidth;
   const displayHeight = (displayWidth * mapHeight) / mapWidth;
@@ -66,12 +66,13 @@ const RegionalMap = ({
   const scaleX = displayWidth / mapWidth;
   const scaleY = displayHeight / mapHeight;
 
-  console.log(`Map scaling: ${mapWidth}x${mapHeight} -> ${displayWidth}x${displayHeight}`);
+  console.log(`Map original: ${mapWidth}x${mapHeight}`);
+  console.log(`Map display: ${displayWidth}x${displayHeight}`);
   console.log(`Scale factors: scaleX=${scaleX}, scaleY=${scaleY}`);
 
   return (
-    <div className="relative w-full bg-white overflow-hidden shadow-xl">
-      {/* Map Image - fills full screen width */}
+    <div className="relative w-full bg-white">
+      {/* Map Image - fills full screen width, maintains aspect ratio */}
       <div 
         className="relative w-full"
         style={{ 
@@ -82,7 +83,7 @@ const RegionalMap = ({
         <img 
           src={mapImage} 
           alt={`${regionId} region map`}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
           style={{ 
             display: 'block',
             width: `${displayWidth}px`,

@@ -93,7 +93,7 @@ const WorldMap = () => {
         <h1 className="text-xl font-bold font-serif">World Map - Baelershire Region</h1>
       </div>
 
-      {/* Map Container - Full width, no padding or constraints */}
+      {/* Map Container - Full width, no constraints */}
       <div className="w-full">
         <RegionalMap
           regionId="baelershire"
@@ -106,29 +106,31 @@ const WorldMap = () => {
         />
       </div>
 
-      {/* Legend - positioned over the map */}
-      <div className="fixed bottom-20 left-4 right-4 bg-white rounded-2xl p-4 shadow-lg z-30 max-w-sm">
-        <h2 className="text-slate-800 font-serif font-bold mb-3">Legend</h2>
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-red-500 rounded-full shadow-sm"></div>
-            <span className="text-slate-700 text-sm font-serif">Active Quest</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-500 rounded-full shadow-sm"></div>
-            <span className="text-slate-700 text-sm font-serif">Completed Quest</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-blue-500 rounded-full shadow-sm"></div>
-            <span className="text-slate-700 text-sm font-serif">Travel Point</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-amber-500 rounded-full shadow-sm"></div>
-            <span className="text-slate-700 text-sm font-serif">Landmark</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-purple-500 rounded-full shadow-sm"></div>
-            <span className="text-slate-700 text-sm font-serif">Your Location</span>
+      {/* Legend - placed after the map */}
+      <div className="bg-white p-6 shadow-lg">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-slate-800 font-serif font-bold mb-4 text-lg">Map Legend</h2>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-red-500 rounded-full shadow-sm"></div>
+              <span className="text-slate-700 text-sm font-serif">Active Quest</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-green-500 rounded-full shadow-sm"></div>
+              <span className="text-slate-700 text-sm font-serif">Completed Quest</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-blue-500 rounded-full shadow-sm"></div>
+              <span className="text-slate-700 text-sm font-serif">Travel Point</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-amber-500 rounded-full shadow-sm"></div>
+              <span className="text-slate-700 text-sm font-serif">Landmark</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-purple-500 rounded-full shadow-sm"></div>
+              <span className="text-slate-700 text-sm font-serif">Your Location</span>
+            </div>
           </div>
         </div>
       </div>
