@@ -182,7 +182,6 @@ const CharacterRenderer = ({
         style={{ 
           imageRendering: size < 64 ? 'auto' : 'auto',
           maxWidth: '100%',
-          height: 'auto',
           width: `${size}px`,
           height: `${size}px`
         }}
