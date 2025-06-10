@@ -42,6 +42,23 @@ const QuestLog = () => {
       ]
     },
     {
+      id: "chapel-mystery",
+      title: "The Silent Chapel",
+      description: "The old chapel has been silent for months. No bells ring, no prayers are heard. Investigate what has happened to the holy site.",
+      status: "available",
+      location: "Abandoned Chapel",
+      difficulty: "Medium",
+      xpReward: 300,
+      progress: 0,
+      maxProgress: 4,
+      objectives: [
+        { text: "Approach the chapel carefully", completed: false },
+        { text: "Investigate the chapel interior", completed: false },
+        { text: "Search for clues", completed: false },
+        { text: "Confront the dark presence", completed: false }
+      ]
+    },
+    {
       id: "lost-artifact",
       title: "The Lost Artifact",
       description: "A powerful artifact has been stolen from the mage tower",

@@ -93,8 +93,8 @@ const WorldMap = () => {
         <h1 className="text-xl font-bold font-serif">World Map - Baelershire Region</h1>
       </div>
 
-      {/* Map Container - Full width, no constraints */}
-      <div className="w-full">
+      {/* Map Container - Full window width, allows scrolling */}
+      <div className="w-full overflow-x-auto">
         <RegionalMap
           regionId="baelershire"
           mapImage="/lovable-uploads/0fbe99d0-6956-4564-b834-75082e430b67.png"
