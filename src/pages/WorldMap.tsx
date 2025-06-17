@@ -79,9 +79,9 @@ const WorldMap = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 overflow-x-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-slate-600 to-slate-700 text-white px-4 py-4 flex items-center shadow-lg">
+      <div className="bg-gradient-to-r from-slate-600 to-slate-700 text-white px-4 py-4 flex items-center shadow-lg relative z-30">
         <Button 
           variant="ghost" 
           size="icon"
@@ -93,8 +93,8 @@ const WorldMap = () => {
         <h1 className="text-xl font-bold font-serif">World Map - Baelershire Region</h1>
       </div>
 
-      {/* Map Container - Full window width, allows scrolling */}
-      <div className="w-full overflow-x-auto">
+      {/* Map Container - Full screen width */}
+      <div className="w-full">
         <RegionalMap
           regionId="baelershire"
           mapImage="/lovable-uploads/0fbe99d0-6956-4564-b834-75082e430b67.png"
@@ -107,7 +107,7 @@ const WorldMap = () => {
       </div>
 
       {/* Legend - placed after the map */}
-      <div className="bg-white p-6 shadow-lg">
+      <div className="bg-white p-6 shadow-lg relative z-20">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-slate-800 font-serif font-bold mb-4 text-lg">Map Legend</h2>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
