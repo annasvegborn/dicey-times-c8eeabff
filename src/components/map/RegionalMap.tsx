@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import CharacterRenderer from "@/components/character/CharacterRenderer";
@@ -38,44 +39,33 @@ const RegionalMap = ({
   onLocationClick
 }: RegionalMapProps) => {
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
-  const [scaleFactor, setScaleFactor] = useState(1);
-  const [displayHeight, setDisplayHeight] = useState(0);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
   const imageRef = useRef<HTMLImageElement>(null);
   const { character } = useCharacter();
 
   useEffect(() => {
-    const updateMapDimensions = () => {
-      const screenWidth = window.innerWidth;
-      const newScaleFactor = screenWidth / mapWidth;
-      const newDisplayHeight = mapHeight * newScaleFactor;
-      
-      console.log(`Screen width: ${screenWidth}`);
-      console.log(`Map original: ${mapWidth}x${mapHeight}`);
-      console.log(`Scale factor: ${newScaleFactor}`);
-      console.log(`Display height: ${newDisplayHeight}`);
-      
-      setScaleFactor(newScaleFactor);
-      setDisplayHeight(newDisplayHeight);
-    };
-
-    // Initial calculation
-    updateMapDimensions();
-    
-    // Recalculate on resize
-    window.addEventListener('resize', updateMapDimensions);
-    
-    // Also recalculate when image loads
-    if (imageRef.current) {
-      imageRef.current.addEventListener('load', updateMapDimensions);
-    }
-    
-    return () => {
-      window.removeEventListener('resize', updateMapDimensions);
-      if (imageRef.current) {
-        imageRef.current.removeEventListener('load', updateMapDimensions);
+    const updateImageDimensions = () => {
+      if (imageRef.current && imageLoaded) {
+        const rect = imageRef.current.getBoundingClientRect();
+        console.log(`Image rendered dimensions: ${rect.width}x${rect.height}`);
+        console.log(`Original image dimensions: ${mapWidth}x${mapHeight}`);
+        setImageDimensions({ width: rect.width, height: rect.height });
       }
     };
-  }, [mapWidth, mapHeight]);
+
+    updateImageDimensions();
+    window.addEventListener('resize', updateImageDimensions);
+    
+    return () => {
+      window.removeEventListener('resize', updateImageDimensions);
+    };
+  }, [imageLoaded, mapWidth, mapHeight]);
+
+  const handleImageLoad = () => {
+    console.log('Image loaded');
+    setImageLoaded(true);
+  };
 
   const handleLocationClick = (location: MapLocation) => {
     setSelectedLocation(location.id);
@@ -93,30 +83,38 @@ const RegionalMap = ({
     }
   };
 
+  const getScaledPosition = (originalX: number, originalY: number) => {
+    if (!imageLoaded || !imageDimensions.width || !imageDimensions.height) {
+      return { x: 0, y: 0 };
+    }
+
+    // Calculate scale factors for both dimensions
+    const scaleX = imageDimensions.width / mapWidth;
+    const scaleY = imageDimensions.height / mapHeight;
+    
+    // Apply scaling to get the position on the rendered image
+    const scaledX = originalX * scaleX;
+    const scaledY = originalY * scaleY;
+    
+    console.log(`Scaling ${originalX}, ${originalY} -> ${scaledX}, ${scaledY} (scale: ${scaleX}, ${scaleY})`);
+    
+    return { x: scaledX, y: scaledY };
+  };
+
   return (
-    <div className="relative bg-slate-100" style={{ 
-      width: '100vw', 
-      height: `${displayHeight}px`,
-      minHeight: '400px'
-    }}>
+    <div className="relative bg-slate-100 w-full">
       {/* Map Image - full screen width, natural height */}
       <img 
         ref={imageRef}
         src={mapImage} 
         alt={`${regionId} region map`}
-        className="block w-full h-full object-cover"
-        style={{ 
-          width: '100vw',
-          height: `${displayHeight}px`
-        }}
+        className="block w-full h-auto"
+        onLoad={handleImageLoad}
       />
       
-      {/* Interactive locations - positioned relative to the scaled map */}
-      {scaleFactor > 0 && locations.map((location) => {
-        const scaledX = location.x * scaleFactor;
-        const scaledY = location.y * scaleFactor;
-        
-        console.log(`Location ${location.name}: original(${location.x}, ${location.y}) -> scaled(${scaledX}, ${scaledY})`);
+      {/* Interactive locations - positioned relative to the rendered image */}
+      {imageLoaded && imageDimensions.width > 0 && locations.map((location) => {
+        const { x: scaledX, y: scaledY } = getScaledPosition(location.x, location.y);
         
         return (
           <button
@@ -143,13 +141,13 @@ const RegionalMap = ({
         );
       })}
 
-      {/* Character position - positioned relative to the scaled map */}
-      {characterPosition && character && scaleFactor > 0 && (
+      {/* Character position - positioned relative to the rendered image */}
+      {characterPosition && character && imageLoaded && imageDimensions.width > 0 && (
         <div
           className="absolute transform -translate-x-1/2 -translate-y-1/2 z-20"
           style={{ 
-            left: `${characterPosition.x * scaleFactor}px`, 
-            top: `${characterPosition.y * scaleFactor}px` 
+            left: `${getScaledPosition(characterPosition.x, characterPosition.y).x}px`, 
+            top: `${getScaledPosition(characterPosition.x, characterPosition.y).y}px` 
           }}
         >
           <div className="relative group">
