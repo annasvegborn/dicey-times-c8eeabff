@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Scroll, MapPin, Clock, Sword, CheckCircle } from "lucide-react";
@@ -7,7 +6,7 @@ import { useQuests } from "@/contexts/QuestContext";
 
 const QuestLog = () => {
   const navigate = useNavigate();
-  const { quests } = useQuests();
+  const { quests, loading } = useQuests();
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -35,6 +34,14 @@ const QuestLog = () => {
       default: return <Scroll className="text-slate-600" size={16} />;
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-slate-700 font-serif text-xl">Loading quest log...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

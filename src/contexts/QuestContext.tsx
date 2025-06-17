@@ -1,5 +1,6 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 export interface QuestObjective {
   id: string;
@@ -28,6 +29,7 @@ export interface Quest {
 
 interface QuestContextType {
   quests: Quest[];
+  loading: boolean;
   updateQuestObjective: (questId: string, objectiveId: string, updates: Partial<QuestObjective>) => void;
   completeObjective: (questId: string, objectiveId: string) => void;
   getQuestById: (questId: string) => Quest | undefined;
@@ -106,35 +108,117 @@ const initialQuests: Quest[] = [
   }
 ];
 
-const STORAGE_KEY = 'fitquest-progress';
-
 export const QuestProvider = ({ children }: { children: ReactNode }) => {
-  const [quests, setQuests] = useState<Quest[]>(() => {
-    // Load saved progress from localStorage on initialization
-    try {
-      const savedProgress = localStorage.getItem(STORAGE_KEY);
-      if (savedProgress) {
-        const parsedProgress = JSON.parse(savedProgress);
-        // Merge saved progress with initial quests to handle new quests added later
-        return initialQuests.map(initialQuest => {
-          const savedQuest = parsedProgress.find((q: Quest) => q.id === initialQuest.id);
-          return savedQuest || initialQuest;
-        });
-      }
-    } catch (error) {
-      console.error('Failed to load quest progress from localStorage:', error);
-    }
-    return initialQuests;
-  });
+  const [quests, setQuests] = useState<Quest[]>(initialQuests);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
-  // Save quest progress to localStorage whenever quests change
+  // Load quest progress from database when user is authenticated
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(quests));
-    } catch (error) {
-      console.error('Failed to save quest progress to localStorage:', error);
+    if (user) {
+      loadQuestProgress();
+    } else {
+      // Reset to initial quests when no user is logged in
+      setQuests(initialQuests);
+      setLoading(false);
     }
-  }, [quests]);
+  }, [user]);
+
+  const loadQuestProgress = async () => {
+    if (!user) return;
+
+    try {
+      setLoading(true);
+      
+      // Fetch user's quest progress
+      const { data: questProgress } = await supabase
+        .from('user_quest_progress')
+        .select('*')
+        .eq('user_id', user.id);
+
+      // Fetch user's objective progress
+      const { data: objectiveProgress } = await supabase
+        .from('user_objective_progress')
+        .select('*')
+        .eq('user_id', user.id);
+
+      // Merge saved progress with initial quests
+      const updatedQuests = initialQuests.map(initialQuest => {
+        const savedQuestProgress = questProgress?.find(qp => qp.quest_id === initialQuest.id);
+        
+        if (savedQuestProgress) {
+          // Update quest status and progress
+          const updatedObjectives = initialQuest.objectives.map(objective => {
+            const savedObjective = objectiveProgress?.find(
+              op => op.quest_id === initialQuest.id && op.objective_id === objective.id
+            );
+            
+            if (savedObjective) {
+              return {
+                ...objective,
+                completed: savedObjective.completed,
+                progress: savedObjective.progress || objective.progress
+              };
+            }
+            return objective;
+          });
+
+          return {
+            ...initialQuest,
+            status: savedQuestProgress.status as "available" | "active" | "completed",
+            progress: savedQuestProgress.progress,
+            objectives: updatedObjectives
+          };
+        }
+        
+        return initialQuest;
+      });
+
+      setQuests(updatedQuests);
+    } catch (error) {
+      console.error('Failed to load quest progress:', error);
+      setQuests(initialQuests);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveQuestProgress = async (questId: string, status: string, progress: number) => {
+    if (!user) return;
+
+    try {
+      await supabase
+        .from('user_quest_progress')
+        .upsert({
+          user_id: user.id,
+          quest_id: questId,
+          status,
+          progress,
+          updated_at: new Date().toISOString()
+        });
+    } catch (error) {
+      console.error('Failed to save quest progress:', error);
+    }
+  };
+
+  const saveObjectiveProgress = async (questId: string, objectiveId: string, completed: boolean, progress?: number) => {
+    if (!user) return;
+
+    try {
+      await supabase
+        .from('user_objective_progress')
+        .upsert({
+          user_id: user.id,
+          quest_id: questId,
+          objective_id: objectiveId,
+          completed,
+          progress: progress || 0,
+          updated_at: new Date().toISOString()
+        });
+    } catch (error) {
+      console.error('Failed to save objective progress:', error);
+    }
+  };
 
   const updateQuestObjective = (questId: string, objectiveId: string, updates: Partial<QuestObjective>) => {
     setQuests(prevQuests => 
@@ -148,12 +232,18 @@ export const QuestProvider = ({ children }: { children: ReactNode }) => {
           const newStatus = completedObjectives === 0 ? "available" : 
                            completedObjectives === updatedObjectives.length ? "completed" : "active";
           
-          return {
+          const updatedQuest = {
             ...quest,
             objectives: updatedObjectives,
             progress: completedObjectives,
             status: newStatus
           };
+
+          // Save to database
+          saveQuestProgress(questId, newStatus, completedObjectives);
+          saveObjectiveProgress(questId, objectiveId, updates.completed || false, updates.progress);
+          
+          return updatedQuest;
         }
         return quest;
       })
@@ -171,6 +261,7 @@ export const QuestProvider = ({ children }: { children: ReactNode }) => {
   return (
     <QuestContext.Provider value={{
       quests,
+      loading,
       updateQuestObjective,
       completeObjective,
       getQuestById

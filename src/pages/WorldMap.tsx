@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -12,7 +11,7 @@ const WorldMap = () => {
   const navigate = useNavigate();
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const { character } = useCharacter();
-  const { quests } = useQuests();
+  const { quests, loading } = useQuests();
 
   // Create a quest lookup for easy access
   const questLookup = quests.reduce((acc, quest) => {
@@ -85,6 +84,14 @@ const WorldMap = () => {
       console.log(`Clicked on ${location.type}: ${location.name}`);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-slate-700 font-serif text-xl">Loading world map...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 overflow-x-hidden">
