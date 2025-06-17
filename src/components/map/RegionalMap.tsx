@@ -88,15 +88,14 @@ const RegionalMap = ({
       return { x: 0, y: 0 };
     }
 
-    // Calculate scale factors for both dimensions
-    const scaleX = imageDimensions.width / mapWidth;
-    const scaleY = imageDimensions.height / mapHeight;
+    // Use uniform scaling based on width since the image maintains aspect ratio
+    const scale = imageDimensions.width / mapWidth;
     
-    // Apply scaling to get the position on the rendered image
-    const scaledX = originalX * scaleX;
-    const scaledY = originalY * scaleY;
+    // Apply the same scale to both X and Y coordinates
+    const scaledX = originalX * scale;
+    const scaledY = originalY * scale;
     
-    console.log(`Scaling ${originalX}, ${originalY} -> ${scaledX}, ${scaledY} (scale: ${scaleX}, ${scaleY})`);
+    console.log(`Scaling ${originalX}, ${originalY} -> ${scaledX}, ${scaledY} (uniform scale: ${scale})`);
     
     return { x: scaledX, y: scaledY };
   };
