@@ -6,13 +6,21 @@ import { useNavigate } from "react-router-dom";
 import RegionalMap from "@/components/map/RegionalMap";
 import CharacterRenderer from "@/components/character/CharacterRenderer";
 import { useCharacter } from "@/hooks/useCharacter";
+import { useQuests } from "@/contexts/QuestContext";
 
 const WorldMap = () => {
   const navigate = useNavigate();
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const { character } = useCharacter();
+  const { quests } = useQuests();
 
-  // Define locations for Baelershire region with quest completion status
+  // Create a quest lookup for easy access
+  const questLookup = quests.reduce((acc, quest) => {
+    acc[quest.id] = quest;
+    return acc;
+  }, {} as Record<string, typeof quests[0]>);
+
+  // Define locations for Baelershire region with quest completion status from shared data
   const baelershireLocations = [
     { 
       id: "mountain-path", 
@@ -28,7 +36,7 @@ const WorldMap = () => {
       y: 266, 
       questId: "village-siege",
       type: "quest" as const,
-      completed: false
+      completed: questLookup["village-siege"]?.status === "completed"
     },
     { 
       id: "city-castle", 
@@ -44,7 +52,7 @@ const WorldMap = () => {
       y: 949, 
       questId: "chapel-mystery",
       type: "quest" as const,
-      completed: false
+      completed: questLookup["chapel-mystery"]?.status === "completed"
     },
     { 
       id: "village-beberty", 
@@ -60,7 +68,7 @@ const WorldMap = () => {
       y: 472, 
       questId: "forest-disturbance",
       type: "quest" as const,
-      completed: false
+      completed: questLookup["forest-disturbance"]?.status === "completed"
     }
   ];
 
@@ -113,7 +121,7 @@ const WorldMap = () => {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 bg-red-500 rounded-full shadow-sm"></div>
-              <span className="text-slate-700 text-sm font-serif">Active Quest</span>
+              <span className="text-slate-700 text-sm font-serif">Available Quest</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 bg-green-500 rounded-full shadow-sm"></div>

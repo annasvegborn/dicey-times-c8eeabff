@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -5,106 +6,24 @@ import { ArrowLeft, CheckCircle2, Trophy, Clock, MessageCircle } from "lucide-re
 import { Progress } from "@/components/ui/progress";
 import { toast } from "@/hooks/use-toast";
 import InteractiveBattleScene from "@/components/combat/InteractiveBattleScene";
-
-// Types for our quest data
-interface QuestObjective {
-  id: string;
-  text: string;
-  completed: boolean;
-  activityType: "walk" | "strength" | "cardio" | "stretch" | "other" | "conversation";
-  target?: number;
-  progress?: number;
-}
-
-interface Quest {
-  id: string;
-  title: string;
-  location: string;
-  description: string;
-  objectives: QuestObjective[];
-  rewards: string[];
-  background?: string;
-  difficulty?: "easy" | "medium" | "hard";
-  conversations?: { [key: string]: string[] };
-}
-
-// Mock data repository - in a real app this would come from a database
-const questRepository: Record<string, Quest> = {
-  "village-siege": {
-    id: "village-siege",
-    title: "Village Under Siege",
-    location: "Oakvale Village",
-    description: "Defend the village from an attack by mysterious bandits who appeared from the western mountains. The village elder has called upon you for help.",
-    background: "bg-amber-900",
-    difficulty: "medium",
-    objectives: [
-      { id: "train-1", text: "Complete a strength training workout", completed: false, activityType: "strength" },
-      { id: "walk-1", text: "Walk 1km to patrol the village", completed: false, activityType: "walk", target: 1000, progress: 0 },
-      { id: "fight-1", text: "Defeat the bandit leader (complete workout)", completed: false, activityType: "strength" }
-    ],
-    rewards: ["Silver Sword", "50 XP", "Village Hero title"]
-  },
-  "forest-disturbance": {
-    id: "forest-disturbance",
-    title: "Strange Disturbance",
-    location: "Whisperwind Forest",
-    description: "Something is causing animals to flee from the forest. The local druids are concerned about an unknown dark presence.",
-    background: "bg-green-900",
-    difficulty: "easy",
-    objectives: [
-      { id: "talk-druid", text: "Speak with the forest druid", completed: false, activityType: "conversation" },
-      { id: "walk-2", text: "Walk 2km to search the forest", completed: false, activityType: "walk", target: 2000, progress: 0 },
-      { id: "find-1", text: "Find evidence of disturbance (10 min cardio)", completed: false, activityType: "cardio" },
-      { id: "talk-animals", text: "Communicate with the forest animals", completed: false, activityType: "conversation" },
-      { id: "report-1", text: "Return to the village elder (stretch session)", completed: false, activityType: "stretch" }
-    ],
-    rewards: ["Forest Map", "40 XP", "Nature's Friend trait"],
-    conversations: {
-      "talk-druid": [
-        "Druid: 'Welcome, traveler. The forest speaks of dark magic stirring within its depths.'",
-        "You: 'What kind of disturbance are we dealing with?'",
-        "Druid: 'The trees whisper of shadows that shouldn't exist. Animals flee in terror. Something unnatural has taken root here.'"
-      ],
-      "talk-animals": [
-        "A frightened rabbit approaches: 'The shadows... they move wrong! They hurt the old oak!'",
-        "You: 'Can you show me where?'",
-        "The rabbit nods: 'Follow the dead leaves, but be careful. The darkness grows stronger there.'"
-      ]
-    }
-  },
-  "chapel-mystery": {
-    id: "chapel-mystery",
-    title: "The Silent Chapel",
-    location: "Abandoned Chapel",
-    description: "The old chapel has been silent for months. No bells ring, no prayers are heard. Investigate what has happened to the holy site.",
-    background: "bg-purple-900",
-    difficulty: "medium",
-    objectives: [
-      { id: "approach-chapel", text: "Approach the chapel carefully", completed: false, activityType: "walk", target: 500, progress: 0 },
-      { id: "investigate-interior", text: "Investigate the chapel interior (strength training)", completed: false, activityType: "strength" },
-      { id: "find-clues", text: "Search for clues (cardio workout)", completed: false, activityType: "cardio" },
-      { id: "confront-presence", text: "Confront the dark presence", completed: false, activityType: "other" }
-    ],
-    rewards: ["Holy Symbol", "60 XP", "Divine Protection blessing"]
-  }
-};
+import { useQuests } from "@/contexts/QuestContext";
 
 const QuestDetail = () => {
   const { questId } = useParams<{ questId: string }>();
   const navigate = useNavigate();
-  const [quest, setQuest] = useState<Quest | null>(null);
+  const { getQuestById, updateQuestObjective, completeObjective } = useQuests();
   const [loading, setLoading] = useState(true);
   const [inBattle, setInBattle] = useState(false);
   const [battleEnemy, setBattleEnemy] = useState<{ name: string; image: string } | null>(null);
   const [currentConversation, setCurrentConversation] = useState<string | null>(null);
 
+  const quest = questId ? getQuestById(questId) : null;
+
   useEffect(() => {
-    // Simulate loading data from an API
+    // Simulate loading data
     setLoading(true);
     setTimeout(() => {
-      if (questId && questRepository[questId]) {
-        setQuest(questRepository[questId]);
-      } else {
+      if (!quest && questId) {
         toast({
           title: "Quest not found",
           description: "This adventure doesn't exist in our records.",
@@ -114,75 +33,49 @@ const QuestDetail = () => {
       }
       setLoading(false);
     }, 500);
-  }, [questId, navigate]);
+  }, [questId, navigate, quest]);
 
-  const completeObjective = (objectiveId: string) => {
-    if (!quest) return;
+  const handleCompleteObjective = (objectiveId: string) => {
+    if (!questId) return;
     
-    setQuest(prev => {
-      if (!prev) return prev;
-      
-      const updatedObjectives = prev.objectives.map(obj => 
-        obj.id === objectiveId ? { ...obj, completed: true } : obj
-      );
-      
-      const allCompleted = updatedObjectives.every(obj => obj.completed);
-      
-      // Update the quest repository to persist completion
-      if (questId && questRepository[questId]) {
-        questRepository[questId] = { ...questRepository[questId], objectives: updatedObjectives };
-      }
-      
-      if (allCompleted) {
-        toast({
-          title: "Quest Completed!",
-          description: `You've completed "${prev.title}"!`,
-        });
-      } else {
-        toast({
-          title: "Objective Completed",
-          description: "Progress saved!",
-        });
-      }
-      
-      return { ...prev, objectives: updatedObjectives };
-    });
+    completeObjective(questId, objectiveId);
+    
+    const updatedQuest = getQuestById(questId);
+    const allCompleted = updatedQuest?.objectives.every(obj => obj.completed);
+    
+    if (allCompleted) {
+      toast({
+        title: "Quest Completed!",
+        description: `You've completed "${updatedQuest?.title}"!`,
+      });
+    } else {
+      toast({
+        title: "Objective Completed",
+        description: "Progress saved!",
+      });
+    }
   };
 
   const trackProgress = (objectiveId: string, newProgress: number) => {
-    if (!quest) return;
+    if (!questId) return;
     
-    setQuest(prev => {
-      if (!prev) return prev;
-      
-      const updatedObjectives = prev.objectives.map(obj => {
-        if (obj.id === objectiveId) {
-          const updatedProgress = Math.min((obj.progress || 0) + newProgress, obj.target || 0);
-          const completed = updatedProgress >= (obj.target || 0);
-          
-          if (completed && !obj.completed) {
-            toast({
-              title: "Objective Completed!",
-              description: obj.text,
-            });
-          }
-          
-          return { 
-            ...obj, 
-            progress: updatedProgress,
-            completed: completed 
-          };
-        }
-        return obj;
-      });
-
-      // Update the quest repository to persist progress
-      if (questId && questRepository[questId]) {
-        questRepository[questId] = { ...questRepository[questId], objectives: updatedObjectives };
-      }
-      
-      return { ...prev, objectives: updatedObjectives };
+    const objective = quest?.objectives.find(obj => obj.id === objectiveId);
+    if (!objective) return;
+    
+    const updatedProgress = Math.min((objective.progress || 0) + newProgress, objective.target || 0);
+    const completed = updatedProgress >= (objective.target || 0);
+    
+    updateQuestObjective(questId, objectiveId, { 
+      progress: updatedProgress,
+      completed: completed 
     });
+    
+    if (completed && !objective.completed) {
+      toast({
+        title: "Objective Completed!",
+        description: objective.text,
+      });
+    }
   };
 
   const startBattle = (enemyName: string, enemyImage: string) => {
@@ -200,8 +93,8 @@ const QuestDetail = () => {
     
     // Find and complete the fight objective
     const fightObjective = quest?.objectives.find(obj => obj.id === "fight-1" || obj.id === "confront-presence");
-    if (fightObjective) {
-      completeObjective(fightObjective.id);
+    if (fightObjective && questId) {
+      handleCompleteObjective(fightObjective.id);
       toast({
         title: "Victory!",
         description: "You defeated the enemy!",
@@ -290,7 +183,7 @@ const QuestDetail = () => {
               </Button>
               <Button 
                 onClick={() => {
-                  completeObjective(currentConversation);
+                  handleCompleteObjective(currentConversation);
                   setCurrentConversation(null);
                 }}
                 className="bg-slate-600 hover:bg-slate-700 text-white font-serif rounded-xl"
@@ -419,7 +312,7 @@ const QuestDetail = () => {
                           <Button 
                             size="sm" 
                             className="text-xs py-1 bg-slate-600 hover:bg-slate-700 text-white font-serif rounded-xl shadow-sm"
-                            onClick={() => completeObjective(objective.id)}
+                            onClick={() => handleCompleteObjective(objective.id)}
                           >
                             Mark as Complete
                           </Button>

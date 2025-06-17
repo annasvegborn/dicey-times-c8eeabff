@@ -1,82 +1,13 @@
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Scroll, MapPin, Clock, Sword, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useQuests } from "@/contexts/QuestContext";
 
 const QuestLog = () => {
   const navigate = useNavigate();
-
-  // Sample quest data - this would come from your game state
-  const quests = [
-    {
-      id: "village-siege",
-      title: "Village Under Siege",
-      description: "Help defend Oakvale Village from goblin raiders",
-      status: "active",
-      location: "Oakvale Village",
-      difficulty: "Easy",
-      xpReward: 100,
-      progress: 2,
-      maxProgress: 3,
-      objectives: [
-        { text: "Speak to the Village Elder", completed: true },
-        { text: "Defeat 5 Goblin Raiders", completed: true },
-        { text: "Return to Village Elder", completed: false }
-      ]
-    },
-    {
-      id: "forest-disturbance",
-      title: "Forest Disturbance",
-      description: "Investigate strange noises coming from Whisperwind Forest",
-      status: "available",
-      location: "Whisperwind Forest",
-      difficulty: "Medium",
-      xpReward: 250,
-      progress: 0,
-      maxProgress: 4,
-      objectives: [
-        { text: "Enter Whisperwind Forest", completed: false },
-        { text: "Find the source of disturbance", completed: false },
-        { text: "Investigate the ancient ruins", completed: false },
-        { text: "Report back to town", completed: false }
-      ]
-    },
-    {
-      id: "chapel-mystery",
-      title: "The Silent Chapel",
-      description: "The old chapel has been silent for months. No bells ring, no prayers are heard. Investigate what has happened to the holy site.",
-      status: "available",
-      location: "Abandoned Chapel",
-      difficulty: "Medium",
-      xpReward: 300,
-      progress: 0,
-      maxProgress: 4,
-      objectives: [
-        { text: "Approach the chapel carefully", completed: false },
-        { text: "Investigate the chapel interior", completed: false },
-        { text: "Search for clues", completed: false },
-        { text: "Confront the dark presence", completed: false }
-      ]
-    },
-    {
-      id: "lost-artifact",
-      title: "The Lost Artifact",
-      description: "A powerful artifact has been stolen from the mage tower",
-      status: "completed",
-      location: "Dragon's Peak",
-      difficulty: "Hard",
-      xpReward: 500,
-      progress: 5,
-      maxProgress: 5,
-      objectives: [
-        { text: "Gather information about the thief", completed: true },
-        { text: "Track the thief to Dragon's Peak", completed: true },
-        { text: "Navigate the mountain caves", completed: true },
-        { text: "Defeat the corrupted mage", completed: true },
-        { text: "Return the artifact", completed: true }
-      ]
-    }
-  ];
+  const { quests } = useQuests();
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -89,9 +20,9 @@ const QuestLog = () => {
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case "Easy": return "bg-green-100 text-green-800";
-      case "Medium": return "bg-yellow-100 text-yellow-800";
-      case "Hard": return "bg-red-100 text-red-800";
+      case "easy": return "bg-green-100 text-green-800";
+      case "medium": return "bg-yellow-100 text-yellow-800";
+      case "hard": return "bg-red-100 text-red-800";
       default: return "bg-slate-600 text-white";
     }
   };
