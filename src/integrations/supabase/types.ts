@@ -192,6 +192,71 @@ export type Database = {
         }
         Relationships: []
       }
+      exercise_entries: {
+        Row: {
+          created_at: string
+          exercise_distance_meters: number | null
+          exercise_speed_kmh: number | null
+          exercise_time_seconds: number | null
+          exercise_type: string
+          exercise_unit: string | null
+          exercise_value: number | null
+          id: string
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          exercise_distance_meters?: number | null
+          exercise_speed_kmh?: number | null
+          exercise_time_seconds?: number | null
+          exercise_type: string
+          exercise_unit?: string | null
+          exercise_value?: number | null
+          id?: string
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          exercise_distance_meters?: number | null
+          exercise_speed_kmh?: number | null
+          exercise_time_seconds?: number | null
+          exercise_type?: string
+          exercise_unit?: string | null
+          exercise_value?: number | null
+          id?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exercise_entries_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "exercise_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exercise_sessions: {
+        Row: {
+          created_at: string
+          id: string
+          session_date: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          session_date?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          session_date?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
