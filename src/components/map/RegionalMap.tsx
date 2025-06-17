@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import CharacterRenderer from "@/components/character/CharacterRenderer";
 import { useCharacter } from "@/hooks/useCharacter";
@@ -39,25 +39,75 @@ const RegionalMap = ({
   onLocationClick
 }: RegionalMapProps) => {
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
-  const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
+  const [imageData, setImageData] = useState({ 
+    displayWidth: 0, 
+    displayHeight: 0, 
+    offsetX: 0, 
+    offsetY: 0,
+    containerWidth: 0,
+    containerHeight: 0
+  });
+  const imageRef = useRef<HTMLImageElement>(null);
   const { character } = useCharacter();
 
   useEffect(() => {
-    const updateDimensions = () => {
+    const updateImageDimensions = () => {
+      if (!imageRef.current) return;
+      
       const screenWidth = window.innerWidth;
       const aspectRatio = mapHeight / mapWidth;
-      const displayHeight = screenWidth * aspectRatio;
       
-      setContainerDimensions({
-        width: screenWidth,
-        height: displayHeight
+      // Calculate what the container height would be if we maintained aspect ratio
+      const idealHeight = screenWidth * aspectRatio;
+      
+      // But we want to show the full image, so we need to check if it fits
+      const screenHeight = window.innerHeight - 100; // Account for header/footer
+      
+      let displayWidth, displayHeight, offsetX = 0, offsetY = 0;
+      
+      if (idealHeight <= screenHeight) {
+        // Image fits width-wise, use full screen width
+        displayWidth = screenWidth;
+        displayHeight = idealHeight;
+      } else {
+        // Image is too tall, scale down to fit height
+        displayHeight = screenHeight;
+        displayWidth = screenHeight / aspectRatio;
+        offsetX = (screenWidth - displayWidth) / 2;
+      }
+      
+      console.log(`Screen: ${screenWidth}x${screenHeight}`);
+      console.log(`Map original: ${mapWidth}x${mapHeight}`);
+      console.log(`Display: ${displayWidth}x${displayHeight}`);
+      console.log(`Offset: ${offsetX}, ${offsetY}`);
+      
+      setImageData({
+        displayWidth,
+        displayHeight,
+        offsetX,
+        offsetY,
+        containerWidth: screenWidth,
+        containerHeight: Math.max(idealHeight, screenHeight)
       });
     };
 
-    updateDimensions();
-    window.addEventListener('resize', updateDimensions);
+    // Initial calculation
+    updateImageDimensions();
     
-    return () => window.removeEventListener('resize', updateDimensions);
+    // Recalculate on resize
+    window.addEventListener('resize', updateImageDimensions);
+    
+    // Also recalculate when image loads
+    if (imageRef.current) {
+      imageRef.current.addEventListener('load', updateImageDimensions);
+    }
+    
+    return () => {
+      window.removeEventListener('resize', updateImageDimensions);
+      if (imageRef.current) {
+        imageRef.current.removeEventListener('load', updateImageDimensions);
+      }
+    };
   }, [mapWidth, mapHeight]);
 
   const handleLocationClick = (location: MapLocation) => {
@@ -77,30 +127,33 @@ const RegionalMap = ({
   };
 
   // Calculate scaling factors for positioning markers correctly
-  const scaleX = containerDimensions.width / mapWidth;
-  const scaleY = containerDimensions.height / mapHeight;
-
-  console.log(`Map original: ${mapWidth}x${mapHeight}`);
-  console.log(`Map display: ${containerDimensions.width}x${containerDimensions.height}`);
-  console.log(`Scale factors: scaleX=${scaleX}, scaleY=${scaleY}`);
+  const scaleX = imageData.displayWidth / mapWidth;
+  const scaleY = imageData.displayHeight / mapHeight;
 
   return (
-    <div className="relative bg-white" style={{ width: '100vw', height: `${containerDimensions.height}px` }}>
-      {/* Map Image - fills full window width */}
+    <div className="relative bg-slate-100 flex justify-center" style={{ 
+      width: '100vw', 
+      height: `${imageData.containerHeight}px`,
+      minHeight: '400px'
+    }}>
+      {/* Map Image - centered and contained */}
       <img 
+        ref={imageRef}
         src={mapImage} 
         alt={`${regionId} region map`}
-        className="block w-full h-full object-cover"
+        className="block object-contain"
         style={{ 
-          width: `${containerDimensions.width}px`,
-          height: `${containerDimensions.height}px`
+          width: `${imageData.displayWidth}px`,
+          height: `${imageData.displayHeight}px`,
+          marginLeft: `${imageData.offsetX}px`,
+          marginTop: `${imageData.offsetY}px`
         }}
       />
       
-      {/* Interactive locations - scaled coordinates */}
-      {locations.map((location) => {
-        const scaledX = location.x * scaleX;
-        const scaledY = location.y * scaleY;
+      {/* Interactive locations - positioned relative to the actual displayed image */}
+      {imageData.displayWidth > 0 && locations.map((location) => {
+        const scaledX = location.x * scaleX + imageData.offsetX;
+        const scaledY = location.y * scaleY + imageData.offsetY;
         
         console.log(`Location ${location.name}: original(${location.x}, ${location.y}) -> scaled(${scaledX}, ${scaledY})`);
         
@@ -129,13 +182,13 @@ const RegionalMap = ({
         );
       })}
 
-      {/* Character position - scaled coordinates */}
-      {characterPosition && character && (
+      {/* Character position - positioned relative to the actual displayed image */}
+      {characterPosition && character && imageData.displayWidth > 0 && (
         <div
           className="absolute transform -translate-x-1/2 -translate-y-1/2 z-20"
           style={{ 
-            left: `${characterPosition.x * scaleX}px`, 
-            top: `${characterPosition.y * scaleY}px` 
+            left: `${characterPosition.x * scaleX + imageData.offsetX}px`, 
+            top: `${characterPosition.y * scaleY + imageData.offsetY}px` 
           }}
         >
           <div className="relative group">
