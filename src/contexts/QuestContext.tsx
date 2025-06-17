@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export interface QuestObjective {
   id: string;
@@ -106,8 +106,35 @@ const initialQuests: Quest[] = [
   }
 ];
 
+const STORAGE_KEY = 'fitquest-progress';
+
 export const QuestProvider = ({ children }: { children: ReactNode }) => {
-  const [quests, setQuests] = useState<Quest[]>(initialQuests);
+  const [quests, setQuests] = useState<Quest[]>(() => {
+    // Load saved progress from localStorage on initialization
+    try {
+      const savedProgress = localStorage.getItem(STORAGE_KEY);
+      if (savedProgress) {
+        const parsedProgress = JSON.parse(savedProgress);
+        // Merge saved progress with initial quests to handle new quests added later
+        return initialQuests.map(initialQuest => {
+          const savedQuest = parsedProgress.find((q: Quest) => q.id === initialQuest.id);
+          return savedQuest || initialQuest;
+        });
+      }
+    } catch (error) {
+      console.error('Failed to load quest progress from localStorage:', error);
+    }
+    return initialQuests;
+  });
+
+  // Save quest progress to localStorage whenever quests change
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(quests));
+    } catch (error) {
+      console.error('Failed to save quest progress to localStorage:', error);
+    }
+  }, [quests]);
 
   const updateQuestObjective = (questId: string, objectiveId: string, updates: Partial<QuestObjective>) => {
     setQuests(prevQuests => 
