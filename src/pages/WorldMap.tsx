@@ -98,7 +98,7 @@ const WorldMap = () => {
         <RegionalMap
           regionId="baelershire"
           mapImage="/lovable-uploads/0fbe99d0-6956-4564-b834-75082e430b67.png"
-          mapWidth={2024}
+          mapWidth={1024}
           mapHeight={1536}
           locations={baelershireLocations}
           characterPosition={characterPosition}
