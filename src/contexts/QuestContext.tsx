@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -229,7 +230,7 @@ export const QuestProvider = ({ children }: { children: ReactNode }) => {
           );
           
           const completedObjectives = updatedObjectives.filter(obj => obj.completed).length;
-          const newStatus = completedObjectives === 0 ? "available" : 
+          const newStatus: "available" | "active" | "completed" = completedObjectives === 0 ? "available" : 
                            completedObjectives === updatedObjectives.length ? "completed" : "active";
           
           const updatedQuest = {
