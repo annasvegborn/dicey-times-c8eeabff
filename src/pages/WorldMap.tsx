@@ -1,9 +1,9 @@
-import { useState } from "react";
+
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import RegionalMap from "@/components/map/RegionalMap";
-import CharacterRenderer from "@/components/character/CharacterRenderer";
 import { useCharacter } from "@/hooks/useCharacter";
 import { useQuests } from "@/contexts/QuestContext";
 
@@ -13,14 +13,16 @@ const WorldMap = () => {
   const { character } = useCharacter();
   const { quests, loading } = useQuests();
 
-  // Create a quest lookup for easy access
-  const questLookup = quests.reduce((acc, quest) => {
-    acc[quest.id] = quest;
-    return acc;
-  }, {} as Record<string, typeof quests[0]>);
+  // Memoize quest lookup to prevent recreation on every render
+  const questLookup = useMemo(() => {
+    return quests.reduce((acc, quest) => {
+      acc[quest.id] = quest;
+      return acc;
+    }, {} as Record<string, typeof quests[0]>);
+  }, [quests]);
 
-  // Define locations for Baelershire region with quest completion status from shared data
-  const baelershireLocations = [
+  // Define locations for Baelershire region with quest completion status
+  const baelershireLocations = useMemo(() => [
     { 
       id: "mountain-path", 
       name: "Path to Mountains", 
@@ -69,9 +71,9 @@ const WorldMap = () => {
       type: "quest" as const,
       completed: questLookup["forest-disturbance"]?.status === "completed"
     }
-  ];
+  ], [questLookup]);
 
-  // Character's current position (you can make this dynamic)
+  // Character's current position
   const characterPosition = { x: 775, y: 583 }; // Starting at City Castle
 
   const handleLocationClick = (location: any) => {
@@ -84,14 +86,6 @@ const WorldMap = () => {
       console.log(`Clicked on ${location.type}: ${location.name}`);
     }
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-slate-700 font-serif text-xl">Loading world map...</div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-slate-50 overflow-x-hidden">
@@ -106,6 +100,11 @@ const WorldMap = () => {
           <ArrowLeft size={20} />
         </Button>
         <h1 className="text-xl font-bold font-serif">World Map - Baelershire Region</h1>
+        {loading && (
+          <div className="ml-auto text-sm text-slate-300">
+            Loading quest data...
+          </div>
+        )}
       </div>
 
       {/* Map Container - Full screen width */}
