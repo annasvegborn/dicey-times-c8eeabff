@@ -1,9 +1,8 @@
 
-import { useState, useEffect, useRef, useMemo, memo } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import SimpleAvatar from "@/components/character/SimpleAvatar";
+import CharacterRenderer from "@/components/character/CharacterRenderer";
 import { useCharacter } from "@/hooks/useCharacter";
-import { useDebounce } from "@/hooks/useDebounce";
 
 interface MapLocation {
   id: string;
@@ -30,7 +29,7 @@ interface RegionalMapProps {
   onLocationClick: (location: MapLocation) => void;
 }
 
-const RegionalMap = memo(({
+const RegionalMap = ({
   regionId,
   mapImage,
   mapWidth,
@@ -45,24 +44,23 @@ const RegionalMap = memo(({
   const imageRef = useRef<HTMLImageElement>(null);
   const { character } = useCharacter();
 
-  // Debounced dimension update function
-  const updateImageDimensions = useDebounce(() => {
-    if (imageRef.current && imageLoaded) {
-      const rect = imageRef.current.getBoundingClientRect();
-      console.log(`Image rendered dimensions: ${rect.width}x${rect.height}`);
-      console.log(`Original image dimensions: ${mapWidth}x${mapHeight}`);
-      setImageDimensions({ width: rect.width, height: rect.height });
-    }
-  }, 100);
-
   useEffect(() => {
+    const updateImageDimensions = () => {
+      if (imageRef.current && imageLoaded) {
+        const rect = imageRef.current.getBoundingClientRect();
+        console.log(`Image rendered dimensions: ${rect.width}x${rect.height}`);
+        console.log(`Original image dimensions: ${mapWidth}x${mapHeight}`);
+        setImageDimensions({ width: rect.width, height: rect.height });
+      }
+    };
+
     updateImageDimensions();
     window.addEventListener('resize', updateImageDimensions);
     
     return () => {
       window.removeEventListener('resize', updateImageDimensions);
     };
-  }, [imageLoaded, updateImageDimensions]);
+  }, [imageLoaded, mapWidth, mapHeight]);
 
   const handleImageLoad = () => {
     console.log('Image loaded');
@@ -85,38 +83,20 @@ const RegionalMap = memo(({
     }
   };
 
-  // Memoize scale factors to prevent recalculation on every render
-  const scaleFactors = useMemo(() => {
-    if (!imageLoaded || !imageDimensions.width || !imageDimensions.height) {
-      return { scaleX: 0, scaleY: 0 };
-    }
-
-    const scaleX = imageDimensions.width / mapWidth;
-    const scaleY = imageDimensions.height / mapHeight;
-    
-    return { scaleX, scaleY };
-  }, [imageLoaded, imageDimensions, mapWidth, mapHeight]);
-
-  // Memoize scaled positions for all locations
-  const scaledLocations = useMemo(() => {
-    if (scaleFactors.scaleX === 0 || scaleFactors.scaleY === 0) {
-      return [];
-    }
-
-    return locations.map(location => ({
-      ...location,
-      scaledX: location.x * scaleFactors.scaleX,
-      scaledY: location.y * scaleFactors.scaleY
-    }));
-  }, [locations, scaleFactors]);
-
   const getScaledPosition = (originalX: number, originalY: number) => {
-    if (scaleFactors.scaleX === 0 || scaleFactors.scaleY === 0) {
+    if (!imageLoaded || !imageDimensions.width || !imageDimensions.height) {
       return { x: 0, y: 0 };
     }
 
-    const scaledX = originalX * scaleFactors.scaleX;
-    const scaledY = originalY * scaleFactors.scaleY;
+    // Calculate scale factors for both dimensions
+    const scaleX = imageDimensions.width / mapWidth;
+    const scaleY = imageDimensions.height / mapHeight;
+    
+    // Apply scaling to get the position on the rendered image
+    const scaledX = originalX * scaleX;
+    const scaledY = originalY * scaleY;
+    
+    console.log(`Scaling ${originalX}, ${originalY} -> ${scaledX}, ${scaledY} (scaleX: ${scaleX}, scaleY: ${scaleY})`);
     
     return { x: scaledX, y: scaledY };
   };
@@ -130,36 +110,39 @@ const RegionalMap = memo(({
         alt={`${regionId} region map`}
         className="block w-full h-auto"
         onLoad={handleImageLoad}
-        fetchPriority="high"
       />
       
       {/* Interactive locations - positioned relative to the rendered image */}
-      {imageLoaded && scaledLocations.map((location) => (
-        <button
-          key={location.id}
-          className={`absolute transform -translate-x-1/2 -translate-y-1/2 group w-4 h-4 rounded-full shadow-lg transition-all duration-200 z-10 ${getLocationColor(location)}`}
-          style={{ 
-            left: `${location.scaledX}px`, 
-            top: `${location.scaledY}px` 
-          }}
-          onClick={() => handleLocationClick(location)}
-        >
-          <div className="w-full h-full rounded-full opacity-90 group-hover:scale-125 transition-transform"></div>
-          <div className="absolute top-6 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-            <div className="bg-white text-slate-800 text-xs px-2 py-1 rounded-lg font-serif whitespace-nowrap shadow-lg border">
-              {location.name}
-              {location.questId && (
-                <div className="text-slate-600 text-xs">
-                  {location.completed ? "Quest Complete" : "Click to view quest"}
-                </div>
-              )}
+      {imageLoaded && imageDimensions.width > 0 && locations.map((location) => {
+        const { x: scaledX, y: scaledY } = getScaledPosition(location.x, location.y);
+        
+        return (
+          <button
+            key={location.id}
+            className={`absolute transform -translate-x-1/2 -translate-y-1/2 group w-4 h-4 rounded-full shadow-lg transition-all duration-200 z-10 ${getLocationColor(location)}`}
+            style={{ 
+              left: `${scaledX}px`, 
+              top: `${scaledY}px` 
+            }}
+            onClick={() => handleLocationClick(location)}
+          >
+            <div className="w-full h-full rounded-full opacity-90 group-hover:scale-125 transition-transform"></div>
+            <div className="absolute top-6 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+              <div className="bg-white text-slate-800 text-xs px-2 py-1 rounded-lg font-serif whitespace-nowrap shadow-lg border">
+                {location.name}
+                {location.questId && (
+                  <div className="text-slate-600 text-xs">
+                    {location.completed ? "Quest Complete" : "Click to view quest"}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        </button>
-      ))}
+          </button>
+        );
+      })}
 
       {/* Character position - positioned relative to the rendered image */}
-      {characterPosition && character && imageLoaded && scaleFactors.scaleX > 0 && (
+      {characterPosition && character && imageLoaded && imageDimensions.width > 0 && (
         <div
           className="absolute transform -translate-x-1/2 -translate-y-1/2 z-20"
           style={{ 
@@ -168,14 +151,18 @@ const RegionalMap = memo(({
           }}
         >
           <div className="relative group">
-            {/* Character marker using SimpleAvatar */}
+            {/* Character marker */}
             <div className="w-10 h-10 bg-purple-500 rounded-full shadow-lg flex items-center justify-center border-2 border-white">
-              <SimpleAvatar
-                race={character.avatar_race || character.race}
-                characterClass={character.class}
-                skinTone={(character.avatar_skin_tone || 'light') as 'light' | 'dark'}
-                size={32}
-              />
+              <div className="w-8 h-8 rounded-full overflow-hidden">
+                <CharacterRenderer
+                  race={character.avatar_race || character.race}
+                  bodyShape={character.avatar_body_shape || 'medium'}
+                  hairStyle={character.avatar_hair_style || 'short'}
+                  characterClass={character.class}
+                  skinTone={(character.avatar_skin_tone || 'light') as 'light' | 'dark'}
+                  size={32}
+                />
+              </div>
             </div>
             {/* Character tooltip */}
             <div className="absolute top-12 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -188,8 +175,6 @@ const RegionalMap = memo(({
       )}
     </div>
   );
-});
-
-RegionalMap.displayName = 'RegionalMap';
+};
 
 export default RegionalMap;
