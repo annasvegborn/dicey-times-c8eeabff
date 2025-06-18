@@ -23,8 +23,8 @@ const CharacterRenderer = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imagesRef = useRef<Map<string, HTMLImageElement>>(new Map());
 
-  // For small thumbnails, use a higher internal resolution and scale down
-  const internalSize = size < 64 ? size * 4 : size;
+  // For better quality, always render at a higher resolution and scale down via CSS
+  const internalSize = Math.max(size * 2, 160);
 
   // Available PNG sprites in the project with descriptive names:
   const sprites = {
@@ -106,10 +106,14 @@ const CharacterRenderer = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    // Configure canvas for high-quality rendering
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+
     // Clear canvas with transparent background
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    console.log(`Canvas size: ${internalSize}x${internalSize}`);
+    console.log(`Canvas size: ${internalSize}x${internalSize}, display size: ${size}x${size}`);
 
     // Build the sprite keys for this character
     const bodyKey = `${race}_body_${skinTone}`;
@@ -145,12 +149,6 @@ const CharacterRenderer = ({
           console.log(`Drawing layer ${key}`);
           
           try {
-            // For small thumbnails, use smoother scaling
-            if (size < 64) {
-              ctx.imageSmoothingEnabled = true;
-              ctx.imageSmoothingQuality = 'high';
-            }
-            
             // Draw the sprite centered in the canvas
             ctx.drawImage(
               image,
@@ -180,10 +178,10 @@ const CharacterRenderer = ({
         height={internalSize}
         className="rounded-lg"
         style={{ 
-          imageRendering: size < 64 ? 'auto' : 'auto',
-          maxWidth: '100%',
+          imageRendering: 'auto',
           width: `${size}px`,
-          height: `${size}px`
+          height: `${size}px`,
+          maxWidth: '100%'
         }}
       />
     </div>
