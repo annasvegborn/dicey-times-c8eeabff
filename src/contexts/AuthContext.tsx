@@ -1,16 +1,24 @@
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
+import React, { createContext, useContext, useState } from 'react';
+
+interface DemoUser {
+  id: string;
+  email: string;
+}
 
 interface AuthContextType {
-  user: User | null;
-  session: Session | null;
+  user: DemoUser | null;
+  session: any;
   loading: boolean;
   signUp: (email: string, password: string, username?: string) => Promise<any>;
   signIn: (email: string, password: string) => Promise<any>;
   signOut: () => Promise<void>;
 }
+
+const DEMO_USER: DemoUser = {
+  id: 'demo-user-001',
+  email: 'demo@diceytimes.app',
+};
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
@@ -23,69 +31,17 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Demo mode: always logged in
+  const [user] = useState<DemoUser | null>(DEMO_USER);
 
-  useEffect(() => {
-    let mounted = true;
-
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (mounted) {
-          console.log('Auth state changed:', event, session?.user?.id);
-          setSession(session);
-          setUser(session?.user ?? null);
-          setLoading(false);
-        }
-      }
-    );
-
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (mounted) {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    });
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  const signUp = async (email: string, password: string, username?: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          username: username || email.split('@')[0]
-        }
-      }
-    });
-    return { data, error };
-  };
-
-  const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
-    return { data, error };
-  };
-
-  const signOut = async () => {
-    await supabase.auth.signOut();
-  };
+  const signUp = async () => ({ data: { user: DEMO_USER }, error: null });
+  const signIn = async () => ({ data: { user: DEMO_USER }, error: null });
+  const signOut = async () => {};
 
   const value = {
     user,
-    session,
-    loading,
+    session: { user: DEMO_USER },
+    loading: false,
     signUp,
     signIn,
     signOut
