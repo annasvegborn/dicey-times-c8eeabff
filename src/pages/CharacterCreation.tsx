@@ -1,7 +1,6 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
 import { useCharacter } from "@/hooks/useCharacter";
 import CharacterRenderer from "@/components/character/CharacterRenderer";
 import CharacterCreationStep1 from "@/components/character/CharacterCreationStep1";
@@ -13,7 +12,6 @@ import CharacterCreationNavigation from "@/components/character/CharacterCreatio
 
 const CharacterCreation = () => {
   const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
   const { createCharacter } = useCharacter();
   const [step, setStep] = useState(1);
   const [creating, setCreating] = useState(false);
@@ -32,23 +30,13 @@ const CharacterCreation = () => {
     }
   });
 
-  // Define which skin tones are available for each race
   const getAvailableSkinTones = (race: string): string[] => {
     switch (race) {
-      case 'human':
-        return ['light', 'dark'];
-      case 'elf':
-        return ['light', 'dark'];
-      default:
-        return ['light'];
+      case 'human': return ['light', 'dark'];
+      case 'elf': return ['light', 'dark'];
+      default: return ['light'];
     }
   };
-
-  useEffect(() => {
-    if (!authLoading && !user) {
-      navigate("/auth");
-    }
-  }, [user, authLoading, navigate]);
 
   const handleChange = (field: string, value: string) => {
     setCharacter(prev => ({ ...prev, [field]: value }));
@@ -57,10 +45,7 @@ const CharacterCreation = () => {
   const handleAvatarChange = (field: string, value: string) => {
     setCharacter(prev => ({
       ...prev,
-      avatarCustomization: {
-        ...prev.avatarCustomization,
-        [field]: value
-      }
+      avatarCustomization: { ...prev.avatarCustomization, [field]: value }
     }));
   };
 
@@ -88,58 +73,14 @@ const CharacterCreation = () => {
     }
   };
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-parchment-100 flex items-center justify-center">
-        <div className="text-parchment-900 text-xl font-serif">Loading...</div>
-      </div>
-    );
-  }
-
   const renderCurrentStep = () => {
     switch (step) {
-      case 1:
-        return (
-          <CharacterCreationStep1
-            characterName={character.name}
-            onNameChange={(name) => handleChange("name", name)}
-          />
-        );
-      case 2:
-        return (
-          <CharacterCreationStep2
-            race={character.avatarCustomization.race}
-            skinTone={character.avatarCustomization.skinTone}
-            hairStyle={character.avatarCustomization.hairStyle}
-            onRaceChange={(race) => handleAvatarChange("race", race)}
-            onSkinToneChange={(skinTone) => handleAvatarChange("skinTone", skinTone)}
-            onHairStyleChange={(hairStyle) => handleAvatarChange("hairStyle", hairStyle)}
-            getAvailableSkinTones={getAvailableSkinTones}
-          />
-        );
-      case 3:
-        return (
-          <CharacterCreationStep3
-            characterClass={character.class}
-            onClassChange={(characterClass) => handleChange("class", characterClass)}
-          />
-        );
-      case 4:
-        return (
-          <CharacterCreationStep4
-            fitnessLevel={character.fitnessLevel}
-            onFitnessLevelChange={(fitnessLevel) => handleChange("fitnessLevel", fitnessLevel)}
-          />
-        );
-      case 5:
-        return (
-          <CharacterCreationStep5
-            progressionMode={character.progressionMode}
-            onProgressionModeChange={(progressionMode) => handleChange("progressionMode", progressionMode)}
-          />
-        );
-      default:
-        return null;
+      case 1: return <CharacterCreationStep1 characterName={character.name} onNameChange={(name) => handleChange("name", name)} />;
+      case 2: return <CharacterCreationStep2 race={character.avatarCustomization.race} skinTone={character.avatarCustomization.skinTone} hairStyle={character.avatarCustomization.hairStyle} onRaceChange={(race) => handleAvatarChange("race", race)} onSkinToneChange={(skinTone) => handleAvatarChange("skinTone", skinTone)} onHairStyleChange={(hairStyle) => handleAvatarChange("hairStyle", hairStyle)} getAvailableSkinTones={getAvailableSkinTones} />;
+      case 3: return <CharacterCreationStep3 characterClass={character.class} onClassChange={(characterClass) => handleChange("class", characterClass)} />;
+      case 4: return <CharacterCreationStep4 fitnessLevel={character.fitnessLevel} onFitnessLevelChange={(fitnessLevel) => handleChange("fitnessLevel", fitnessLevel)} />;
+      case 5: return <CharacterCreationStep5 progressionMode={character.progressionMode} onProgressionModeChange={(progressionMode) => handleChange("progressionMode", progressionMode)} />;
+      default: return null;
     }
   };
 
@@ -150,12 +91,7 @@ const CharacterCreation = () => {
           <h1 className="text-2xl font-bold text-parchment-900 font-serif">Create Your Character</h1>
           <div className="flex items-center gap-4">
             <label className="flex items-center gap-2 text-xs text-parchment-700 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={showDebugGrid}
-                onChange={(e) => setShowDebugGrid(e.target.checked)}
-                className="w-3 h-3"
-              />
+              <input type="checkbox" checked={showDebugGrid} onChange={(e) => setShowDebugGrid(e.target.checked)} className="w-3 h-3" />
               Debug Grid
             </label>
             <div className="text-sm text-parchment-600">Step {step}/5</div>
@@ -163,33 +99,13 @@ const CharacterCreation = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left column - Character Preview */}
           <div className="flex justify-center items-start">
-            <CharacterRenderer
-              race={character.avatarCustomization.race}
-              bodyShape={character.avatarCustomization.bodyShape}
-              hairStyle={character.avatarCustomization.hairStyle}
-              characterClass={character.class}
-              skinTone={character.avatarCustomization.skinTone as 'light' | 'dark'}
-              size={256}
-              showDebugGrid={showDebugGrid}
-            />
+            <CharacterRenderer race={character.avatarCustomization.race} bodyShape={character.avatarCustomization.bodyShape} hairStyle={character.avatarCustomization.hairStyle} characterClass={character.class} skinTone={character.avatarCustomization.skinTone as 'light' | 'dark'} size={256} showDebugGrid={showDebugGrid} />
           </div>
-
-          {/* Right column - Character Options */}
-          <div>
-            {renderCurrentStep()}
-          </div>
+          <div>{renderCurrentStep()}</div>
         </div>
 
-        <CharacterCreationNavigation
-          step={step}
-          creating={creating}
-          onPrevStep={prevStep}
-          onNextStep={nextStep}
-          onCancel={() => navigate("/")}
-          onCompleteCreation={completeCreation}
-        />
+        <CharacterCreationNavigation step={step} creating={creating} onPrevStep={prevStep} onNextStep={nextStep} onCancel={() => navigate("/")} onCompleteCreation={completeCreation} />
       </div>
     </div>
   );

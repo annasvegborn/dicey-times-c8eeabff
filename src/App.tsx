@@ -8,7 +8,6 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { QuestProvider } from "@/contexts/QuestContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import Auth from "./pages/Auth";
 import CharacterCreation from "./pages/CharacterCreation";
 import CharacterSheet from "./pages/CharacterSheet";
 import WorldMap from "./pages/WorldMap";
@@ -29,7 +28,6 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/auth" element={<Auth />} />
               <Route path="/character-creation" element={<CharacterCreation />} />
               <Route path="/character-sheet" element={<CharacterSheet />} />
               <Route path="/world-map" element={<WorldMap />} />
@@ -37,7 +35,6 @@ const App = () => (
               <Route path="/quest/:questId" element={<QuestDetail />} />
               <Route path="/step-tracker" element={<StepTracker />} />
               <Route path="/inventory" element={<Inventory />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

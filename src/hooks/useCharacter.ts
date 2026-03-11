@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -34,6 +33,11 @@ export interface CharacterStats {
   charisma_progress: number;
 }
 
+const STORAGE_KEY = 'dicey-times-character';
+const STATS_KEY = 'dicey-times-stats';
+const TRAITS_KEY = 'dicey-times-traits';
+const FEATURES_KEY = 'dicey-times-features';
+
 export const useCharacter = () => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -44,169 +48,84 @@ export const useCharacter = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
-      loadCharacter();
-    }
+    loadCharacter();
   }, [user]);
 
   const loadCharacter = async () => {
-    if (!user) return;
-
     try {
       setLoading(true);
-      
-      // Load character
-      const { data: characterData, error: characterError } = await supabase
-        .from('characters')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+      const savedChar = localStorage.getItem(STORAGE_KEY);
+      const savedStats = localStorage.getItem(STATS_KEY);
+      const savedTraits = localStorage.getItem(TRAITS_KEY);
+      const savedFeatures = localStorage.getItem(FEATURES_KEY);
 
-      if (characterError && characterError.code !== 'PGRST116') {
-        throw characterError;
+      if (savedChar) {
+        const parsed = JSON.parse(savedChar);
+        setCharacter({ ...parsed, avatar_skin_tone: parsed.avatar_skin_tone || 'light' });
       }
-
-      if (characterData) {
-        console.log('Loaded character data:', characterData);
-        // Ensure skin tone has a default value if it's null
-        const characterWithDefaults = {
-          ...characterData,
-          avatar_skin_tone: characterData.avatar_skin_tone || 'light'
-        };
-        setCharacter(characterWithDefaults);
-
-        // Load stats
-        const { data: statsData, error: statsError } = await supabase
-          .from('character_stats')
-          .select('*')
-          .eq('character_id', characterData.id)
-          .single();
-
-        if (statsError && statsError.code !== 'PGRST116') {
-          throw statsError;
-        }
-
-        if (statsData) {
-          setStats(statsData);
-        }
-
-        // Load traits
-        const { data: traitsData, error: traitsError } = await supabase
-          .from('character_traits')
-          .select('trait_name')
-          .eq('character_id', characterData.id);
-
-        if (traitsError) throw traitsError;
-
-        setTraits(traitsData?.map(t => t.trait_name) || []);
-
-        // Load features
-        const { data: featuresData, error: featuresError } = await supabase
-          .from('character_features')
-          .select('feature_name, feature_description')
-          .eq('character_id', characterData.id);
-
-        if (featuresError) throw featuresError;
-
-        setFeatures(featuresData?.map(f => ({ name: f.feature_name, description: f.feature_description || '' })) || []);
-      }
+      if (savedStats) setStats(JSON.parse(savedStats));
+      if (savedTraits) setTraits(JSON.parse(savedTraits));
+      if (savedFeatures) setFeatures(JSON.parse(savedFeatures));
     } catch (error: any) {
-      toast({
-        title: "Error loading character",
-        description: error.message,
-        variant: "destructive",
-      });
+      console.error('Error loading character:', error);
     } finally {
       setLoading(false);
     }
   };
 
   const createCharacter = async (characterData: Partial<Character>) => {
-    if (!user) return;
-
     try {
-      // Create character
-      const { data: newCharacter, error: characterError } = await supabase
-        .from('characters')
-        .insert({
-          user_id: user.id,
-          name: characterData.name || 'Adventurer',
-          race: characterData.race || 'human',
-          class: characterData.class || 'warrior',
-          fitness_level: characterData.fitness_level || 'moderate',
-          progression_mode: characterData.progression_mode || 'xp',
-          avatar_race: characterData.avatar_race || characterData.race || 'human',
-          avatar_body_shape: characterData.avatar_body_shape || 'medium',
-          avatar_hair_style: characterData.avatar_hair_style || 'short',
-          avatar_skin_tone: characterData.avatar_skin_tone || 'light'
-        })
-        .select()
-        .single();
+      const newCharacter: Character = {
+        id: 'char-' + Date.now(),
+        name: characterData.name || 'Adventurer',
+        level: 1,
+        race: characterData.race || 'human',
+        class: characterData.class || 'warrior',
+        xp: 0,
+        xp_to_next_level: 100,
+        fitness_level: characterData.fitness_level || 'moderate',
+        progression_mode: characterData.progression_mode || 'xp',
+        avatar_race: characterData.avatar_race || characterData.race || 'human',
+        avatar_body_shape: characterData.avatar_body_shape || 'medium',
+        avatar_hair_style: characterData.avatar_hair_style || 'short',
+        avatar_skin_tone: characterData.avatar_skin_tone || 'light',
+      };
 
-      if (characterError) throw characterError;
+      const newStats: CharacterStats = {
+        strength_value: characterData.class === 'warrior' ? 14 : 10,
+        dexterity_value: characterData.class === 'rogue' ? 14 : 10,
+        constitution_value: characterData.class === 'warrior' ? 12 : 10,
+        intelligence_value: characterData.class === 'mage' ? 14 : 8,
+        wisdom_value: characterData.class === 'cleric' ? 14 : 10,
+        charisma_value: 9,
+        strength_progress: characterData.class === 'warrior' ? 30 : 0,
+        dexterity_progress: characterData.class === 'rogue' ? 30 : 0,
+        constitution_progress: 15,
+        intelligence_progress: characterData.class === 'mage' ? 30 : 0,
+        wisdom_progress: characterData.class === 'cleric' ? 30 : 0,
+        charisma_progress: 5,
+      };
 
-      // Create default stats
-      const { error: statsError } = await supabase
-        .from('character_stats')
-        .insert({
-          character_id: newCharacter.id,
-          strength_value: characterData.class === 'warrior' ? 14 : 10,
-          dexterity_value: characterData.class === 'rogue' ? 14 : 10,
-          constitution_value: characterData.class === 'warrior' ? 12 : 10,
-          intelligence_value: characterData.class === 'mage' ? 14 : 8,
-          wisdom_value: characterData.class === 'cleric' ? 14 : 10,
-          charisma_value: 9,
-          strength_progress: characterData.class === 'warrior' ? 30 : 0,
-          dexterity_progress: characterData.class === 'rogue' ? 30 : 0,
-          constitution_progress: 15,
-          intelligence_progress: characterData.class === 'mage' ? 30 : 0,
-          wisdom_progress: characterData.class === 'cleric' ? 30 : 0,
-          charisma_progress: 5
-        });
-
-      if (statsError) throw statsError;
-
-      // Create default traits
       const defaultTraits = ['Determined', 'Cautious'];
-      for (const trait of defaultTraits) {
-        await supabase
-          .from('character_traits')
-          .insert({
-            character_id: newCharacter.id,
-            trait_name: trait
-          });
-      }
-
-      // Create default features
       const defaultFeatures = [
         { name: 'Basic Attack', description: 'A simple attack using your main weapon. Deals 1d6 + STR modifier damage.' },
         { name: 'Shield Block', description: 'Use your shield to block incoming attacks. Reduces damage by 1d4 + CON modifier.' }
       ];
 
-      for (const feature of defaultFeatures) {
-        await supabase
-          .from('character_features')
-          .insert({
-            character_id: newCharacter.id,
-            feature_name: feature.name,
-            feature_description: feature.description
-          });
-      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newCharacter));
+      localStorage.setItem(STATS_KEY, JSON.stringify(newStats));
+      localStorage.setItem(TRAITS_KEY, JSON.stringify(defaultTraits));
+      localStorage.setItem(FEATURES_KEY, JSON.stringify(defaultFeatures));
 
-      await loadCharacter();
-      
-      toast({
-        title: "Character created!",
-        description: "Your adventure begins now.",
-      });
+      setCharacter(newCharacter);
+      setStats(newStats);
+      setTraits(defaultTraits);
+      setFeatures(defaultFeatures);
 
+      toast({ title: "Character created!", description: "Your adventure begins now." });
       return newCharacter;
     } catch (error: any) {
-      toast({
-        title: "Error creating character",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast({ title: "Error creating character", description: error.message, variant: "destructive" });
       throw error;
     }
   };
@@ -217,47 +136,23 @@ export const useCharacter = () => {
     hairStyle: string;
     skinTone: string;
   }) => {
-    if (!user) return;
-
     try {
-      console.log('Updating character appearance in database:', appearance);
-      
-      const { data, error } = await supabase
-        .from('characters')
-        .update({
-          avatar_race: appearance.race,
-          avatar_body_shape: appearance.bodyShape,
-          avatar_hair_style: appearance.hairStyle,
-          avatar_skin_tone: appearance.skinTone
-        })
-        .eq('id', characterId)
-        .select();
-
-      if (error) throw error;
-
-      console.log('Database update successful:', data);
-
-      // Update local state immediately
-      setCharacter(prev => prev ? {
-        ...prev,
+      const updated = character ? {
+        ...character,
         avatar_race: appearance.race,
         avatar_body_shape: appearance.bodyShape,
         avatar_hair_style: appearance.hairStyle,
         avatar_skin_tone: appearance.skinTone
-      } : null);
-      
-      toast({
-        title: "Appearance updated!",
-        description: "Your character's look has been changed.",
-      });
+      } : null;
 
+      if (updated) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        setCharacter(updated);
+      }
+
+      toast({ title: "Appearance updated!", description: "Your character's look has been changed." });
     } catch (error: any) {
-      console.error('Error updating appearance:', error);
-      toast({
-        title: "Error updating appearance",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast({ title: "Error updating appearance", description: error.message, variant: "destructive" });
       throw error;
     }
   };
